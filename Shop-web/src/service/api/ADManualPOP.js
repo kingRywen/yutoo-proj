@@ -1,0 +1,376 @@
+export default [
+  {
+      name: 'adManualUpdateClassifyId',
+      method: 'POST',
+      desc: '移入分组',
+      path: 'adManual/updateClassifyId',
+    //   
+      showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adManualList',
+      method: 'POST',
+      desc: '广告系列/组/关键词列表',
+      path: 'adManual/list',
+      singleLoading: true,
+    //   
+      // showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adManualSaveStrategy',
+      method: 'POST',
+      desc: '添加定时调整预算策略',
+      path: 'adManual/saveStrategy',
+    //   
+      showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adManualUpdateStrategy',
+      method: 'POST',
+      desc: '编辑定时调整预算策略',
+      path: 'adManual/updateStrategy',
+    //   
+      showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adManualRemoveStrategy',
+      method: 'POST',
+      desc: '删除定时调整预算策略',
+      path: '/adManual/removeStrategy', 
+      newShowSuccess: true,
+  },
+  {
+      name: 'taskClassifyAdList',
+      method: 'POST',
+      desc: '根据分组查系列、组',
+      path: 'taskClassify/adList',
+    //   
+      // showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adManualUpdateStrategyStatus',
+      method: 'POST',
+      desc: '开启/关闭定时调整预算策略',
+      path: 'adManual/updateStrategyStatus',
+    //   
+      showSuccess: true,
+      params: {}
+  },
+  {
+      name: 'adDataGetLatestTime',
+      method: 'POST',
+      desc: '获取广告数据更新时间状态',
+      path: 'ad/data/getLatestTime',
+      params: {}
+  },
+  {
+      name: 'adManualStrategyInfo',
+      method: 'POST',
+      desc: '定时调整预算策略详情',
+      singleLoading: true,
+      path: 'adManual/strategyInfo',
+    //   
+      // showSuccess: true,
+      params: {}
+  },
+  {
+    name: 'adManualSeoList',
+    method: 'POST',
+    desc: '广告系列/组/关键词优化记录',
+    singleLoading: true,
+    path: '/adManual/seoList',
+    
+    // showSuccess: true,
+    params: {},
+    must:['platformId','siteId','sellerId','strategyType','objectId','period','startTime','endTime']
+  },
+  {
+    name: 'adManualExportSeoData',
+    method: 'POST',
+    desc: '导出广告系列/组/关键词优化记录',
+    singleLoading: true,
+    path: '/adManual/exportSeoData',
+    
+    // showSuccess: true,
+    params: {},
+    config:{responseType: "blob"},
+    must:['platformId','siteId','sellerId','strategyType','objectId','period','startTime','endTime']
+  },
+  {
+    name: 'adManualIgnore',
+    method: 'POST',
+    desc: '广告系列/组/关键词 忽略/取消忽略',
+    singleLoading: true,
+    path: '/adManual/ignore',
+    // 
+    showSuccess: true,
+    params: {},
+    must:['platformId','siteId','sellerId','strategyType','objectIds','ignoreFlag']
+  },
+  {
+    name: 'adDataUpdateData',
+    method: 'POST',
+    desc: '手动更新广告数据',
+    singleLoading: true,
+    path: '/ad/data/updateData',
+    
+    //showSuccess: true,
+    //params: {},
+    must:['platformId','siteId','sellerId']
+  },
+  {
+    name: 'adCampaignNegativeKeywordList',
+    method: 'POST',
+    desc: '广告系列否定词列表',
+    path: '/adCampaignNegativeKeyword/list',
+	mock:true,
+  },
+  {
+    name: 'adNegativeKeywordList',
+    method: 'POST',
+    desc: '广告组否定词列表',
+    path: '/adNegativeKeyword/list',
+  	mock:true,
+  },
+  {
+    name: 'adProductRptList',
+    method: 'POST',
+    desc: '广告产品列表',
+    path: '/adProductRpt/list',
+  	mock:true,
+  },
+  {
+    name: 'adProductSave',
+    method: 'POST',
+    desc: '广告产品-添加',
+    path: '/adProduct/save',
+	newShowSuccess: true,
+  	mock:true,
+  },
+  {
+    name: 'adNegativeKeywordAddKeyword',
+    method: 'POST',
+    desc: '加入广告组否定词',
+    path: '/adNegativeKeyword/addKeyword',
+  	mock:true,
+	newShowSuccess: true,
+  },
+  {
+    name: 'adNegativeKeywordRemoveKeyword',
+    method: 'POST',
+    desc: '删除广告组否定词',
+    path: '/adNegativeKeyword/removeKeyword',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+  {
+    name: 'adProductUpdate',
+    method: 'POST',
+    desc: '修改广告产品状态',
+    path: '/adProduct/update',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+  {
+    name: 'adCampaignNegativeKeywordAddKeyword1',
+    method: 'POST',
+    desc: '加入广告系列否定词',
+    path: '/adCampaignNegativeKeyword/addKeyword',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+  {
+    name: 'adCampaignNegativeKeywordRemoveKeyword1',
+    method: 'POST',
+    desc: '删除广告系列否定词',
+    path: '/adCampaignNegativeKeyword/removeKeyword',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+  {
+    name: 'adCampaignUpdate',
+    method: 'POST',
+    desc: '修改广告系列状态',
+    path: '/adCampaign/update',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+  {
+    name: 'adKeywordSave',
+    method: 'POST',
+    desc: '广告关键词-添加',
+    path: '/adKeyword/save',
+  	mock:true,
+  	newShowSuccess: true,
+  },
+	{
+	  name: 'adKeywordUpdate',
+	  method: 'POST',
+	  desc: '广告关键词-修改',
+	  path: '/adKeyword/update',
+		mock:true,
+		newShowSuccess: true,
+	},
+	{
+	  name: 'adGroupUpdate',
+	  method: 'POST',
+	  desc: '广告组-修改(通用)',
+	  path: '/adGroup/update',
+		mock:true,
+		newShowSuccess: true,
+	},
+	{
+	  name: 'adCampaignInfo',
+	  method: 'POST',
+	  desc: '广告系列-详情',
+	  path: '/adCampaign/info',
+		mock:true,
+	},
+	{
+	  name: 'adGroupInfoToCustom',
+	  method: 'POST',
+	  desc: '广告组-详情',
+	  path: '/adGroup/infoToCustom',
+		mock:true,
+	},
+	{
+	  name: 'adGroupUpdateToCustom',
+	  method: 'POST',
+	  desc: '广告组-修改',
+	  path: '/adGroup/updateToCustom',
+		mock:true,
+		newShowSuccess: true,
+	},
+	{
+	  name: 'adNegativeTargetList',
+	  method: 'POST',
+	  desc: '否定商品定位广告-列表',
+	  path: '/adNegativeTarget/list',
+		mock:true,
+	},
+	{
+	  name: 'adNegativeTargetRemove',
+	  method: 'POST',
+	  desc: '否定商品定位广告-删除',
+	  path: '/adNegativeTarget/remove',
+		mock:true,
+		newShowSuccess: true,
+	},
+	{
+	  name: 'adNegativeTargetSave',
+	  method: 'POST',
+	  desc: '否定商品定位广告-添加',
+	  path: '/adNegativeTarget/save',
+		mock:true,
+		newShowSuccess: true,
+	},
+	
+	{
+	    name: 'adCampaignTemplate',
+	    method: 'POST',
+	    desc: '广告系列-导入模板',
+	    path: '/adCampaign/template',
+	    mock: true,
+	    config:{
+	        responseType:"blob"
+	    }
+	},
+	{
+	    name: 'adCampaignBatchSaveImport',
+	    method: 'POST',
+	    desc: '广告系列-批量添加',
+	    path: '/adCampaign/batchSaveImport',
+	    mock: true,
+	    showSuccess: true,
+	},
+	{
+	    name: 'adManualNtSave',
+	    method: 'POST',
+	    desc: '否定词策略-添加/编辑',
+	    path: '/adManual/nt/save',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualNtInfo',
+	    method: 'POST',
+	    desc: '否定词策略-详情',
+	    path: '/adManual/nt/info',
+	    mock: true,
+	},
+	{
+	    name: 'adManualNtUpdateStatus',
+	    method: 'POST',
+	    desc: '否定策略_开启/关闭',
+	    path: '/adManual/nt/updateStatus',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualNtRemove',
+	    method: 'POST',
+	    desc: '否定策略-删除',
+	    path: '/adManual/nt/remove',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adTargetUpdate',
+	    method: 'POST',
+	    desc: '商品定位广告-修改',
+	    path: '/adTarget/update',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adTargetSave',
+	    method: 'POST',
+	    desc: '商品定位广告-添加',
+	    path: '/adTarget/save',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualPausedSave',
+	    method: 'POST',
+	    desc: '广告产品暂停策略-添加/编辑',
+	    path: '/adManual/paused/save',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualPausedInfo',
+	    method: 'POST',
+	    desc: '广告产品暂停策略-详情',
+	    path: '/adManual/paused/info',
+	    mock: true,
+	},
+	{
+	    name: 'adManualPausedUpdateStatus',
+	    method: 'POST',
+	    desc: '广告产品暂停策略_开启/关闭',
+	    path: '/adManual/paused/updateStatus',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualPausedRemove',
+	    method: 'POST',
+	    desc: '广告产品暂停策略-删除',
+	    path: '/adManual/paused/remove',
+	    mock: true,
+	    newShowSuccess: true,
+	},
+	{
+	    name: 'adManualVerifyExpress',
+	    method: 'POST',
+	    desc: '表达式验证',
+	    path: '/adManual/verifyExpress',
+	    mock: true,
+	},
+]

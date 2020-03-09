@@ -1,0 +1,12 @@
+// 背景色
+$bgColor:#ececec;
+
+// 方框背景色
+$boxBgColor: #f6f6f8; // 方框边框
+$boxBorderColor: #e5e5e5;
+
+@mixin flex-wrapper($justify:center) {
+  display: flex;
+  justify-content: $justify;
+  align-items: center;
+}

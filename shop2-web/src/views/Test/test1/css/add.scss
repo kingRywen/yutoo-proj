@@ -1,0 +1,119 @@
+.mainView{
+	.title_content{
+		>*{
+			font-size: 12px;
+		}
+		>div:nth-child(1){
+			display: inline-block;
+			background: rgb(0,152,152);
+			font-size: 13px;
+			padding: 3px 19px;
+			border-radius: 4px;
+			color: #fff;
+			margin-right: 10px;
+		}
+	}
+	.rule_content {
+		width: 100%;
+		height: auto;
+		.form_item {
+			.lebelBox {
+				display: flex;
+				flex-direction: row;
+				.lebelBtn{
+					min-height: 200px;
+					width: 210px;			
+					border: 1px solid #dcdfe6;
+					border-radius: 5px;
+					margin-right: 10px;
+					>div {
+						width: 100%;
+						background:rgb(242,242,242);
+						text-align: center;
+						display:block;
+						height: 30px;
+						line-height: 30px;
+					}
+					.el-button{
+						padding: 8px 10px;
+					}
+				}
+				.lebel {
+					min-height: 200px;
+					width: 330px;
+					padding: 10px;
+					border: 1px solid #dcdfe6;
+					border-radius: 5px;
+					margin-right: 10px;
+					.el-checkbox {
+						&:first-child {
+							margin-right: 10px;
+						}
+					}
+					.el-checkbox.is-bordered + .el-checkbox.is-bordered {
+						margin: 0 10px 0 0;
+					}
+					&:last-child {
+						flex: 1;
+						margin-right: 0;
+						.tag {
+							margin-right: 10px;
+							margin-bottom: 15px;
+							position: relative;
+							.rulehint {
+								position: absolute;
+								left: 0;
+								bottom: -26px;
+								color: #f56c6c;
+							}
+						}
+						.ruleinput {
+							width: 30px;
+							.el-input__inner {
+								padding: 0;
+								text-align: center;
+							}
+						}
+					}
+					.draggable {
+					  padding: 5px 0 5px 10px;
+					  display: flex;
+					  flex-wrap: wrap;
+					  .formula-btn {
+						margin-right: 10px;
+						margin-bottom:10px;
+						font-size: 12px;
+						display: flex;
+						height: 25px;
+						line-height: 25px;
+						margin-bottom: 30px;
+						.btn-txt {
+						  cursor: move;
+						  padding-top: 0px;
+						  >div {
+							  background: rgb(188,188,188);
+							  color:#fff;
+							  padding: 0 10px 0 10px;
+							  margin-top: 8px;
+							  border-radius: 4px;
+						  }
+						}
+						/deep/ [class^='el-icon-'] {
+						  font-size: 10px;
+						  width: 10px;
+						  height: 10px;
+						  color: red;
+						  cursor: pointer;
+						}
+					  }
+					}
+				}
+			}
+			&:last-child {
+				div {
+					// margin-left: 80px;
+				}
+			}
+		}
+	}
+}

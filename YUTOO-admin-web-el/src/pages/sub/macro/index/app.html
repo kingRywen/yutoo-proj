@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <el-row :gutter="10">
+      <el-col :span="24">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>系统菜单</span>
+          </div>
+          <div>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-row>
+                <div class="btn-box" style="float:right">
+                  <el-button @click="refresh" v-if="hasPermission('sys:menu:list')">刷新</el-button>
+                  <el-button type="success" v-if="hasPermission('sys:menu:save')" @click="add">新增</el-button>
+                  <el-button type="primary" v-if="hasPermission('sys:menu:edit')" @click="edit">编辑</el-button>
+                  <el-button type="danger" v-if="hasPermission('sys:menu:remove')" @click="del">删除</el-button>
+                </div>
+              </el-row>
+            </el-form>
+
+            <el-table ref="singleTable" :data="tableData" highlight-current-row style="width: 100%" @selection-change="handleSelectionChange">
+              <el-table-column type="selection" width="55">
+              </el-table-column>
+              <el-table-column property="macroId" label="编号" width="120">
+              </el-table-column>
+              <el-table-column property="name" label="参数名" width="120">
+              </el-table-column>
+              <el-table-column property="value" label="参数值">
+              </el-table-column>
+              <el-table-column property="typeName" label="所属类别">
+              </el-table-column>
+              <el-table-column label="类型">
+                <template slot-scope="scope">
+                  <el-tag v-if="scope.row.type === 0">目录</el-tag>
+                  <el-tag type="warning" v-else>参数</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column property="orderNum" label="排序">
+              </el-table-column>
+              <el-table-column label="可用">
+                <template slot-scope="scope">
+                  <el-switch :value="scope.row.status" :active-value="1" :inactive-value="0" disabled>
+                </template>
+              </el-table-column>
+              <el-table-column property="remark" label="备注">
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</body>
+
+</html>

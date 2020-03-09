@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <el-row :gutter="10">
+      <el-col :span="24">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>系统菜单</span>
+          </div>
+          <div>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-row>
+                <div style="float:left">
+                  <el-form-item label="">
+                    <el-input v-model="formInline.val" placeholder="输入查询关键字" @keyup.enter="onSubmit"></el-input>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button type="primary" @click="onSubmit">查询</el-button>
+                  </el-form-item>
+                </div>
+                <div class="btn-box" style="float:right">
+                  <el-button @click="refresh">刷新</el-button>
+                  <el-button @click="generate" type="primary">生成代码</el-button>
+                </div>
+              </el-row>
+            </el-form>
+
+            <com-table :data="tableData" :columns="columns" :selection="true" :multiple-selection.sync="multiSelect">
+            </com-table>
+            <el-pagination style="margin-top: 20px; text-align: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+              :current-page="pageNo" :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
+              :total="total">
+            </el-pagination>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+
+  <!-- <script src="/src/scripts/layui/layui.all.js"></script> -->
+</body>
+
+</html>

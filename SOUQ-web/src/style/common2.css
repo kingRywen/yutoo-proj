@@ -1,0 +1,42 @@
+.keywordQuery .el-radio-button__orig-radio:checked+.el-radio-button__inner,
+  {
+  color: orange !important;
+  background-color: #fff;
+  border-color: orange !important;
+  -webkit-box-shadow: -1px 0 0 0;
+  box-shadow: -1px 0 0 0;
+}
+
+.el-date-wrapper .el-popper[x-placement^="bottom"] {
+  position: fixed !important;
+  top: 220px !important;
+  left: 627px !important;
+  z-index: 2031;
+}
+
+.keywordQuery .el-dialog__header,
+.categoryRanking,
+.el-dialog__header,
+.adkeywordRanking .el-dialog__header,
+.adkeywordRanking,
+.adkeywordRanking .el-dialog__header {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0px;
+}
+
+.salesMonitoring .el-dialog__body,
+.keywordQuery .el-dialog__body,
+.categoryRanking .el-dialog__body,
+.adkeywordRanking .el-dialog__body {
+  color: #606266;
+  font-size: 14px;
+  padding: 20px 100px 0 0px;
+}
+
+.el-button .el-button--success {
+  margin-right: 20px;
+}
+
+.keywordQuery .el-form-item__content {
+  margin-left: 0;
+}

@@ -1,0 +1,477 @@
+export default [{
+  name: 'userlogin',
+  method: 'POST',
+  desc: '用户登录',
+  path: 'sys/login',
+}, {
+  name: 'sysUserUpdatePswd',
+  method: 'POST',
+  showSuccess: true,
+  type: 'formdata',
+  desc: '修改密码',
+  path: 'sys/user/updatePswd',
+}, {
+  name: 'platformSiteGetPlatformSite',
+  method: 'POST',
+  desc: '选择平台站点',
+  path: 'PlatformSite/getPlatformSite',
+}, {
+  name: 'categoryList',
+  method: 'POST',
+  desc: '类目列表',
+  path: 'Category/list',
+}, {
+  name: 'categoryDropdownList',
+  method: 'POST',
+  desc: '类目下拉值',
+  config: {
+    keep: true,
+  },
+  path: 'Category/dropdownList',
+}, {
+  name: 'categoryDropdownListHasParent',
+  method: 'POST',
+  config: {
+    keep: true,
+  },
+  desc: '类目下拉值(包含父类目名称)',
+  path: 'Category/dropdownList/hasParent',
+}, {
+  name: 'categorySave',
+  method: 'POST',
+  showSuccess: true,
+  desc: '类目新增',
+  path: 'Category/save',
+}, {
+  name: 'categoryUpdate',
+  method: 'POST',
+  desc: '类目编辑',
+
+  showSuccess: true,
+  path: 'Category/update',
+}, {
+  name: 'categorySearch',
+  method: 'POST',
+  desc: '类目搜索',
+  type: 'formdata',
+  path: 'Category/search',
+}, {
+  name: 'categoryRemove',
+  method: 'POST',
+  desc: '类目删除',
+  showSuccess: true,
+  path: 'Category/remove',
+}, {
+  name: 'categoryInfo',
+  method: 'POST',
+  desc: '类目信息（通过主键获取）',
+  path: 'Category/info',
+}, {
+  name: 'accountList',
+  method: 'POST',
+  desc: '账号列表',
+  path: 'Account/list',
+}, {
+  name: 'accountSave',
+  method: 'POST',
+  desc: '账号新增',
+  showSuccess: true,
+  path: 'Account/save',
+}, {
+  name: 'accountListCategory',
+  method: 'POST',
+  desc: '账号类目',
+  singleLoading: true,
+  path: 'Account/list/category',
+}, {
+  name: 'accountUpdate',
+  method: 'POST',
+  showSuccess: true,
+  desc: '账号编辑',
+  path: 'Account/update',
+}, {
+  name: 'accountExportTemplate',
+  method: 'POST',
+  desc: '下载模版',
+  config: {
+    responseType: "blob"
+  },
+  path: 'Account/exportTemplate',
+}, {
+  name: 'accountImportData',
+  method: 'POST',
+  desc: '导入数据',
+  showSuccess: true,
+  path: 'Account/importData',
+}, {
+  name: 'accountActive',
+  method: 'POST',
+  desc: '激活账号',
+  // showSuccess: true,
+  path: 'Account/active',
+}, {
+  name: 'apiPriceRange',
+  method: 'POST',
+  desc: '价格区间',
+  showSuccess: true,
+  path: 'api/priceRange',
+}, {
+  name: 'merchantOrderGetOrderId',
+  method: 'POST',
+  desc: '获取订单ID',
+  // showSuccess: true,
+  path: 'MerchantOrder/getOrderId',
+}, {
+  name: 'apiPrice',
+  method: 'POST',
+  desc: '获取价格',
+  path: 'api/price',
+}, {
+  name: 'accountListActive',
+  method: 'POST',
+  desc: '可激活账号列表',
+  path: 'Account/list/active',
+}, {
+  name: 'accountAotuRegister',
+  method: 'POST',
+  showSuccess: true,
+  desc: '自动注册（手动类型的账号）',
+  path: 'Account/aotuRegister',
+}, {
+  name: 'accountRemove',
+  method: 'POST',
+  desc: '账号删除',
+  showSuccess: true,
+  path: 'Account/remove',
+}, {
+  name: 'accountUpdateStatus',
+  method: 'POST',
+  desc: '修改状态',
+  showSuccess: true,
+  path: 'Account/updateStatus',
+}, {
+  name: 'accountInfo',
+  method: 'POST',
+  desc: '账号信息（通过主键获取）',
+  path: 'Account/info',
+}, {
+  name: 'taskSubParamList',
+  method: 'POST',
+  desc: '查看账号结果',
+  path: 'TaskSubParam/list',
+}, {
+  name: 'merchantOrderList',
+  method: 'POST',
+  desc: '订单列表',
+  path: 'MerchantOrder/list',
+}, {
+  name: 'merchantOrderPayInfo',
+  method: 'POST',
+  desc: '支付信息（通过订单号id获取）',
+  path: 'MerchantOrder/payInfo',
+}, {
+  name: 'merchantOrderAccountList',
+  method: 'POST',
+  desc: '账号列表',
+  path: 'MerchantOrder/accountList',
+}, {
+  name: 'merchantOrderPay',
+  method: 'POST',
+  desc: '支付',
+  showSuccess: true,
+  path: 'MerchantOrder/pay',
+}, {
+  name: 'merchantOrderPayList',
+  method: 'POST',
+  desc: '付费记录列表',
+  path: 'MerchantOrderPay/list',
+}, {
+  name: 'merchantOrderCancellation',
+  method: 'POST',
+  desc: '作废',
+  path: 'MerchantOrder/cancellation',
+}, {
+  name: 'merchantOrderRenewInfo',
+  method: 'POST',
+  desc: '续费信息（通过订单号id获取）',
+  path: 'MerchantOrder/renewInfo',
+}, {
+  name: 'merchantOrderRenew',
+  method: 'POST',
+  desc: '续费',
+  showSuccess: true,
+  path: 'MerchantOrder/renew',
+}, {
+  name: 'taskList',
+  method: 'POST',
+  desc: '任务列表',
+  path: 'Task/list',
+}, {
+  name: 'taskSave',
+  method: 'POST',
+  desc: '任务新增',
+  showSuccess: true,
+  path: 'Task/save',
+}, {
+  name: 'taskUpdate',
+  method: 'POST',
+  desc: '任务编辑',
+  path: 'Task/update',
+}, {
+  name: 'taskInfo',
+  method: 'POST',
+  desc: '任务信息（通过主键获取）',
+  path: 'Task/info',
+}, {
+  name: 'taskSubInfo',
+  method: 'POST',
+  desc: '子任务信息（通过主键获取）',
+  path: 'TaskSub/info',
+}, {
+  name: 'taskSubParamInfo',
+  method: 'POST',
+  desc: '任务信息（通过主键获取）',
+  path: 'TaskSubParam/info',
+}, {
+  name: 'taskRemove',
+  method: 'POST',
+  desc: '任务删除',
+  path: 'Task/remove',
+}, {
+  name: 'taskCancel',
+  method: 'POST',
+  desc: '取消任务',
+  path: 'Task/cancel',
+}, {
+  name: 'taskName',
+  method: 'POST',
+  desc: '获取任务名称',
+  path: 'Task/name',
+}, {
+  name: 'taskTypeDropdownList',
+  method: 'POST',
+  desc: '任务类型下拉值',
+  path: 'TaskType/dropdownList',
+}, {
+  name: 'taskSubList',
+  method: 'POST',
+  desc: '查看结果',
+  path: 'TaskSub/list',
+}, {
+  name: 'libEvaluateList',
+  method: 'POST',
+  desc: '评价列表',
+  path: 'LibEvaluate/list',
+}, {
+  name: 'libEvaluateUpdate',
+  method: 'POST',
+  desc: '评价编辑',
+  showSuccess: true,
+  path: 'LibEvaluate/update',
+}, {
+  name: 'libEvaluateSave',
+  method: 'POST',
+  desc: '评价新增',
+  showSuccess: true,
+  path: 'LibEvaluate/save',
+}, {
+  name: 'libEvaluateRemove',
+  method: 'POST',
+  desc: '评价删除',
+  showSuccess: true,
+  path: 'LibEvaluate/remove',
+}, {
+  name: 'libEvaluateExportTemplate',
+  method: 'POST',
+  desc: '下载评价模版',
+  config: {
+    responseType: "blob"
+  },
+  path: 'LibEvaluate/exportTemplate',
+}, {
+  name: 'libEvaluateImportData',
+  method: 'POST',
+  desc: '评价导入数据',
+  path: 'LibEvaluate/importData',
+}, {
+  name: 'libEvaluateInfo',
+  method: 'POST',
+  desc: '评价信息（通过主键获取）',
+  path: 'LibEvaluate/info',
+}, {
+  name: 'libQuestionAnswerList',
+  method: 'POST',
+  desc: '问答列表',
+  path: 'LibQuestionAnswer/list',
+}, {
+  name: 'libQuestionAnswerSave',
+  method: 'POST',
+  desc: '问答新增',
+  showSuccess: true,
+  path: 'LibQuestionAnswer/save',
+}, {
+  name: 'libQuestionAnswerUpdate',
+  method: 'POST',
+  desc: '问答编辑',
+  showSuccess: true,
+  path: 'LibQuestionAnswer/update',
+}, {
+  name: 'libQuestionAnswerRemove',
+  method: 'POST',
+  desc: '问答删除',
+  showSuccess: true,
+  path: 'LibQuestionAnswer/remove',
+}, {
+  name: 'libQuestionAnswerExportTemplate',
+  method: 'POST',
+  desc: '下载问答模版',
+  config: {
+    responseType: "blob"
+  },
+  path: 'LibQuestionAnswer/exportTemplate',
+}, {
+  name: 'libQuestionAnswerImportData',
+  method: 'POST',
+  desc: '问答导入数据',
+  path: 'LibQuestionAnswer/importData',
+}, {
+  name: 'libQuestionAnswerInfo',
+  method: 'POST',
+  desc: '问答信息（通过主键获取）',
+  path: 'LibQuestionAnswer/info',
+}, {
+  name: 'libMessageContentList',
+  method: 'POST',
+  desc: '站内信列表',
+  path: 'LibMessageContent/list',
+}, {
+  name: 'libMessageContentSave',
+  method: 'POST',
+  desc: '问答新增',
+  showSuccess: true,
+  path: 'LibMessageContent/save',
+}, {
+  name: 'libMessageContentUpdate',
+  method: 'POST',
+  desc: '问答编辑',
+  showSuccess: true,
+  path: 'LibMessageContent/update',
+}, {
+  name: 'libMessageContentRemove',
+  method: 'POST',
+  desc: '问答删除',
+  showSuccess: true,
+  path: 'LibMessageContent/remove',
+}, {
+  name: 'libMessageContentInfo',
+  method: 'POST',
+  desc: '站内信信息（通过主键获取）',
+  path: 'LibMessageContent/info',
+}, {
+  name: 'libMessageContentExportTemplate',
+  method: 'POST',
+  desc: '下载站内信模版',
+  config: {
+    responseType: "blob"
+  },
+  path: 'LibMessageContent/exportTemplate',
+}, {
+  name: 'libMessageContentImportData',
+  method: 'POST',
+  desc: '站内信导入数据',
+  path: 'LibMessageContent/importData',
+}, {
+  name: 'accountLogin',
+  method: 'POST',
+  desc: '获取登录',
+  // showSuccess: true,
+  path: 'Account/login',
+}, {
+  name: 'accountReactive',
+  method: 'POST',
+  desc: '重新激活账号',
+  // showSuccess: true,
+  singleLoading: true,
+  path: 'Account/reactive',
+}, {
+  name: 'platformSiteListPlatform',
+  method: 'POST',
+  desc: '选择平台',
+  path: 'PlatformSite/list/platform',
+}, {
+  name: 'platformSiteListSite',
+  method: 'POST',
+  desc: '选择站点',
+  path: 'PlatformSite/list/site',
+}, {
+  name: 'sysUserChangeSite',
+  method: 'POST',
+  desc: '切换站点（点击站点后就调该接口）',
+  path: 'sys/user/changeSite',
+}, {
+  name: 'sysUserInfo',
+  method: 'POST',
+  desc: '个人信息',
+  path: 'sys/user/info',
+}, {
+  name: 'merchantMailTemplateInfo',
+  method: 'POST',
+  desc: '邮箱设置（打开页面就获取信息）',
+  path: 'MerchantMailTemplate/info',
+}, {
+  name: 'merchantMailTemplateSet',
+  method: 'POST',
+  showSuccess: true,
+  desc: '邮箱设置（点设置那个页面保存时调的）',
+  path: 'MerchantMailTemplate/set',
+}, {
+  name: 'merchantOrderAuditPass',
+  method: 'POST',
+  showSuccess: true,
+  desc: '订单审核通过(中心端)',
+  path: 'MerchantOrder/auditPass',
+}, {
+  name: 'accountCenterActive',
+  method: 'POST',
+  showSuccess: true,
+  desc: '激活账号(中心端)',
+  path: 'Account/center/active',
+}, {
+  name: 'accountLogout',
+  method: 'POST',
+  showSuccess: true,
+  desc: '关闭浏览器',
+  path: 'Account/logout',
+}, {
+  name: 'ipBindRecordGetIpCase',
+  method: 'POST',
+  desc: '剩余可用配额数调接口',
+  path: 'IpBindRecord/getIpCase',
+}, {
+  name: 'ipPricePriceRange',
+  method: 'POST',
+  desc: '获取价格区间',
+  path: 'IpPrice/priceRange',
+}, {
+  name: 'ipPricePrice',
+  method: 'POST',
+  desc: '获取单价、总金额（单个月）和需付金额',
+  path: 'IpPrice/price',
+}, {
+  name: 'ipPriceNeedPay',
+  method: 'POST',
+  desc: '获取需付金额（账号激活的支付，续费时调的）',
+  path: 'IpPrice/needPay',
+}, {
+  name: 'merchantOrderPayReactivePay',
+  method: 'POST',
+  showSuccess: true,
+  desc: '重新激活账号的支付',
+  path: 'MerchantOrderPay/reactivePay',
+}, {
+  name: 'accountCopyPassword',
+  method: 'POST',
+  showSuccess: true,
+  desc: '获取密码',
+  path: 'Account/copyPassword',
+}]

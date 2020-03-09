@@ -1,0 +1,24 @@
+$titleColor: #30cc7b;
+$titleBgColor: #f5f5f5;
+$text: #272b2c;
+$bgColor: #f5f5f5;
+
+// 按钮色
+$btnColor: #3ab6fe;
+
+$subColor: #ff9900;
+
+@mixin wrap-overflow($clamp: 3) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $clamp;
+  /*! autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
+}
+@mixin flex-wrapper($justify: center) {
+  display: flex;
+  justify-content: $justify;
+  align-items: center;
+}

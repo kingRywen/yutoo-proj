@@ -1,0 +1,37 @@
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env
+.env.local
+.env.*.local
+.env.lib
+babel.config.js
+vue.config.js
+yarn.lock
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+
+/public
+/src
+
+# 去除演示文件 map文件
+/lib/demo.html
+/lib/*.map
+
+/utils/demo.html
+/utils/*.map

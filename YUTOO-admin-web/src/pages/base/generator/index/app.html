@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+<div id="yutooPLT" class="container-fluid" v-cloak>
+  <div class="row">
+    <div class="col-md-4 form-inline pull-left">
+      <div class="form-group btn-group-sm">
+        <input v-model="keyword" @keyup.enter="load" class="form-control" placeholder="请输入查询关键字" style="width: 220px;" />
+      </div>
+      <div class="form-group btn-group-sm margin-left">
+        <a class="btn btn-primary btm-sm" href="#" @click="load">
+          <i class="fa fa-search"></i>&nbsp;查询</a>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="btn-toolbar pull-right">
+        <div class="btn-group btn-group-sm">
+          <a class="btn btn-outline-primary btm-sm" href="#" onclick="window.location.reload();">
+            <i class="fa fa-refresh"></i>&nbsp;刷新</a>
+          <a class="btn btn-outline-primary btm-sm" href="#" @click="generate">
+            <i class="fa fa-plus"></i>&nbsp;生成代码</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <table id="dataGrid"></table>
+  </div>
+</div>
+  <!-- <script src="/src/scripts/layui/layui.all.js"></script> -->
+</body>
+
+</html>

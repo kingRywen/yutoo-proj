@@ -1,0 +1,19 @@
+$titleColor: #4BA2D7;
+$subBgTitleColor: mix($titleColor, #fff, 8%);
+$subTitleColor: mix($titleColor, #fff, 40%);
+$titleBgColor: #f5f5f5;
+$text: #5e5e5e;
+$bgColor: #fafafa;
+$siderBarhoverColor: #eee;
+// 导航背景色
+$navBgColor: #212F3E;
+// $collapseHeaderTextColor: #5e5e5e;
+
+@mixin wrap-overflow($clamp:3) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $clamp;
+  /* autoprefixer: ignore next */
+  -webkit-box-orient: vertical;
+}

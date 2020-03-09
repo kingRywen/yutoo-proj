@@ -1,0 +1,24 @@
+.el-menu {
+  box-sizing: border-box;
+}
+
+.customDialog {
+  .el-dialog__header {
+    text-align: left
+  }
+}
+
+.el-form-item__content {
+  .el-cascader.el-cascader--small {
+    width: 100%;
+  }
+}
+
+.el-form-item.title {
+  background: #ebeef5;
+
+  .el-form-item__label {
+    font-weight: bold;
+    color: #333;
+  }
+}

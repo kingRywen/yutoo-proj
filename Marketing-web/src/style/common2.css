@@ -1,0 +1,104 @@
+.keywordQuery .el-radio-button__orig-radio:checked+.el-radio-button__inner,
+  {
+  color: orange !important;
+  background-color: #fff;
+  border-color: orange !important;
+  -webkit-box-shadow: -1px 0 0 0;
+  box-shadow: -1px 0 0 0;
+}
+
+.el-date-wrapper .el-popper[x-placement^="bottom"] {
+  position: fixed !important;
+  top: 220px !important;
+  left: 627px !important;
+  z-index: 2031;
+}
+
+.el-button+.el-button {
+  /* margin-left: 10px !important; */
+}
+
+.el-table .cell .rowStyle {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  /*! autoprefixer: off */
+  -webkit-box-orient: vertical !important;
+  /* autoprefixer: on */
+  /* overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; */
+}
+
+.addNewEdition .el-dialog {
+  position: relative;
+  margin: 0 auto 12px;
+  background: #fff;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin-top: 100px;
+  width: 30%;
+}
+
+.parentPosition {
+  position: relative;
+  overflow: hidden;
+}
+.timeStyleBox {
+  margin-bottom: 30px;
+  float: right;
+  margin-right: 250px;
+}
+
+.timeStyle {
+  position: absolute;
+  right: -210px;
+  width: 450px;
+}
+
+.rankChart {
+  width: 807px;
+  height: 528px;
+  padding: 0px 20px 20px;
+}
+
+/* .timeStyleBox {
+  position: absolute !important;
+  right:0px;
+}
+
+.timeStyle {
+  width: 500px !important;
+  position: absolute !important;
+  top: -2px !important;
+  right: 0px !important;
+} */
+
+.shopAuthorization .el-input-group__prepend {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 75px;
+}
+
+.salesMonitoring .el-dialog__body,
+.keywordQuery .el-dialog__body,
+.categoryRanking .el-dialog__body,
+.adkeywordRanking .el-dialog__body {
+  color: #606266;
+  font-size: 14px;
+}
+
+.el-button .el-button--success {
+  margin-right: 20px;
+}
+
+.keywordQuery .el-form-item__content {
+  margin-left: 0;
+}

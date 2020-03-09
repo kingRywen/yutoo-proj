@@ -1,0 +1,58 @@
+{
+  "name": "@yutoo/web-template-cli3",
+  "version": "0.1.0",
+  "description": "yutoo前端框架",
+  "private": false,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:test": "vue-cli-service build --mode test",
+    "build:online": "vue-cli-service build --mode online",
+    "build:all": "concurrently \"yarn build:test\" \"yarn build:online\"",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@vue-materials/basic-container": "^1.0.0",
+    "@yutoo/yutoo": "^0.1.7",
+    "jsonp": "^0.2.1",
+    "lodash": "^4.17.11",
+    "throttle-debounce": "^2.1.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.4",
+    "@vue/cli-plugin-eslint": "^3.0.4",
+    "@vue/cli-service": "^3.0.4",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "node-sass": "^4.9.3",
+    "sass-loader": "^7.1.0",
+    "style-resources-loader": "^1.2.1",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@yutoo/component2",
+  "version": "0.0.1",
+  "description": "宇图公用组件 2.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.demo.js",
+    "build": "webpack"
+  },
+  "keywords": [
+    "ui",
+    "公用组件"
+  ],
+  "peerDependencies": {
+    "element-ui": "^2.12.0",
+    "vue": "^2.5.17"
+  },
+  "author": "wen",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.5.1",
+    "eslint-plugin-html": "^6.0.0",
+    "eslint-plugin-json": "^1.4.0",
+    "eslint-plugin-vue": "^5.2.3",
+    "progress-bar-webpack-plugin": "^1.12.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  }
+}

@@ -1,0 +1,87 @@
+@import './reset.scss';
+@import './transition.scss';
+@import './header.scss';
+@import './fonts.scss';
+@import './element-custom.scss';
+@import './common.scss';
+@import './gridTable.scss';
+@import './lazyloading.scss';
+
+// 滚动条
+::-webkit-scrollbar-track {
+  // -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  z-index: 222;
+  
+}
+
+.el-table {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 0;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
+  background-color: rgba(144, 147, 153, 0.3);
+  &:hover {
+    background-color: rgba(144, 147, 153, 0.5);
+  }
+}
+
+
+.custom_box_form {
+  .box_form {
+    border: 1px solid $boxBorderColor;
+    padding: 16px 16px 0;
+    margin-bottom: 20px;
+    background: $boxBgColor;
+
+    h3 {
+      font-size: 14px;
+      width: 100%;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .title {
+    font-size: 14px;
+    margin: 3px 0 16px;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.warning {
+  // background: rgb(255, 251, 244) !important;
+}
+
+.flex {
+  @include flex;
+  flex-wrap: nowrap;
+  align-items: center;
+
+}
+
+.toggle-wrapper {
+  .el-tooltip {
+    z-index: 2 !important;
+  }
+}

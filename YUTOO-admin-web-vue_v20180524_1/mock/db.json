@@ -1,0 +1,233 @@
+{
+  "getMainMenu": {
+    "rows": [{
+        "icon": "desktop",
+        "name": "我的工作台",
+        "href": "/admin.html"
+      },
+      {
+        "icon": "appstore",
+        "name": "产品库中心",
+        "href": "/product.html"
+      },
+      {
+        "icon": "rocket",
+        "name": "仓储物流管理"
+      },
+      {
+        "icon": "shop",
+        "name": "销售管理"
+      },
+      {
+        "icon": "customer-service",
+        "name": "CRM客服管理"
+      },
+      {
+        "icon": "setting",
+        "name": "系统管理"
+      },
+      {
+        "icon": "pay-circle-o",
+        "name": "财务管理"
+      },
+      {
+        "icon": "area-chart",
+        "name": "报告中心"
+      }
+    ]
+  },
+  "getProductSubMenu": [{
+      "name": "产品管理",
+      "icon": "user",
+      "children": [{
+          "name": "产品库",
+          "icon": "user",
+          "children": [{
+              "name": "产品",
+              "url": "/product/productList.html"
+            },
+            {
+              "name": "平台产品",
+              "url": "/product/platformList.html"
+            },
+            {
+              "name": "店铺产品",
+              "url": "/product/ShopProducts.html"
+            }
+          ]
+        },
+        {
+          "name": "产品开发",
+          "icon": "user",
+          "children": [{
+              "name": "销售提报开发"
+
+            },
+            {
+              "name": "平台产品采集"
+            },
+            {
+              "name": "供应商产品审核"
+            }
+          ]
+        },
+        {
+          "name": "相关设置",
+          "icon": "user",
+          "children": [{
+              "name": "店铺管理"
+            },
+            {
+              "name": "产品类目管理"
+            },
+            {
+              "name": "敏感关键字管理"
+            },
+            {
+              "name": "渠道sku生成规则"
+            },
+            {
+              "name": "sku平台标题管理"
+            },
+            {
+              "name": "批量修改渠道关联"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "采购管理",
+      "icon": "laptop",
+      "children": [{
+          "name": "采购单管理"
+        },
+        {
+          "name": "质检管理"
+        },
+        {
+          "name": "采购财务账号管理"
+        }
+      ]
+    },
+    {
+      "name": "供应商管理",
+      "icon": "notification",
+      "children": [{
+          "name": "供应商列表"
+        },
+        {
+          "name": "采购点管理"
+        },
+        {
+          "name": "供应商账期赚理"
+        }
+      ]
+    }
+  ],
+  "getAdminCard": {
+    "rows": [{
+        "title": "未读邮件",
+        "count": 243,
+        "subTitle": "本系统所有邮件",
+        "subCount": 2545,
+        "color": "#108ee9",
+        "icon": "mail"
+      },
+      {
+        "title": "待办事项",
+        "count": 24,
+        "subTitle": "所有和其相关的待办事项",
+        "subCount": "",
+        "color": "#f46e65",
+        "icon": "clock-circle-o"
+      },
+      {
+        "title": "待补货",
+        "count": 24,
+        "subTitle": "上升产品",
+        "subCount": 2,
+        "color": "#00a854",
+        "icon": "api"
+      }
+    ]
+  },
+  "variant_property": [
+    {
+      "inputType": 1,
+      "propertyName": "color",
+      "val": "红色"
+    },
+    {
+      "inputType": 1,
+      "propertyName": "尺寸",
+      "val": "xl"
+    }
+  ],
+  "variant_color": {
+    "rows": [{
+        "id": 0,
+        "text": "黑色  Black",
+        "value": "#000"
+      },
+      {
+        "id": 1,
+        "text": "深色  Dark Grey",
+        "value": "#f00"
+      },
+      {
+        "id": 2,
+        "text": "绿色  Green",
+        "value": "#000"
+      },
+      {
+        "id": 3,
+        "text": "蓝色  Blue",
+        "value": "#f00"
+      },
+      {
+        "id": 4,
+        "text": "白色  White",
+        "value": "#000"
+      },
+      {
+        "id": 5,
+        "text": "金色  Golden",
+        "value": "#f00"
+      },
+      {
+        "id": 6,
+        "text": "银色  Silver",
+        "value": "#0f0"
+      }
+    ]
+  },
+  "variant_size": {
+    "rows": [{
+        "id": 0,
+        "text": "大码",
+        "value": "#121"
+      },
+      {
+        "id": 1,
+        "text": "加大码",
+        "value": "#f00"
+      },
+      {
+        "id": 2,
+        "text": "加加大码",
+        "value": "#f23"
+      },
+      {
+        "id": 3,
+        "text": "加加加大码",
+        "value": "#f00"
+      },
+      {
+        "id": 4,
+        "text": "小码",
+        "value": "#0220"
+      }
+    ]
+  }
+}

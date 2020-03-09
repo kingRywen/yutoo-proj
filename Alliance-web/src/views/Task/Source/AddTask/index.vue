@@ -1,0 +1,1399 @@
+<template>
+  <div v-if="showEdit" v-loading="loading">
+    <el-page-header
+      @back="goBack"
+      :class="{'no-back': view}"
+      :content="view ? '查看任务 （任务ID：'+ $route.query.id + '）' :quick ? '快速发布任务' : edit ? '编辑任务 （任务ID：'+ $route.query.id + '）'  : '发布任务'"
+    ></el-page-header>
+    <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="基本信息">
+      <new-form ref="form1" :disabled="view || edit" label-width="140px" :form-schema="base" :value="value1"></new-form>
+    </WidgetCardWrapper>
+
+    <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="买家偏好" v-if="isAmazon">
+      <new-form ref="form2" :disabled="view || edit" label-width="140px" :form-schema="love" :value="value1"></new-form>
+    </WidgetCardWrapper>
+    <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="任务信息">
+      <new-form ref="form3" :disabled="view || edit" label-width="140px" :form-schema="task" :value="value1"></new-form>
+    </WidgetCardWrapper>
+    <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="搜索关键词">
+      <new-form ref="form4" :disabled="view || edit" label-width="140px" :form-schema="taskKeyword" :value="value1"></new-form>
+    </WidgetCardWrapper>
+    <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="产品信息">
+      <new-form ref="form5" :disabled="view || edit" label-width="140px" :form-schema="productInfo" :value="value1"></new-form>
+    </WidgetCardWrapper>
+    <template v-if="value1.relHandle">
+      <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="关联产品信息">
+        <new-form ref="form6" :disabled="view || edit" label-width="140px" :form-schema="relateInfo" :value="value1"></new-form>
+      </WidgetCardWrapper>
+    </template>
+    <template v-if="value1.taskTypeId == 7">
+      <WidgetCardWrapper :isCollapse="false" :defaultHide="false" title="评价点Helpful参数">
+        <new-form ref="form7" :disabled="view || edit" label-width="140px" :form-schema="helpful" :value="value1"></new-form>
+      </WidgetCardWrapper>
+    </template>
+    <template v-if="showReview">
+      <WidgetCardWrapper key="review" :isCollapse="false" :defaultHide="false" title="Review评价内容">
+        <div v-if="taskNum">
+          <new-form ref="form8" :disabled="view" label-width="140px" :form-schema="review" :value="value1"></new-form>
+          <ElTabs v-if="view || value1.reviewSupplyType == 1" style="margin:0 40px" v-model="activeTab1">
+            <ElTabPane label="填写" name="first">
+              <el-form
+                ref="form9"
+                :disabled="view"
+                style="margin-top:10px"
+                label-width="100px"
+                size="small"
+                :model="reviewData"
+              >
+                <ElRow class="box" v-for="(item, index) in reviewData.data" :key="index">
+                  <ElCol :span="22" v-if="isAmazon">
+                    <el-form-item :label="`标题`" :rules="requiredRule" :prop="`data.${index}.title`">
+                      <el-input v-model="item.title" placeholder></el-input>
+                    </el-form-item>
+                  </ElCol>
+                  <ElCol :span="22">
+                    <el-form-item :label="`内容`" :rules="requiredRule" :prop="`data.${index}.content`">
+                      <el-input
+                        v-model="item.content"
+                        type="textarea"
+                        :autosize="{ minRows: 1, maxRows: !view ? 6 : 30}"
+                        maxlength="1024"
+                        placeholder
+                      ></el-input>
+                    </el-form-item>
+                  </ElCol>
+                  <!-- <ElCol :span="2">
+                    <ElButton class="ml10" type="text" @click="copy(item.content)">复制</ElButton>
+                  </ElCol>-->
+                  <ElCol :span="24">
+                    <el-form-item :label="`评分`" :rules="requiredRule" :prop="`data.${index}.grade`">
+                      <el-select :disabled="true" style="width: 25%" v-model="item.grade">
+                        <el-option v-for="i in helpful.grade.options" :key="i.value" :label="i.label" :value="i.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </ElCol>
+                  <ElCol v-if="value1.taskTypeId === 3 && value1.reviewSupplyType == 0" :span="24">
+                    <el-form-item label="图片" :rules="requiredRule" :prop="`data.${index}.imageUrl`">
+                      <el-upload
+                        accept="image/*"
+                        :auto-upload="true"
+                        list-type="picture-card"
+                        :limit="3"
+                        ref="upload"
+                        :multiple="true"
+                        :file-list="item.imageUrl"
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :on-exceed="handleExceed"
+                        :on-change="handleChange.bind(null, item)"
+                        :on-success="handleSuccess.bind(null, item)"
+                        :on-preview="handlePictureCardPreview"
+                        :http-request="handleRequest.bind(null, item)"
+                        :on-remove="handleRemove.bind(null, item)"
+                      >
+                        <i class="el-icon-plus"></i>
+                      </el-upload>
+                      <el-checkbox-group v-show="false" :value="item.imageUrl"></el-checkbox-group>
+                    </el-form-item>
+                  </ElCol>
+                  <!-- <ElCol v-if="index !== reviewData.data.length - 1" :span="24">
+                    <el-divider></el-divider>
+                  </ElCol>-->
+                </ElRow>
+              </el-form>
+            </ElTabPane>
+            <ElTabPane v-if="!view" label="导入" name="second">
+              <ElButton :disabled="view" type="primary" size="small" class="mb10" @click="downloadTemp(0)">下载模板</ElButton>
+              <new-form :disabled="view" :form-schema="importRvSkm" v-model="imptRvVal"></new-form>
+            </ElTabPane>
+          </ElTabs>
+          <ElForm
+            v-else
+            ref="form9"
+            :disabled="view"
+            style="margin-top:10px"
+            label-width="100px"
+            size="small"
+            :rules="reviewCusRules"
+            :model="reviewCusData"
+          >
+            <ElRow>
+              <ElCol :span="8">
+                <ElFormItem label="评分">
+                  <el-input value="1" disabled></el-input>
+                </ElFormItem>
+              </ElCol>
+              <ElCol :span="8">
+                <ElFormItem label="数量" :required="!isReviewCusValid" prop="reviewGradeOneNum">
+                  <ElInputNumber :min="0" size="small" v-model="reviewCusData.reviewGradeOneNum"></ElInputNumber>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+            <ElRow>
+              <ElCol :span="8">
+                <ElFormItem label="评分">
+                  <el-input value="2" disabled></el-input>
+                </ElFormItem>
+              </ElCol>
+              <ElCol :span="8">
+                <ElFormItem label="数量" :required="!isReviewCusValid" prop="reviewGradeTwoNum">
+                  <ElInputNumber :min="0" size="small" v-model="reviewCusData.reviewGradeTwoNum"></ElInputNumber>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+            <ElRow>
+              <ElCol :span="8">
+                <ElFormItem label="评分">
+                  <el-input value="3" disabled></el-input>
+                </ElFormItem>
+              </ElCol>
+              <ElCol :span="8">
+                <ElFormItem label="数量" :required="!isReviewCusValid" prop="reviewGradeThreeNum">
+                  <ElInputNumber :min="0" size="small" v-model="reviewCusData.reviewGradeThreeNum"></ElInputNumber>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+            <ElRow>
+              <ElCol :span="8">
+                <ElFormItem label="评分">
+                  <el-input value="4" disabled></el-input>
+                </ElFormItem>
+              </ElCol>
+              <ElCol :span="8">
+                <ElFormItem label="数量" :required="!isReviewCusValid" prop="reviewGradeFourNum">
+                  <ElInputNumber :min="0" size="small" v-model="reviewCusData.reviewGradeFourNum"></ElInputNumber>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+            <ElRow>
+              <ElCol :span="8">
+                <ElFormItem label="评分">
+                  <el-input value="5" disabled></el-input>
+                </ElFormItem>
+              </ElCol>
+              <ElCol :span="8">
+                <ElFormItem label="数量" :required="!isReviewCusValid" prop="reviewGradeFiveNum">
+                  <ElInputNumber :min="0" size="small" v-model="reviewCusData.reviewGradeFiveNum"></ElInputNumber>
+                </ElFormItem>
+              </ElCol>
+            </ElRow>
+          </ElForm>
+        </div>
+        <none-page v-else text="请先填写任务数量" noBack></none-page>
+      </WidgetCardWrapper>
+    </template>
+
+    <template v-if="value1.taskTypeId == 6 && taskNum">
+      <WidgetCardWrapper key="qa" :isCollapse="false" :defaultHide="false" title="QA内容">
+        <div v-if="taskNum">
+          <ElTabs style="margin:0 40px" v-model="activeTab2">
+            <ElTabPane label="填写" name="first">
+              <el-form
+                ref="form10"
+                :disabled="view || edit"
+                style="margin-top:10px"
+                label-width="100px"
+                size="small"
+                :model="QaData"
+              >
+                <ElRow class="box" v-for="(item, index) in QaData.data" :key="index">
+                  <ElCol :span="22">
+                    <el-form-item :label="`问题`" :rules="requiredRule" :prop="`data.${index}.content`">
+                      <el-input v-model="item.content" maxlength="1024" placeholder></el-input>
+                    </el-form-item>
+                  </ElCol>
+                  <ElCol :span="2">
+                    <!-- <ElButton class="ml10" type="text" @click="copy(item.content)">复制</ElButton> -->
+                  </ElCol>
+                </ElRow>
+              </el-form>
+            </ElTabPane>
+            <ElTabPane v-if="!view" label="导入" name="second">
+              <ElButton :disabled="view" type="primary" size="small" class="mb10" @click="downloadTemp(1)">下载模板</ElButton>
+              <new-form :disabled="view" :form-schema="importQaSkm" :value="importQaVal"></new-form>
+            </ElTabPane>
+          </ElTabs>
+        </div>
+        <none-page v-else text="请先填写任务数量" noBack></none-page>
+      </WidgetCardWrapper>
+    </template>
+
+    <el-dialog width="1200px" title="图片预览" :visible.sync="dialogVisible">
+      <a target="_blank" :href="dialogImageUrl">
+        <img width="100%" :src="dialogImageUrl" />
+      </a>
+    </el-dialog>
+    <div class="txc">
+      <ElButton v-if="!view" class="more-len" type="primary" @click="submit">{{(edit && !quick) ?'发布' : '发布'}}任务</ElButton>
+      <ElButton type="primary" @click="cancel" plain>{{!view ?'取消' : '返回'}}</ElButton>
+    </div>
+  </div>
+</template>
+<script>
+import { downloadFile1 as downloadFile } from 'Utils/tools'
+import { URL } from 'Config'
+import Oss from 'Utils/oss'
+
+const relHandles = [
+  {
+    label: '无',
+    value: 0
+  },
+  {
+    label: '浏览',
+    value: 1
+  },
+  {
+    label: '加购',
+    value: 2
+  },
+  {
+    label: '购买',
+    value: 3
+  }
+]
+export default {
+  props: {
+    view: {
+      default: false,
+      type: Boolean
+    },
+    quick: {
+      default: false,
+      type: Boolean
+    },
+    edit: {
+      default: false,
+      type: Boolean
+    }
+  },
+  data() {
+    let vm = this
+    const checkReviewNum = (rule, value, cb) => {
+      vm.$refs.form9.clearValidate()
+      if (Object.values(vm.reviewCusData).every(el => !el)) {
+        vm.isReviewCusValid = false
+        cb(new Error('请输入任务数量'))
+      } else if (
+        Object.values(vm.reviewCusData).reduce(
+          (prev, cur) => prev + (cur || 0),
+          0
+        ) !== vm.taskNum
+      ) {
+        vm.isReviewCusValid = false
+        cb(new Error('任务数量总和必须与搜索任务数量总和一致'))
+      } else {
+        vm.isReviewCusValid = true
+        cb()
+      }
+    }
+    return {
+      loading: false,
+      showEdit: !this.view && !this.quick && !this.edit,
+      isReviewCusValid: false,
+      reviewCusRules: {
+        reviewGradeOneNum: [
+          {
+            validator: checkReviewNum
+          }
+        ],
+        reviewGradeTwoNum: [
+          {
+            validator: checkReviewNum
+          }
+        ],
+        reviewGradeThreeNum: [
+          {
+            validator: checkReviewNum
+          }
+        ],
+        reviewGradeFourNum: [
+          {
+            validator: checkReviewNum
+          }
+        ],
+        reviewGradeFiveNum: [
+          {
+            validator: checkReviewNum
+          }
+        ]
+      },
+      reviewCusData: {},
+      maxTaskCount: 1000,
+      earnReview: [],
+      earnQa: [],
+      moneyInfo: {},
+      importRvSkm: {
+        value: {
+          widget: 'upload',
+          label: '',
+          span: 24,
+          limit: 1,
+          multiple: false,
+          autoUpload: true,
+          withCredentials: true,
+          data: {
+            platformCode: this.$store.state.currentSiteInfo.platformCode,
+            token: this.$storage.get('local', 'token')
+          },
+          action: URL + '/taskSource/import',
+          onSuccess: this.reviewImpSuc,
+          fileLimit: ['excel']
+        }
+      },
+      imptRvVal: {
+        value: []
+      },
+      importQaSkm: {
+        value: {
+          widget: 'upload',
+          label: '',
+          span: 24,
+          limit: 1,
+          autoUpload: true,
+          withCredentials: true,
+          data: {
+            token: this.$storage.get('local', 'token')
+          },
+          action: URL + '/TaskSource/qa/importData',
+          onSuccess: this.qaImpSuc,
+          fileLimit: ['excel']
+        }
+      },
+      importQaVal: {},
+      dialogVisible: false,
+      dialogImageUrl: '',
+      requiredRule: [
+        {
+          required: true,
+          message: '不能为空'
+        }
+      ],
+      activeTab1: 'first',
+      activeTab2: 'first',
+      reviewData: {
+        data: []
+      },
+      QaData: {
+        data: []
+      },
+      base: {
+        platformSite: {
+          label: '平台站点',
+          clearable: true,
+          required: true,
+          span: 12,
+          width: '50%'
+        },
+        category: {
+          label: '产品类目',
+          required: true,
+          width: '50%',
+          clearable: true,
+          hidden: false,
+          span: 12
+        },
+        terminalType: {
+          widget: 'radio',
+          label: '终端类型',
+          required: true,
+          clearable: true,
+          span: 12,
+          options: '$const.OTHER/termnalType'
+        },
+        storeName: {
+          label: '店铺名称',
+          span: 12,
+          width: '50%',
+          required: true
+        }
+      },
+      love: {
+        buyerSex: {
+          widget: 'select',
+          span: 12,
+          label: '买家性别',
+          clearable: false,
+          defaultVal: -1,
+          options: '$const.OTHER/sex',
+          innerTips: ' ',
+          change: data => {
+            if (~data.buyerSex) {
+              this.love.buyerSex.innerTips = this.moneyInfo.buyerSex[
+                data.buyerSex
+              ]
+            }
+          },
+          showInnerTipFunc(data) {
+            return !!~data.buyerSex
+          }
+        },
+        primeMemberFlag: {
+          widget: 'switch',
+          span: 12,
+          label: 'Prime会员',
+          innerTips: ' ',
+          change: data => {
+            if (data.primeMemberFlag) {
+              this.love.primeMemberFlag.innerTips = this.moneyInfo.primeMemberFlag[
+                data.primeMemberFlag
+              ]
+            }
+          },
+          showInnerTipFunc(data) {
+            return data.primeMemberFlag
+          }
+        },
+        age: {
+          clearable: false,
+          widget: 'select',
+          span: 12,
+          innerTips: ' ',
+          label: '年龄段',
+          defaultVal: 'unlimited',
+          showInnerTipFunc(data) {
+            return data.age !== 'unlimited'
+          },
+          change: data => {
+            if (data.age !== 'unlimited') {
+              this.love.age.innerTips = this.moneyInfo.age[data.age]
+            }
+          },
+          options: []
+        }
+      },
+      task: {
+        taskTypeId: {
+          required: true,
+          label: '任务类型',
+          widget: 'radio',
+          vertical: true,
+          // innerTips: '（佣金：$10/单）',
+          options: '$const.OTHER/taskType',
+          change: data => {
+            data.relHandle = null
+            this.taskKeyword.taskKeywordArray.arrayMax = 5
+            data.recycleProductFlag = null
+            if (data.taskTypeId <= 3) {
+              data.relHandle = 0
+              this.task.relHandle.options = relHandles
+            } else if (data.taskTypeId == 4) {
+              this.task.relHandle.options = [relHandles[1], relHandles[2]]
+            } else if (data.taskTypeId == 5) {
+              // data.relHandle = 1
+              this.task.relHandle.options = [relHandles[1]]
+            } else {
+              this.taskKeyword.taskKeywordArray.arrayMax = 1
+              this.task.relHandle.options = relHandles
+            }
+          }
+        },
+        relHandle: {
+          // required: true,
+          width: '200px',
+          label: '关联操作',
+          hidden(data) {
+            return (
+              !data.taskTypeId || (data.taskTypeId > 5 && data.taskTypeId !== 8)
+            )
+          },
+          widget: 'select',
+          vertical: true,
+          // innerTips: '（佣金：$10/单）',
+          options: relHandles
+        },
+        // recycleProductFlag: {
+        //   hidden(data) {
+        //     return !data.taskTypeId || data.taskTypeId > 3
+        //   },
+        //   label: '商品回收',
+        //   widget: 'switch',
+        //   rightBtn: {
+        //     name: '参考费用说明',
+        //     type: 'text',
+        //     fn: () => {
+        //       this._openDialog({
+        //         size: 'small',
+        //         title: '费用说明',
+        //         cancelBtnText: '关闭',
+        //         component: () => import('./dialogs/refrceCst.vue')
+        //       })
+        //     }
+        //   }
+        // },
+        reviewSupplyType: {
+          required: true,
+          hidden(data) {
+            return (
+              !data.taskTypeId ||
+              ((data.taskTypeId == 1 || data.taskTypeId > 3) &&
+                data.taskTypeId !== 8)
+            )
+          },
+          change: data => {
+            this.task.reviewSupplyType.innerTips = this.moneyInfo.reviewSupplyType[
+              data.reviewSupplyType
+            ]
+          },
+          label: 'Review内容提供',
+          widget: 'radio',
+          defaultVal: 0,
+          innerTips: ' ',
+          options: [
+            {
+              label: '自己提供',
+              value: 0,
+              tip: false
+            },
+            {
+              label: '系统提供',
+              // tip: '条数=任务数量*评价数量',
+              value: 1
+            }
+          ]
+        }
+      },
+      taskKeyword: {
+        taskKeywordArray: {
+          type: 'object',
+          label: '',
+          array: true,
+          arrayMax: 5,
+          showBtn: true,
+          properties: {
+            keyword: {
+              widget: 'input',
+              label: '关键词',
+              required: true,
+              span: 11
+            },
+            taskNum: {
+              widget: 'select',
+              options: [],
+              width: '100px',
+              labelWidth: '100px',
+              label: '任务数量',
+              required: {
+                value: (rule, value, cb) => {
+                  if (
+                    this.value1.taskKeywordArray.reduce(
+                      (prev, cur) => prev + cur.taskNum,
+                      0
+                    ) > this.maxTaskCount
+                  ) {
+                    cb(new Error(`任务数量总和不能大于${this.maxTaskCount}`))
+                  }
+                  cb()
+                }
+              },
+              span: 5
+            },
+            executeTime: {
+              pickerOptions: {
+                disabledDate: time => {
+                  let today = Date.now() - 24 * 3600 * 1000
+                  return time.getTime() < today
+                }
+              },
+              selectDate: null,
+              widget: 'date',
+              // time: true,
+              labelWidth: '120px',
+              label: '任务执行时间',
+              // blur: () => {
+              //   this.selectDate = null
+              // },
+              required: true,
+              span: 8
+            }
+          }
+        }
+      },
+      productInfo: {
+        productId: {
+          label: '产品ID',
+          span: 12,
+          width: '50%',
+          required: 'asin'
+        },
+        parentProductId: {
+          hidden: () => vm.isWhat(['AliExpress']),
+          label: '父产品ID',
+          span: 12,
+          width: '50%',
+          required: 'asin'
+        },
+        sku: {
+          label: '成交SKU属性',
+          span: 12,
+          hidden(data) {
+            return (
+              !data.taskTypeId || (data.taskTypeId >= 4 && data.taskTypeId != 8)
+            )
+          },
+          required: true
+        },
+        productMoney: {
+          widget: 'currency',
+          label: '产品金额',
+          width: '50%',
+          hidden(data) {
+            return (
+              !data.taskTypeId || (data.taskTypeId >= 4 && data.taskTypeId != 8)
+            )
+          },
+          span: 12,
+          required: true
+        },
+        deliver: {
+          widget: 'radio',
+          label: '发货方式',
+          options: [
+            {
+              label: 'FBA',
+              value: 0
+            },
+            {
+              label: 'FBM',
+              value: 1
+            }
+          ],
+          width: '50%',
+          hidden(data) {
+            return (
+              !data.taskTypeId ||
+              data.taskTypeId >= 4 ||
+              vm.isWhat(['AliExpress'])
+            )
+          },
+          span: 12,
+          required: true
+        },
+        imgUrl: {
+          label: '产品主图URL',
+          tip: {
+            img: require('@/assets/images/tips.jpg')
+          },
+          span: 24,
+          required: 'url'
+        },
+        productTitle: {
+          label: '产品标题',
+          span: 24,
+          required: true
+        },
+        appPrintscreen: {
+          hidden(data) {
+            return !data.terminalType || data.terminalType == 2
+          },
+          widget: 'upload',
+          listType: 'picture-card',
+          label: 'App搜索结果截图',
+          span: 24,
+          limit: 1,
+          drag: false,
+          autoUpload: true,
+          action: 'https://jsonplaceholder.typicode.com/posts/',
+          required: true,
+          httpRequest: this.handleRequest.bind(null, 'appPrintscreen'),
+          fileLimit: ['image']
+        }
+      },
+      relateInfo: {
+        relProductId: {
+          label: '产品ID',
+          span: 12,
+          width: '50%',
+          required: 'asin'
+        },
+        relParentProductId: {
+          label: '父产品ID',
+          hidden: () => vm.isWhat(['AliExpress']),
+          span: 12,
+          width: '50%',
+          required: 'asin'
+        },
+        relSku: {
+          label: '成交SKU属性',
+          span: 12,
+          hidden(data) {
+            return !data.relHandle || data.relHandle !== 3
+            // return !data.taskTypeId || data.taskTypeId >= 4
+          },
+          required: true
+        },
+        relProductMoney: {
+          widget: 'currency',
+          label: '产品金额',
+          width: '50%',
+          hidden(data) {
+            return !data.relHandle || data.relHandle !== 3
+            // return !data.taskTypeId || data.taskTypeId >= 4
+          },
+          span: 12,
+          required: true
+        },
+
+        relSeller: {
+          span: 12,
+          hidden(data) {
+            return (
+              !data.relHandle ||
+              data.relHandle !== 3 ||
+              vm.isWhat(['AliExpress'])
+            )
+          },
+          label: '卖家名称',
+          required: true
+        },
+
+        relDeliver: {
+          widget: 'radio',
+          label: '发货方式',
+          hidden(data) {
+            return (
+              !data.relHandle ||
+              data.relHandle !== 3 ||
+              vm.isWhat(['AliExpress'])
+            )
+          },
+          options: [
+            {
+              label: 'FBA',
+              value: 0
+            },
+            {
+              label: 'FBM',
+              value: 1
+            }
+          ],
+          width: '50%',
+          // hidden(data) {
+          //   return !data.taskTypeId || data.taskTypeId >= 4
+          // },
+          span: 12,
+          required: true
+        },
+
+        relProductTitle: {
+          label: '产品标题',
+          span: 24,
+          required: true
+        },
+        relAppPrintscreen: {
+          hidden(data) {
+            return !data.terminalType || data.terminalType == 2
+          },
+          widget: 'upload',
+          listType: 'picture-card',
+          label: 'App搜索结果截图',
+          span: 24,
+          limit: 1,
+          drag: false,
+          autoUpload: true,
+          action: 'https://jsonplaceholder.typicode.com/posts/',
+          required: true,
+          httpRequest: this.handleRequest.bind(null, 'relAppPrintscreen'),
+          fileLimit: ['image']
+        }
+      },
+      helpful: {
+        sortBy: {
+          label: '排序方式',
+          widget: 'select',
+          span: 12,
+          width: '50%',
+          required: true,
+          options: [
+            {
+              label: 'Top Reviews',
+              value: 0
+            },
+            {
+              label: 'Most Recent',
+              value: 1
+            }
+          ]
+        },
+        grade: {
+          label: '评分',
+          widget: 'select',
+          width: '50%',
+          span: 12,
+          required: true,
+          options: [
+            {
+              label: '1',
+              value: 1
+            },
+            {
+              label: '2',
+              value: 2
+            },
+            {
+              label: '3',
+              value: 3
+            },
+            {
+              label: '4',
+              value: 4
+            },
+            {
+              label: '5',
+              value: 5
+            }
+          ]
+        },
+        helpfulNum: {
+          label: '评价数量',
+          width: '50%',
+          widget: 'number',
+          required: true,
+          tip: {
+            content: '按排序方式，前N条'
+          },
+          span: 12
+        }
+      },
+      review: {
+        reviewTimeType: {
+          label: '评价时间',
+          widget: 'select',
+          width: '50%',
+          options: [
+            {
+              label: '系统定义',
+              value: 0
+            },
+            // {
+            //   label: '自定义',
+            //   value: 1
+            // },
+            {
+              label: '人工索评',
+              value: 1
+            }
+          ],
+          change: data => {
+            this.review.reviewTimeType.innerTips = this.moneyInfo.reviewTimeType[
+              data.reviewTimeType
+            ]
+          },
+          span: 12,
+          defaultVal: 0,
+          required: true,
+          tip: {
+            content:
+              '系统定义：购买完成10天后。<Br>人工索评（收费）：在任务中心人工索评。'
+          },
+          innerTips: ' ',
+          showInnerTipFunc(data) {
+            return !!data.reviewTimeType
+          }
+        }
+        // startReviewDays: {
+        //   label: '从',
+        //   widget: 'number',
+        //   min: 10,
+        //   labelWidth: '130px',
+        //   max: 180,
+        //   width: '100%',
+        //   hidden: data => {
+        //     return data.reviewTimeType !== 1
+        //   },
+        //   change: data => {
+        //     data.endReviewDays = undefined
+        //     this.review.endReviewDays.min = Math.max(data.startReviewDays, 0)
+        //     this.review.endReviewDays.max = Math.min(
+        //       data.startReviewDays + 2,
+        //       180
+        //     )
+        //   },
+        //   span: 5
+        // },
+        // endReviewDays: {
+        //   label: '到 ',
+        //   hidden: data => {
+        //     return data.reviewTimeType !== 1
+        //   },
+        //   widget: 'number',
+        //   labelWidth: '20px',
+        //   width: '100%',
+        //   min: 10,
+        //   max: 180,
+        //   span: 3
+        // }
+      },
+      value1: { relHandle: 0, recycleProductFlag: 0 }
+    }
+  },
+  watch: {
+    'value1.platformSiteId'(val, oldVal) {
+      if (val && val.length) {
+        if (JSON.stringify(val) === JSON.stringify(oldVal)) {
+          return
+        }
+
+        this.base.categoryId.hidden = () => true
+        this.$nextTick(() => {
+          this.base.categoryId.hidden = () => false
+        })
+      } else {
+        this.value1.categoryId = []
+      }
+    },
+    'value1.relHandle'(val) {
+      if (!this.moneyInfo.relHandle) {
+        return
+      }
+      this.task.relHandle.innerTips = val ? this.moneyInfo.relHandle[val] : null
+    },
+    taskNum(val, oldVal) {
+      // if (this.isEdit) {
+      //   return
+      // }
+      if (val == oldVal) {
+        return
+      }
+
+      if (val > oldVal) {
+        let len = val - oldVal
+        for (let index = 0; index < len; index++) {
+          if (this.reviewData.data.length !== val) {
+            this.reviewData.data.push(this.earnReview.shift() || {})
+          }
+          if (this.QaData.data.length !== val) {
+            this.QaData.data.push(this.earnQa.shift() || {})
+          }
+        }
+      } else {
+        // const len = this.reviewData.data.length
+        this.earnReview.push(...this.reviewData.data.slice(val))
+        this.earnQa.push(...this.QaData.data.slice(val))
+        this.reviewData.data = this.reviewData.data.slice(0, val)
+        this.QaData.data = this.QaData.data.slice(0, val)
+      }
+    }
+  },
+  computed: {
+    showReview() {
+      if (!this.taskNum) {
+        return false
+      }
+      if (this.isAmazon) {
+        return (
+          (this.value1.taskTypeId == 2 || this.value1.taskTypeId == 3) &&
+          this.taskNum
+        )
+      }
+      return this.taskNum && this.value1.taskTypeId == 8
+    },
+    isAmazon() {
+      return this.isWhat(['Amazon'])
+    },
+    taskNum() {
+      if (!this.value1 || !this.value1.taskKeywordArray) {
+        return 0
+      }
+      return this.value1.taskKeywordArray.reduce(
+        (total, cur) => (total += cur.taskNum || 0),
+        0
+      )
+    }
+  },
+  created() {
+    if (this.view || this.edit) {
+      this.getEditData()
+    }
+    // this.getMoney()
+  },
+  methods: {
+    isWhat(plats = []) {
+      if (!this.value1.platformSite) {
+        return
+      }
+      plats = plats.map(el => el.toLowerCase())
+      // console.log(
+      //   plats,
+      //   this.value1.platformSite.split('-')[0],
+      //   plats.indexOf(this.value1.platformSite.split('-')[0]) > -1
+      // )
+
+      return (
+        plats.indexOf(this.value1.platformSite.split('-')[0].toLowerCase()) > -1
+      )
+    },
+    setNums(num) {
+      const nums = new Array(num)
+        .join(',')
+        .split(',')
+        .map((el, index) => ({ label: index + 1, value: index + 1 }))
+      this.taskKeyword.taskKeywordArray.properties.taskNum.options = nums
+    },
+    reviewImpSuc(data) {
+      this.imptRvVal.value = []
+      if (data.code == 0) {
+        this.activeTab1 = 'first'
+        this.$message.success('操作成功！')
+        this.reviewData.data.forEach((el, index) => {
+          if (data.data[index]) {
+            el.content = data.data[index].content
+            el.imgUrlOne = data.data[index].imgUrlOne
+            el.imgUrlTwo = data.data[index].imgUrlTwo
+            el.imgUrlThree = data.data[index].imgUrlThree
+            el.title = data.data[index].title
+          }
+        })
+        // if (this.taskNum > data.rows.length) {
+        //   this.reviewData.data = data.rows.concat(
+        //     new Array(this.taskNum - data.rows.length)
+        //       .join(',')
+        //       .split(',')
+        //       .map(() => ({}))
+        //   )
+        // } else if (this.taskNum < data.rows.length) {
+        //   this.reviewData.data = data.rows.slice(0, this.taskNum)
+        // } else {
+        //   this.reviewData.data = data.rows
+        // }
+      } else {
+        this.$message.error(data.msg)
+      }
+    },
+    qaImpSuc(data) {
+      this.importQaVal.value = []
+      if (data.code == 0) {
+        this.activeTab2 = 'first'
+        this.$message.success(data.msg)
+        this.QaData.data = data.data
+      } else {
+        this.$message.error(data.msg)
+      }
+    },
+    getMoney(data, platformSite) {
+      let vm = this
+      let moneyInfo = {
+        taskTypeId: {},
+        relHandle: {},
+        reviewSupplyType: {},
+        reviewTimeType: {}
+      }
+      let isAli = platformSite.split('-')[0].toLowerCase() == 'aliexpress'
+      Object.values(data).forEach(val => {
+        const { itemCode, value } = val
+        const m = `佣金：$${value}/单`
+        let arr = []
+        switch (itemCode) {
+          case 'buyerSex':
+            moneyInfo.buyerSex = {
+              0: m,
+              1: m
+            }
+            break
+          case 'primeMemberFlag':
+            moneyInfo.primeMemberFlag = {
+              1: m
+            }
+            break
+          case 'age':
+            moneyInfo.age = {
+              under20: m,
+              between30and40: m,
+              between40and50: m,
+              between50and60: m,
+              above60: m
+            }
+            break
+          case '1':
+          case '2':
+
+          // eslint-disable-next-line no-fallthrough
+          case '3':
+          case '4':
+          case '5':
+          case '6':
+          case '7':
+          case '8':
+            moneyInfo.taskTypeId[itemCode] = m
+            if (isAli) {
+              moneyInfo.taskTypeId[2] = m
+            }
+            break
+          case 'relOperation':
+            arr = [1, 2, 3]
+            arr.forEach(el => {
+              moneyInfo.relHandle[el] = m
+            })
+            break
+          case 'reviewSupplyType':
+            arr = [1]
+            arr.forEach(el => {
+              moneyInfo.reviewSupplyType[el] = m
+            })
+            break
+          case 'reviewTimeType':
+            arr = [1]
+            arr.forEach(el => {
+              moneyInfo.reviewTimeType[el] = m
+            })
+            break
+
+          default:
+            break
+        }
+      })
+      vm.moneyInfo = moneyInfo
+      // eslint-disable-next-line no-unused-vars
+      const { buyerSex, primeMemberFlag, age, taskTypeId } = moneyInfo
+      let list = isAli
+        ? this.$const['OTHER/taskType_aliexpress']
+        : this.$const['OTHER/taskType']
+      console.log(platformSite, list)
+
+      vm.task.taskTypeId.options = list.map((el, index) => {
+        el.innerTips = taskTypeId[index + 1]
+        return el
+      })
+      this.setMoney()
+    },
+    submit() {
+      let promises = [this.$refs.form9].map(el => el.validate())
+      Promise.all(promises)
+        .then(() => {
+          const hasReview = [2, 3, 8]
+          let params = {
+            taskSourceId: this.$route.query.id,
+            taskReviewArray:
+              hasReview.indexOf(this.value1.taskTypeId) > -1
+                ? this.value1.reviewSupplyType == 1 // 如果 Review内容提供 选项为 自己提供 时才会传评价内容
+                  ? this.reviewData.data.map(el => {
+                      // eslint-disable-next-line no-unused-vars
+                      const { imageUrl, ...info } = el
+                      if (imageUrl && this.value1.taskTypeId == 3) {
+                        if (imageUrl[0]) {
+                          info.imgUrlOne = imageUrl[0].response
+                            ? imageUrl[0].response[0]
+                            : imageUrl[0].url
+                        }
+                        if (imageUrl[1]) {
+                          info.imgUrlTwo = imageUrl[1].response
+                            ? imageUrl[1].response[0]
+                            : imageUrl[1].url
+                        }
+                        if (imageUrl[2]) {
+                          info.imgUrlThree = imageUrl[2].response
+                            ? imageUrl[2].response[0]
+                            : imageUrl[2].url
+                        }
+                      }
+                      return info
+                    })
+                  : []
+                : null
+          }
+          // this.$api[`main/taskSourceCheckBalance`](params).then(data => {
+          //   this.showTips({ msg: data.msg }, () => {
+
+          //   })
+          // })
+          return this.$api[`main/taskSourceUpdate`](params).then(() => {
+            this.$router.push('/task/source')
+          })
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    cancel() {
+      let isChange =
+        JSON.stringify(this.value1) !== this.$options.value1 ||
+        JSON.stringify(this.reviewData) !== this.$options.reviewData ||
+        JSON.stringify(this.QaData) !== this.$options.QaData
+      if (this.view) {
+        window.close()
+        return
+      }
+      if (!isChange) {
+        this.$router.push('/dash')
+        return
+      }
+      this.$confirm('确认后所有填写的信息都将丢失，是否取消?', '警告', {
+        confirmButtonText: '取消',
+        cancelButtonText: '确认',
+        type: 'warning'
+      })
+        .then(() => {})
+        .catch(() => {
+          if (this.edit && !this.quick) {
+            window.close()
+            return
+          }
+          this.$router.push('/dash')
+        })
+      // this.showTips({ msg: '确认后所有填写的信息都将丢失，是否取消?' }, () => {
+      //   this.$router.push('/dash')
+      //   return Promise.resolve()
+      // })
+    },
+    downloadTemp() {
+      this.$api[`main/taskSourceExportTemplate`]({
+        platformCode: this.$store.state.currentSiteInfo.platformCode
+      }).then(data => {
+        downloadFile(data, '评价模板.xlsx', false, '.xls')
+      })
+    },
+    setMoney() {
+      if (!this.hasVal || !this.moneyInfo.buyerSex) {
+        return
+      }
+      this.love.buyerSex.innerTips = this.moneyInfo.buyerSex[
+        this.value1.buyerSex
+      ]
+      this.love.primeMemberFlag.innerTips = this.moneyInfo.primeMemberFlag[
+        this.value1.primeMemberFlag
+      ]
+      this.love.age.innerTips = this.moneyInfo.age[this.value1.age]
+
+      this.task.reviewSupplyType.innerTips = this.moneyInfo.reviewSupplyType[
+        this.value1.reviewSupplyType
+      ]
+    },
+    getEditData() {
+      this.isEdit = true
+      this.loading = true
+      this.$api[`main/taskSourceInfo`]({
+        taskSourceId: +this.$route.query.id
+      })
+        .then(data => {
+          this.loading = false
+          let {
+            taskReviewArray,
+            taskQaArray,
+            appPrintscreen,
+            reviewGradeOneNum,
+            relAppPrintscreen,
+            reviewGradeTwoNum,
+            reviewGradeThreeNum,
+            reviewGradeFourNum,
+            reviewGradeFiveNum,
+            brokerages,
+            ...info
+          } = data.rows
+          this.importRvSkm.value.data.platformCode = data.rows.platformCode
+          this.getMoney(brokerages, data.rows.platformSite)
+
+          this.reviewCusData = {
+            reviewGradeOneNum: reviewGradeOneNum || undefined,
+            reviewGradeTwoNum: reviewGradeTwoNum || undefined,
+            reviewGradeThreeNum: reviewGradeThreeNum || undefined,
+            reviewGradeFourNum: reviewGradeFourNum || undefined,
+            reviewGradeFiveNum: reviewGradeFiveNum || undefined
+          }
+
+          this.value1 = {
+            ...this.value1,
+            ...info,
+            relAppPrintscreen: [{ name: '', url: relAppPrintscreen }],
+            appPrintscreen: [{ name: '', url: appPrintscreen }]
+          }
+          this.hasVal = true
+          this.setMoney()
+
+          this.reviewData.data =
+            (taskReviewArray &&
+              taskReviewArray.map(el => {
+                let { imgUrlOne, imgUrlTwo, imgUrlThree, ...info } = el
+                return {
+                  ...info,
+                  imageUrl: new Array(imgUrlOne, imgUrlTwo, imgUrlThree)
+                    .filter(el => el !== null)
+                    .map(el => ({ name: '', url: el }))
+                }
+              })) ||
+            []
+          this.QaData.data = taskQaArray || []
+          this.$options.value1 = JSON.stringify(this.value1)
+          this.$options.reviewData = JSON.stringify(
+            taskReviewArray ? this.reviewData : { data: [] }
+          )
+          this.$options.QaData = JSON.stringify(
+            taskQaArray ? this.QaData : { data: [] }
+          )
+          setTimeout(() => {
+            this.isEdit = false
+            this.showEdit = true
+          }, 0)
+        })
+        .catch(() => {
+          this.loading = false
+        })
+    },
+    copy(text) {
+      this.$copyText(text).then(
+        () => {
+          this.$message.success('复制成功')
+        },
+        () => {
+          this.$message.success('复制失败，请重试或手动复制')
+        }
+      )
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    handleSuccess(item, value = 'value1', res) {
+      if (item === 'appPrintscreen') {
+        this.$set(this.value1, item, value.map(el => ({ name: '', url: el })))
+        return
+      }
+      if (!res) {
+        res = value
+        value = 'value1'
+      }
+      if (typeof item === 'object') {
+        this.$set(item, 'imageUrl', res)
+      } else {
+        this.$set(this[value], item, res.map(el => ({ name: '', url: el })))
+      }
+    },
+    async handleRequest(item, file) {
+      const path = await this.$api[`main/constantRealPathGet`]({
+        uploadType: 'review-img-url'
+      }).then(data => data.filePath)
+      let res = await Oss.batchUpload(
+        [file.file],
+        path,
+        '/constant/get/oss/signature',
+        e => {
+          if (e.lengthComputable) {
+            let percent = Math.round(((e.loaded / e.total) * 100) | 0)
+            if (typeof item === 'object') {
+              let f = item.imageUrl.find(el => el.raw === file.file)
+              f.percentage = percent
+            }
+
+            // console.log(percent)
+          }
+        },
+        this.$storage.get('local', 'token')
+      )
+      if (typeof item === 'object') {
+        this.$set(item, 'imgs', res)
+      }
+      return res
+    },
+    handleRemove(item, file, fileList) {
+      this.$set(item, 'imageUrl', fileList)
+    },
+    handleExceed() {
+      this.$message.warning('只能上传3张图片')
+    },
+    handleChange(item, file, fileList) {
+      this.$set(item, 'imageUrl', fileList)
+    },
+    goBack() {
+      this.$router.go(-1)
+    }
+  }
+}
+</script>

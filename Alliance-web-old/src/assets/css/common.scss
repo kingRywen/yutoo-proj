@@ -1,0 +1,94 @@
+@mixin flex($direction:columin, $inline:block) {
+    display: if($inline==block, flex, inline-flex);
+    flex-direction: $direction;
+    flex-wrap: wrap;
+}
+
+$bgColor:#ececec; //背景色
+$textColor:#409eff; //文字颜色
+$dialogItemColor:#67C23A;
+
+.pad10 {
+    padding: 10px;
+}
+
+.mar10 {
+    margin: 10px;
+}
+
+.pb20 {
+    padding-bottom: 20px !important;
+}
+
+.mb20 {
+    margin-bottom: 20px !important;
+}
+
+.mt10 {
+    margin-top: 10px !important;
+}
+
+.mt20 {
+    margin-top: 20px !important;
+}
+
+.per100 {
+    width: 100% !important
+}
+
+.marleft10 {
+    margin-left: 10px;
+}
+
+.marright10 {
+    margin-right: 10px;
+}
+
+.martop {
+    margin-top: 10px;
+}
+
+.txc {
+    text-align: center;
+}
+
+.border {
+    border: 1px dashed #ccc;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.dialogItemTitle {
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: $dialogItemColor;
+}
+
+
+
+
+
+.textOverflow {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tabs {
+    .el-tabs__header {
+        margin-bottom: 0;
+    }
+
+    .UniversalLayout {
+        position: inherit;
+    }
+}
+
+
+.hr {
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+    padding-bottom: 30px;
+
+}

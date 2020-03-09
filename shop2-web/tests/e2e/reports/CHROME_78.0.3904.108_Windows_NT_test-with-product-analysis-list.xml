@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="0"
+            failures="0"
+            tests="1">
+
+  <testsuite name="test-with-product-analysis-list"
+    errors="0" failures="0" hostname="" id="" package="test-with-product-analysis-list" skipped="0"
+    tests="1" time="19.41" timestamp="">
+  
+    <testcase name="添加任务" classname="test-with-product-analysis-list" time="19.41" assertions="6">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    </testcase>
+  
+
+  
+
+  
+  </testsuite>
+</testsuites>

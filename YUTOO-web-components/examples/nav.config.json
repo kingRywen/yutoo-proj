@@ -1,0 +1,49 @@
+[
+  {
+    "name": "通用",
+    "groups": [{
+      "groupName": "Common",
+      "list": [{
+          "path": "/common/function",
+          "title": "通用函数 Vue.proptotype.$"
+        }
+      ]
+    }]
+  },
+  {
+  "name": "组件",
+  "groups": [{
+    "groupName": "ERP 重构组件",
+    "list": [{
+      "path": "/ERP_reverse/example",
+      "title": "表格"
+    }]
+  },{
+    "groupName": "Basic",
+    "list": [{
+        "path": "/table",
+        "title": "扩展表格 yt-table"
+      },
+      {
+        "path": "/page",
+        "title": "表格布局 yt-page"
+      },
+      {
+        "path": "/transition",
+        "title": "动画 yt-transition"
+      }
+    ]
+  }, {
+    "groupName": "市场",
+    "list": [{
+      "path": "/shop/MainLayout/MainLayout",
+      "title": "表格布局组件 main-layout"
+    }]
+  }, {
+    "groupName": "ERP",
+    "list": [{
+      "path": "/ERP/example",
+      "title": "ERP example"
+    }]
+  }]
+}]

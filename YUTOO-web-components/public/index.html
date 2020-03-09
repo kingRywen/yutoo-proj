@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <link href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" rel="stylesheet">
+  <link href="http://element-cn.eleme.io/docs.b8d0d50.css" rel="stylesheet">
+  
+  <title>yutoo</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but yutoo doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+  </noscript>
+  <script>
+    (function (document) {
+      var currentScript = "currentScript",
+        scripts = document.getElementsByTagName('script'); // Live NodeList collection
+
+      // If browser needs currentScript polyfill, add get currentScript() to the document object
+      if (!(currentScript in document)) {
+        Object.defineProperty(document, currentScript, {
+          get: function () {
+
+            // IE 6-10 supports script readyState
+            // IE 10+ support stack trace
+            try {
+              throw new Error();
+            } catch (err) {
+
+              // Find the second match for the "at" string to get file src url from stack.
+              // Specifically works with the format of stack traces in IE.
+              var i, res = ((/.*at [^\(]*\((.*):.+:.+\)$/ig).exec(err.stack) || [false])[1];
+
+              // For all scripts on the page, if src matches or if ready state is interactive, return the script tag
+              for (i in scripts) {
+                if (scripts[i].src == res || scripts[i].readyState == "interactive") {
+                  return scripts[i];
+                }
+              }
+
+              // If no match, return null
+              return null;
+            }
+          }
+        });
+      }
+    })(document);
+    window.GLOBAL = {}
+  </script>
+  <div id="app">
+  </div>
+  <script src="https://unpkg.com/vue@2.5.21/dist/vue.js"></script>
+  <!-- <script src="<%= BASE_URL %>static/editor/ueditor.config.js"></script>
+  <script src="<%= BASE_URL %>static/editor/ueditor.all.min.js"></script>
+  <script src="<%= BASE_URL %>static/editor/lang/zh-cn/zh-cn.js"></script> -->
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+  <!-- built files will be auto injected -->
+</body>
+
+</html>

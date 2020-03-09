@@ -1,0 +1,82 @@
+export default [
+  {
+    name: 'paSaveTask',
+    method: 'POST',
+    desc: '添加任务',
+    // showSuccess: true,
+    path: '/pa/saveTask',
+    newShowSuccess: true
+  },
+  {
+    name: 'paReCrawlTask',
+    method: 'POST',
+    desc: '重新抓取',
+    newShowSuccess: true,
+    path: '/pa/reCrawlTask',
+  },
+  {
+    name: "categoryGetCategory",
+    method: "POST",
+    desc: "获取下级类目",
+    path: "/category/getCategory",
+    params: {}
+  },
+  {
+    name: 'paRemoveTask',
+    method: 'POST',
+    desc: '删除任务',
+    newShowSuccess: true,
+    path: '/pa/removeTask',
+  },
+  {
+    name: 'paTaskList',
+    method: 'POST',
+    desc: '任务列表',
+    path: '/pa/taskList',
+  },
+  {
+    name: 'paProductInfo',
+    method: 'POST',
+    desc: '产品基础信息',
+    must: ['platformId', 'siteId', 'taskId'],
+    singleLoading: true,
+    path: '/pa/productInfo',
+  },
+  {
+    name: 'paReviewCrv',
+    method: 'POST',
+    must: ['platformId', 'siteId', 'taskId', 'startTime', 'endTime', 'reviewerRanking'],
+    singleLoading: true,
+    desc: '新增评价数曲线',
+    path: '/pa/reviewCrv',
+  },
+  {
+    name: 'paQaCrv',
+    method: 'POST',
+    singleLoading: true,
+    must: ['platformId', 'siteId', 'taskId', 'startTime', 'endTime'],
+    desc: '新增QA数曲线',
+    path: '/pa/qaCrv',
+  },
+  {
+    name: 'paVariants',
+    method: 'POST',
+    desc: '变体列表',
+    must: ['platformId', 'siteId', 'taskId'],
+    path: '/pa/variants',
+  },
+  {
+    name: 'paReviewComparedCrv',
+    method: 'POST',
+    singleLoading: true,
+    desc: '产品评价数和评分对比',
+    path: '/pa/reviewComparedCrv',
+  },
+  {
+    name: 'paKpCrv',
+    method: 'POST',
+    desc: '历史数据',
+    path: '/pa/kpCrv',
+    singleLoading: true,
+  },
+]

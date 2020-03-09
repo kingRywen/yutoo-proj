@@ -1,0 +1,12 @@
+$titleColor: #30cc7b;
+$titleBgColor: #f5f5f5;
+$text: #424F62;
+@mixin wrap-overflow($clamp:3) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $clamp;
+  /*! autoprefixer: off */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: on */
+}

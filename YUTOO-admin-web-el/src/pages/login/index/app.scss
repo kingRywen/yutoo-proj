@@ -1,0 +1,63 @@
+@import '~assets/css/all.scss';
+
+@font-face {
+  font-family: 'iconfont';
+  /* project id 635800 */
+  src: url('//at.alicdn.com/t/font_635800_si97ox3ltek1q0k9.eot');
+  src: url('//at.alicdn.com/t/font_635800_si97ox3ltek1q0k9.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_635800_si97ox3ltek1q0k9.woff') format('woff'), url('//at.alicdn.com/t/font_635800_si97ox3ltek1q0k9.ttf') format('truetype'), url('//at.alicdn.com/t/font_635800_si97ox3ltek1q0k9.svg#iconfont') format('svg');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+
+
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: baseline;
+  display: inline-block;
+  height: 100%;
+  width: 25px;
+  text-align: center;
+  transition: all .3s;
+  line-height: 40px;
+}
+
+body,html, #root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #7da9ff, #4e75ff);
+  background-image: url('http://oy9tlpm12.bkt.clouddn.com/photo-1509226704106-8a5a71ffbfa4.jpg');
+  background-size: cover
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & .login_wrapper {
+    max-width: 400px;
+    width: 100%;
+    background: #fff;
+    padding: 40px;
+    border-radius: 5px;
+    box-shadow: 0 3px 16px rgba($color: #000000, $alpha: 0.2);
+    .main_title {
+      font-size: 30px;
+      padding: 30px 0;
+      color: #333;
+      text-align: center
+    }
+  }
+}

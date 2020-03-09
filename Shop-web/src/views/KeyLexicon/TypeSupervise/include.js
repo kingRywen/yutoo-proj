@@ -1,0 +1,5 @@
+export { default as KeyProperty } from './property'
+export { default as KeyScreen } from './screen'
+export { default as KeyRelatedWords } from './related-words'
+export { default as KeyNegateWords } from './negate-words'
+export { default as KeyPreposition } from './preposition'

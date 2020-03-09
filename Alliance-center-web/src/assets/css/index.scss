@@ -1,0 +1,47 @@
+// @import '~normalize.css/normalize.css';
+@import './transition.scss';
+@import './header.scss';
+@import './fonts.scss';
+@import './element-custom.scss';
+@import './common.scss';
+@import './base.scss';
+@import './lazyloading.scss';
+@import './editor.scss';
+
+.warning {
+  color: #E6A23C
+}
+
+.success {
+  color: #67C23A
+}
+
+.danger {
+  color: #F56C6C
+}
+
+.info {
+  color: #909399
+}
+
+.custom-upload {
+  width: 100%;
+
+  .el-upload {
+    width: 100%;
+
+    .el-upload-dragger {
+      width: 100%;
+    }
+  }
+}
+
+.scroll-wrapper {
+  &>div {
+    height: 100%;
+
+    .main-layout {
+      height: 100%;
+    }
+  }
+}

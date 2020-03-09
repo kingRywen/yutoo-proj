@@ -1,0 +1,11 @@
+{
+  "@font-size-base": "12px",
+  "@font-size": "12px",
+  "@btn-height-base": "33px",
+  "@btn-height-lg": "33px",
+  "@btn-height-sm": "26px",
+  "@input-height-base": "33px",
+  "@input-height-lg": "33px",
+  "@input-height-sm": "26px",
+  "@text-color": "#000"
+}

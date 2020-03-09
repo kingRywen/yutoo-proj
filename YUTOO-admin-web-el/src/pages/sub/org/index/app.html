@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <el-row :gutter="10">
+      <el-col :span="24">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>系统菜单</span>
+          </div>
+          <div>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-row>
+                <div class="btn-box" style="float:right">
+
+
+
+                  <el-button @click="refresh" v-if="hasPermission('sys:org:list')">刷新</el-button>
+                  <el-button @click="add" v-if="hasPermission('sys:org:save')">新增</el-button>
+                  <el-button @click="edit" v-if="hasPermission('sys:org:edit')">编辑</el-button>
+                  <el-button @click="del" v-if="hasPermission('sys:org:remove')">删除</el-button>
+                </div>
+              </el-row>
+            </el-form>
+
+            <com-table :data="tableData" :columns="columns" :selection="true" :multiple-selection.sync="multiSelect">
+              <div slot="status" slot-scope="props">
+                <el-switch :value="props.scope == 1" disabled></el-switch>
+              </div>
+            </com-table>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+
+  <!-- <script src="/src/scripts/layui/layui.all.js"></script> -->
+</body>
+
+</html>

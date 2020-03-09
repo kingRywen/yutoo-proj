@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- 禁用缓存 start -->
+  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Cache-control" content="no-cache" />
+  <meta http-equiv="Cache" content="no-cache" />
+  <!-- 禁用缓存 end -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <!-- 仅针对IOS的Safari顶端状态条的样式（可选default/black/black-translucent ）-->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <!-- IOS中禁用将数字识别为电话号码/忽略Android平台中对邮箱地址的识别 -->
+  <meta name="format-detection" content="telephone=no, email=no" />
+  <!-- 启用360浏览器的极速模式(webkit) -->
+  <meta name="renderer" content="webkit" />
+  <!-- 避免IE使用兼容模式 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+  <meta name="HandheldFriendly" content="true" />
+  <!-- 微软的老式浏览器 -->
+  <meta name="MobileOptimized" content="320" />
+  <!-- uc强制竖屏 -->
+  <meta name="screen-orientation" content="portrait" />
+  <!-- QQ强制竖屏 -->
+  <meta name="x5-orientation" content="portrait" />
+  <!-- UC强制全屏 -->
+  <meta name="full-screen" content="yes" />
+  <!-- QQ强制全屏 -->
+  <meta name="x5-fullscreen" content="true" />
+  <!-- UC应用模式 -->
+  <meta name="browsermode" content="application" />
+  <!-- QQ应用模式 -->
+  <meta name="x5-page-mode" content="app" />
+  <!-- windows phone 点击无高光 -->
+  <meta name="msapplication-tap-highlight" content="no" />
+  <% if (process.env.NODE_ENV==='production' ) { %>
+  <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet"> -->
+  <% } %>
+  <!-- <link href="https://fonts.googleapis.com/css?family=Kanit|Merriweather+Sans|Montserrat:700|Open+Sans:600&display=swap"
+    rel="stylesheet"> -->
+  <!-- insert css -->
+  <title>店铺</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but erp doesn't work properly without JavaScript
+      enabled. Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <script>
+    window.GLOBAL = {}
+  </script>
+  <% if (process.env.NODE_ENV==='production' ) { %>
+  <script src="<%- VUE_APP_CDN %>"></script>
+  <script src="<%- VUE_APP_CDN_URL %>/element-ui@2.10.1/lib/index.js"></script>
+  <script src="<%- VUE_APP_CDN_URL %>/vue-router@3.0.1/dist/vue-router.min.js"></script>
+  <script src="<%- VUE_APP_CDN_URL %>/vue-lazyload@1.2.6/vue-lazyload.js"></script>
+  <script src="<%- VUE_APP_CDN_URL %>/axios@0.18.0/dist/axios.min.js"></script>
+  <script src="<%- VUE_APP_CDN_URL %>/vuex@3.1.0/dist/vuex.min.js"></script>
+  <% } %>
+
+
+</body>
+
+
+
+</html>

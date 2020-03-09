@@ -1,0 +1,52 @@
+.__img_wrapper {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  background-color: #fff;
+
+  img {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  img[lazy=loaded] {
+    background: #fff;
+  }
+}
+
+img.loadingImg {
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+  background: #fff;
+}
+
+img.loadingImg[lazy=loading] {
+  /*your style here*/
+  opacity: 1;
+  background-color: #fff;
+  display: block;
+  // background-image: url('~@/assets/icon/loading.svg');
+  background-size: 30%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  animation: rotate 2s infinite; // transition: all 0.2s ease-in-out
+}
+
+img.loadingImg[lazy=error] {
+  opacity: 1;
+  /*your style here*/
+  background-color: #e8e8e8;
+  display: block;
+  background-image: url('~@/assets/icon/error.svg');
+  background-size: 40%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%; // transition: all 0.2s ease-in-out
+}
+
+img[lazy=loaded] {
+  opacity: 1;
+  transition: all 0.3s ease-in-out
+}

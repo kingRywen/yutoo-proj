@@ -1,0 +1,108 @@
+@-webkit-keyframes rotate1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform-origin: 50% 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform-origin: 50% 50%;
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform-origin: 50% 50%;
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform-origin: 50% 50%;
+    transform: rotate(360deg);
+  }
+}
+.__img_wrapper {
+  webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &.__img_wrapper1 {
+    width: 40px;
+    height: 40px;
+  }
+  img {
+    webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: all 0.2s ease-in-out;
+  }
+
+  img[lazy='loaded'] {
+    // transition: all 0.2s ease-in-out;
+    background: #fff;
+  }
+  img.normal[lazy='loading'] {
+    width: 30px;
+    height: 30px;
+    opacity: 1;
+    background-color: #fff;
+    background-size: 10% 10%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    // transition: all 0.2s ease-in-out;
+    animation: rotate1 2s infinite; //
+  }
+}
+
+img.loadingImg {
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+  background: #fff;
+}
+
+img.loadingImg[lazy='loading'] {
+  width: 40%;
+  /*your style here*/
+  opacity: 1;
+  background-color: #fff;
+  display: block;
+  // background-image: url('~@/assets/font/loading.svg');
+  background-size: 30%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  transition: all 0.2s ease-in-out;
+  animation: rotate1 2s infinite; //
+}
+
+img.loadingImg[lazy='error'] {
+  opacity: 1;
+  /*your style here*/
+  background-color: #e8e8e8;
+  display: block;
+  background-image: url('~@/assets/images/error.svg');
+  background-size: 40%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%; // transition: all 0.2s ease-in-out
+}
+
+img[lazy='loaded'] {
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+}

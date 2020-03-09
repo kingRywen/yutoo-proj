@@ -1,0 +1,43 @@
+@import '../common-variables.scss';
+.color {
+  color: $titleColor
+}
+
+.bgc {
+  background-color: $titleBgColor
+}
+
+.ml20 {
+  margin-left: 20px;
+}
+
+.mb20 {
+  margin-bottom: 20px;
+}
+
+.iconfs {
+  font-size: 22px
+}
+
+.border {
+  border: 1px solid $titleColor;
+  padding: 8px 15px;
+}
+
+// flex左右对齐，中间均匀
+.flex__space_between {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+// 不换行省略号
+.no_wrap {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.cursor {
+  cursor: pointer;
+}

@@ -1,0 +1,21 @@
+body {
+  background: #fff
+}
+.login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login .card {
+  max-width: 400px;
+  width: 100%;
+}
+.alert-wrapper {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+}
+.container-fluid {
+  margin-top: 15px
+}

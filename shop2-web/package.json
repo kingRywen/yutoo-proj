@@ -1,0 +1,113 @@
+{
+  "name": "shop2-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "build:con": "vue-cli-service build --mode con",
+    "build:online": "vue-cli-service build --mode online",
+    "build:test": "vue-cli-service build --mode testm",
+    "test:e2e": "vue-cli-service test:e2e --mode development",
+    "test:unit": "vue-cli-service test:unit",
+    "test:unit:inspect": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit --runInBand"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.8.3",
+    "@luban-h5/lbc-button": "^0.0.3",
+    "@luban-h5/lbp-slide": "^0.0.6",
+    "@luban-h5/lbs-text-align": "^0.0.4",
+    "@luban-h5/plugin-common-props": "^0.0.1",
+    "animate.css": "^3.7.2",
+    "ant-design-vue": "^1.4.11",
+    "axios": "0.18.0",
+    "echarts": "^4.5.0",
+    "element-ui": "2.12.0",
+    "font-awesome": "^4.7.0",
+    "html2canvas": "^1.0.0-rc.5",
+    "lodash": "^4.17.11",
+    "normalize.css": "^8.0.0",
+    "pl-table": "^2.5.8",
+    "qrcode": "^1.4.4",
+    "v-click-outside": "^3.0.1",
+    "vant": "^2.5.2",
+    "vue": "2.5.18",
+    "vue-clipboard2": "^0.3.0",
+    "vue-echarts": "^4.0.4",
+    "vue-i18n": "^8.15.4",
+    "vue-lazyload": "^1.2.6",
+    "vue-quill-editor": "^3.0.6",
+    "vue-router": "^3.0.1",
+    "vuedraggable": "^2.23.2",
+    "vuex": "^3.0.1",
+    "xlsx": "^0.15.3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.4",
+    "@vue/cli-plugin-e2e-nightwatch": "^4.1.1",
+    "@vue/cli-plugin-eslint": "^3.0.4",
+    "@vue/cli-plugin-unit-jest": "^4.1.2",
+    "@vue/cli-service": "^3.0.4",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "chromedriver": "78",
+    "element-theme-chalk": "2.12.0",
+    "geckodriver": "^1.19.1",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "nightwatch-html-reporter": "^2.0.6",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
+    "sinon": "^8.0.1",
+    "vue-jest": "^3.0.5",
+    "vue-template-compiler": "2.5.18"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off",
+      "no-debugger": "off",
+      "vue/require-v-for-key": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__test__/*.{j,t}s?(x)"
+        ],
+        "env": {
+          "mocha": true
+        }
+      },
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "ie > 8"
+  ]
+}

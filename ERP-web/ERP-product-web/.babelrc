@@ -1,0 +1,18 @@
+{
+  "compact": false,
+  "presets": ["env", "stage-3"],
+  "plugins": [
+    "transform-async-to-generator",
+    "transform-object-rest-spread",
+    "transform-vue-jsx", [
+      "transform-runtime",
+      {
+        "helpers": false,
+        "polyfill": false,
+        "regenerator": true,
+        "moduleName": "babel-runtime"
+      }
+    ],
+    "syntax-dynamic-import"
+  ]
+}

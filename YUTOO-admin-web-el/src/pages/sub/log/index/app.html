@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <el-row :gutter="10">
+      <el-col :span="24">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>系统菜单</span>
+          </div>
+          <div>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-row>
+                <div style="float:left">
+                  <el-form-item label="">
+                    <el-input v-model="formInline.val" placeholder="输入查询关键字" @keyup.enter="onSubmit"></el-input>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-date-picker v-model="dateRange" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期"
+                      end-placeholder="结束日期" :picker-options="pickerOptions">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click="onSubmit">查询</el-button>
+                  </el-form-item>
+                </div>
+                <div class="btn-box" style="float:right">
+                  <el-button @click="refresh" v-if="hasPermission('sys:log:list')">刷新</el-button>
+                  <el-button type="warning" v-if="hasPermission('sys:log:remove')" @click="del">删除</el-button>
+                  <el-button type="danger" v-if="hasPermission('sys:log:clear')" @click="clear">清空</el-button>
+                </div>
+              </el-row>
+            </el-form>
+
+            <el-table ref="table" :data="tableData" highlight-current-row style="width: 100%" @selection-change="handleSelectionChange">
+              
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <el-form label-position="left" inline class="demo-table-expand">
+                    <el-form-item label="操作用户ID">
+                      <span>{{ props.row.userId }}</span>
+                    </el-form-item>
+                    <el-form-item label="执行方法">
+                      <span>{{ props.row.method }}</span>
+                    </el-form-item>
+                    <el-form-item label="请求参数">
+                      <span>{{ props.row.params }}</span>
+                    </el-form-item>
+                  </el-form>
+                </template>
+              </el-table-column>
+              <el-table-column type="selection" width="55">
+              </el-table-column>
+              <el-table-column property="id" label="编号" width="60">
+              </el-table-column>
+              <el-table-column property="username" label="用户名">
+              </el-table-column>
+              <el-table-column property="operation" label="操作">
+              </el-table-column>
+              <el-table-column property="time" label="响应时间(ms)">
+              </el-table-column>
+              <el-table-column property="ip" label="IP地址">
+              </el-table-column>
+              <el-table-column property="gmtCreate" label="创建时间">
+              </el-table-column>
+            </el-table>
+            <el-pagination style="margin-top: 20px; text-align: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNo" :page-sizes="[10, 20, 50, 100]"
+              :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</body>
+
+</html>

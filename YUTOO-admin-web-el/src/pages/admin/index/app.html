@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+<body>
+<div id="app" :class="{collapseMenu: isCollapse}" v-cloak>
+  <el-container>
+    <!-- header -->
+    <el-header style="height: 100px;">
+      <div class="logo">
+        <span><a href="/admin/index.html">LOGO</a></span>
+      </div>
+      <div class="right">
+        <div class="collapseBtn" @click="toggleCollapse">
+          <span></span>
+        </div>
+        <div class="menu-main">
+          <div v-for="(item, index) in topMenu" :class="{'active': index == getIndexMenu}">
+            <a :href="item.url">
+              <i class="system" :class="item.icon"></i>
+              <span>{{item.name}}</span>
+            </a>
+          </div>
+        </div>
+        <div class="settings">
+          <div class="avator">
+            <img src="~assets/img/avator.png" alt="">
+          </div>
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ user && user.username }}
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="a">
+                <i class="el-icon-close"></i> 退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+      </div>
+    </el-header>
+    <!-- header end -->
+    <el-container class="content_wrapper">
+      <el-aside>
+        <!-- siderbar -->
+        <el-menu :default-active="siderBarHover" @select="selectMenu" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+          <el-submenu :index="String(index)" v-for="(menu, index) in menuList" :key="index" :class="{'notDisplay': index != getIndexMenu}">
+            <template slot="title">
+              <i :class="menu.icon"></i>
+              <span slot="title">{{menu.name}}</span>
+            </template>
+            <el-menu-item-group v-if="menu.list && menu.list.length > 0">
+              <el-menu-item :index="index + '-' + i" v-for="(submenu, i) in menu.list" :data-index="index + '-' + i" :key="i" :data-url="submenu.url" @click="toggleUrl">
+                <i :class="submenu.icon"></i>  {{submenu.name}}
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
+        <!-- siderbar end -->
+      </el-aside>
+      <iframe :src="frameSrc" frameborder="0" name="main" id="main" allowtransparency="true"></iframe>
+    </el-container>
+  </el-container>
+  <com-dialog :data="dialog.data" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" :title="dialog.title" :src="dialog.frameSrc" :height="dialog.height" :callback="dialog.callback"></com-dialog>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+
+<body>
+<div id="app" v-cloak>
+
+
+  <el-alert title="" type="success" description="模块包名：項目文件package结构，比如com.yutoo.admin">
+  </el-alert>
+<el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="demo-ruleForm" style="margin-top: 20px">
+  <el-form-item label="模块包名" prop="module">
+    <el-input v-model="ruleForm.module" placeholder="模块包名"></el-input>
+  </el-form-item>
+</el-form>
+
+
+</div>
+</body>
+
+</html>

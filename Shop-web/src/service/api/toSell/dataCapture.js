@@ -1,0 +1,210 @@
+export default [
+	{
+		name: 'siteListCountry1',
+		method: 'POST',
+		desc: '运送国家列表',
+		path: '/site/listCountry',
+		mock:true,
+		params: {}
+	},
+	{
+		name: 'siteListSite1',
+		method: 'POST',
+		desc: '站点列表',
+		path: '/site/listSite',
+		mock:false,
+		params: {}
+	},
+	{
+	    name: 'imSaleProdCateList',
+	    method: 'POST',
+	    desc: '左侧类目数',
+	    path: '/imSaleProdCate/list',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'imSaleProdSrcListProduct',
+	    method: 'POST',
+	    desc: '产品列表',
+	    path: '/imSaleProdSrc/listProduct',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'imSaleProdSrcListProductExport',
+	    method: 'POST',
+	    desc: '产品列表-导出',
+	    path: '/imSaleProdSrc/listProductExport',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+		config:{
+			responseType: 'blob'
+		},
+	},
+	{
+	    name: 'imSaleProdSrcListProductTask',
+	    method: 'POST',
+	    desc: '产品列表--点击任务进入',
+	    path: '/imSaleProdSrc/listProductTask',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'imSaleProdSrcListProductTaskExport',
+	    method: 'POST',
+	    desc: '产品列表--点击任务进入-导出',
+	    path: '/imSaleProdSrc/listProductTaskExport',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+		config:{
+			responseType: 'blob'
+		},
+	},
+	{
+	    name: 'taskSaleSiteListTask',
+	    method: 'POST',
+	    desc: '源站点-任务列表',
+	    path: '/taskSaleSite/listTask',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'taskSaleSiteSave',
+	    method: 'POST',
+	    desc: '源站点-添加任务',
+	    path: '/taskSaleSite/save',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleSiteBatchRemove',
+	    method: 'POST',
+	    desc: '源站点-删除任务(批量)',
+	    path: '/taskSaleSite/batchRemove',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleSiteReExecute',
+	    method: 'POST',
+	    desc: '源站点-重新抓取',
+	    path: '/taskSaleSite/reExecute',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleSellerListTask',
+	    method: 'POST',
+	    desc: '源店铺-任务列表',
+	    path: '/taskSaleSeller/listTask',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'taskSaleSellerSave',
+	    method: 'POST',
+	    desc: '源店铺-添加任务',
+	    path: '/taskSaleSeller/save',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleSellerBatchRemove',
+	    method: 'POST',
+	    desc: '源店铺-删除任务(批量)',
+	    path: '/taskSaleSeller/batchRemove',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleSellerReExecute',
+	    method: 'POST',
+	    desc: '源店铺-重新抓取',
+	    path: '/taskSaleSeller/reExecute',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	
+	
+	{
+	    name: 'taskSaleProductListTask',
+	    method: 'POST',
+	    desc: '源产品-任务列表',
+	    path: '/taskSaleProduct/listTask',
+		mock:true,
+	    params: {}
+	},
+	{
+	    name: 'taskSaleProductSave',
+	    method: 'POST',
+	    desc: '源产品-添加任务',
+	    path: '/taskSaleProduct/save',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleProductBatchRemove',
+	    method: 'POST',
+	    desc: '源产品-删除任务(批量)',
+	    path: '/taskSaleProduct/batchRemove',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'taskSaleProductReExecute',
+	    method: 'POST',
+	    desc: '源产品-重新抓取',
+	    path: '/taskSaleProduct/reExecute',
+			
+		  mock:true,
+	    params: {},
+		  showSuccess: true,
+	},
+	{
+	    name: 'taskSaleProductReSave',
+	    method: 'POST',
+	    desc: '产品列表-重新抓取',
+	    path: '/taskSaleProduct/reSave',
+			
+		  mock:true,
+	    params: {},
+		  showSuccess: true,
+	},
+	{
+	    name: 'imSaleProdCheckSave',
+	    method: 'POST',
+	    desc: '加入目标市场校验',
+	    path: '/imSaleProdCheck/save',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'imSaleProdCheckSaveTask',
+	    method: 'POST',
+	    desc: '加入目标市场校验--点击任务进入',
+	    path: '/imSaleProdCheck/saveTask',
+		mock:true,
+	    params: {},
+		showSuccess: true,
+	},
+	{
+	    name: 'imSaleProdSrcRemove',
+	    method: 'POST',
+	    desc: '产品列表_删除',
+	    path: '/imSaleProdSrc/remove',
+		mock:true,
+		showSuccess: true,
+	},
+]

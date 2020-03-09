@@ -1,0 +1,489 @@
+<template>
+  <div>
+    <main-layout
+      :key="key"
+      :outerParams="{...storeInfo, siteId: $store.state.selling.curSiteId}"
+      :searchFields="searchFields"
+      :columns="columns"
+      :url="apiName"
+      ref="layout"
+      :object-merge="true"
+      :checkStrictly="false"
+      editWidth="200px"
+      :right-edit-btns="editBtns"
+      :edit-btns="edits"
+      tbRightFixed="right"
+      :searchFunc="searchFunc"
+      :treeTable="treeTable"
+      :treeTableOtions="treeTableOtions"
+      :topBatchBtn="topBatchBtn"
+      :btnTip="true"
+      @left-batch-change="handleLeftBatchChange"
+    >
+      <div slot="btnTip">
+        1、父产品从跟卖源加入到可跟卖库之后，数据保持原样
+        <br />2、加入可跟卖库的产品的基础数据会按“数据更新频率-基础数据”频率更新，但是跟卖数据不会自动更新
+      </div>
+    </main-layout>
+  </div>
+</template>
+<script>
+import { getSearchNumField, renderCate } from 'Utils/table-render'
+export default {
+  data() {
+    let vm = this
+    let columns = [
+      {
+        label: '序号',
+        expand: true,
+        type: 'index'
+      },
+      {
+        label: 'ASIN',
+        value: 'asin',
+        url: true,
+        expand: true,
+        btnClick: scope => {
+          window.open(this.storeUrls.asinUrl + scope.row['asin'])
+        },
+        width: 140
+      },
+
+      {
+        label: '主图',
+        value: 'imageUrl',
+        img: true,
+        link: row => {
+          return this.storeUrls.asinUrl + row['asin']
+        },
+        title: 'title',
+        width: '70px'
+      },
+      {
+        label: '品牌名',
+        width: 120,
+        value: 'brand'
+      },
+      {
+        label: '底层类目',
+        width: 330,
+        // noTooltip: true,
+        value: 'category',
+        render(h, scope) {
+          return renderCate(h, scope)
+        }
+      },
+      {
+        label: '销售状态',
+        value: 'saleFlag',
+        _enum: {
+          true: '在售',
+          false: '不可售'
+        }
+      },
+      {
+        label: '大类BSR',
+        value: 'bsr'
+      },
+      {
+        label: '评价数',
+        sortable: 'custom',
+        value: 'reviewCnt'
+      },
+      {
+        label: '评分',
+        sortable: 'custom',
+        value: 'starCnt'
+      },
+      {
+        label: '最低售价',
+        sortable: 'custom',
+        value: 'minPrice'
+      },
+      {
+        label: '最高售价',
+        sortable: 'custom',
+        value: 'maxPrice'
+      },
+      {
+        label: '跟卖卖家数',
+        sortable: 'custom',
+        width: 100,
+        value: 'sellerCnt'
+      },
+      {
+        label: '跟卖数量',
+        sortable: 'custom',
+        value: 'sellingCnt'
+      },
+      {
+        label: '发货方式',
+        value: 'fbpFlag',
+        _enum: this.cfuns.arrayToObj(this.$const['OTHER/fbpFlag'])
+      },
+      {
+        label: '抓取方式',
+        value: 'dataType',
+        _enum: ['类目', '关键词', '店铺ID', 'ASIN']
+      },
+      {
+        label: '抓取状态',
+        value: 'status',
+        _enum: this.cfuns.arrayToObj(this.$const['PRODUCTANALYSIS/status'])
+      },
+      {
+        label: '抓取创建时间',
+        width: 150,
+        value: 'createTime'
+      },
+      {
+        label: '请求更新时间',
+        width: 150,
+        value: 'requestTime'
+      },
+      {
+        label: '基础数据更新时间',
+        width: 150,
+        value: 'baseUpdateTime'
+      },
+      {
+        label: '跟卖数据更新时间',
+        width: 150,
+        value: 'updateTime'
+      },
+      {
+        label: '是否关注',
+        value: 'attentionFlag',
+        _enum: {
+          true: '是',
+          false: '否'
+        }
+      }
+    ]
+
+    return {
+      key: '1111',
+      apiName: 'ss/sellingSrcAllProductList',
+      treeTableOtions: {
+        childs: 'childList',
+        expandFunc: row => {
+          return row.childList && row.childList.length
+        }
+      },
+      topBatchBtn: {
+        title: '项',
+        options: [
+          {
+            label: '加入可跟卖库'
+          },
+          {
+            label: '重新抓取源数据'
+          },
+          {
+            label: '关注'
+          },
+          {
+            label: '取消关注'
+          },
+          {
+            label: '删除'
+          }
+        ]
+      },
+      editBtns: [
+        {
+          name: '添加任务',
+          perm: 'add',
+          fn: () => {
+            this.$_dialog({
+              size: 'medium',
+              title: '添加跟卖源任务',
+              params: { siteId: this.$store.state.selling.curSiteId },
+              cancelBtnText: '取消',
+              okBtnText: '确认',
+              component: () => import('./dialogs/addTask.vue')
+            })
+          }
+        }
+      ],
+      edits: [
+        {
+          name: '加入可跟卖库',
+          perm: 'add',
+          fn: scope => {
+            this.addToLib([scope.row.asin], scope.row._level == 1 ? 1 : 0)
+          }
+        },
+        {
+          name: '重新抓取源数据',
+          perm: 'add',
+          fn: scope => {
+            this.recrwal([scope.row.asin], scope.row._level == 1 ? 1 : 0)
+          }
+        },
+        {
+          name: '关注',
+          perm: 'add',
+          fn: scope => {
+            this.atx([scope.row.asin], scope.row._level == 1 ? 1 : 0, true)
+          }
+        },
+        {
+          name: '取消关注',
+          perm: 'add',
+          fn: scope => {
+            this.atx([scope.row.asin], scope.row._level == 1 ? 1 : 0, false)
+          }
+        }
+      ],
+      columns,
+      searchFields: {
+        searchText: {
+          label: 'ASIN',
+          labelWidth: 52
+        },
+        displayType: {
+          label: '展示方式',
+          widget: 'select',
+          clearable: false,
+          change: data => {
+            vm.apiName = data.displayType
+              ? 'ss/sellingSrcAllProductList'
+              : 'ss/sellingSrcChildProductList'
+            if (data.displayType) {
+              vm.columns[2].label == '父ASIN' && vm.columns.splice(2, 1)
+            } else {
+              vm.columns[2].label !== '父ASIN' &&
+                vm.columns.splice(2, 0, {
+                  label: '父ASIN',
+                  value: 'parentAsin',
+                  width: 120
+                })
+            }
+            vm.columns[1].expand = data.displayType
+          },
+          defaultVal: true,
+          options: [
+            {
+              label: '父视图',
+              value: true
+            },
+            {
+              label: '子视图',
+              value: false
+            }
+          ]
+        },
+        category: {
+          hidden: true,
+          widget: 'cascader',
+          label: '平台类目',
+          clearable: true,
+          props: {
+            lazy: true,
+            lazyLoad(node, resolve) {
+              const { data } = node
+              const params = {
+                ...vm.storeInfo,
+                siteId: vm.$store.state.selling.curSiteId,
+                parentName: data
+                  ? (data.parentName ? data.parentName + ':' : '') + data.value
+                  : null
+              }
+              vm.$api[`ss/sellingGetCategoryList`](params)
+                .then(data => {
+                  resolve(
+                    data.data.map(e => ({
+                      label: e.name,
+                      value: e.name,
+                      parentName: e.parentName,
+                      leaf: !e.haveChildren
+                    }))
+                  )
+                })
+                .catch(() => {
+                  resolve(false)
+                })
+            }
+          }
+        },
+        status: {
+          label: '抓取状态',
+          hidden: true,
+          widget: 'select',
+          options: this.$const['PRODUCTANALYSIS/status']
+        },
+        dataType: {
+          label: '抓取方式',
+          hidden: true,
+          widget: 'select',
+          options: this.$const['SS/scDataType']
+        },
+        attentionFlag: {
+          label: '关注',
+          hidden: true,
+          labelWidth: '55px',
+          widget: 'select',
+          options: [
+            {
+              label: '已关注',
+              value: true
+            },
+            {
+              label: '未关注',
+              value: false
+            }
+          ]
+        },
+
+        saleFlag: {
+          label: '销售状态',
+          hidden: true,
+          widget: 'select',
+          options: [
+            {
+              label: '在售',
+              value: true
+            },
+            {
+              label: '不可售',
+              value: false
+            }
+          ]
+        },
+        bsr: getSearchNumField.call(vm, '大类BSR', 'bsr', '76px'),
+        sellerCnt: getSearchNumField.call(vm, '跟卖数', 'sellerCnt', '70px'),
+        searchPrice: getSearchNumField.call(
+          vm,
+          '价格',
+          'searchPrice',
+          '50px',
+          2
+        ),
+        reviewCnt: getSearchNumField.call(vm, '评价数', 'reviewCnt', '65px'),
+        starCnt: getSearchNumField.call(vm, '评分', 'starCnt', '56px'),
+        brands: {
+          widget: 'textarea',
+          placeholder: '一行一个',
+          label: '品牌名',
+          hidden: true,
+          labelWidth: '65px',
+          rows: 1
+        }
+      }
+    }
+  },
+  watch: {
+    '$store.state.selling.curSiteId'(val) {
+      this.key = val
+    }
+  },
+  computed: {
+    treeTable() {
+      return this.apiName == 'ss/sellingSrcAllProductList'
+    },
+    curSiteId() {
+      return this.$store.state.selling.curSiteId
+    }
+  },
+  methods: {
+    handleLeftBatchChange(val, sel) {
+      // {
+      //       label: '加入可跟卖库'
+      //     },
+      //     {
+      //       label: '重新抓取源数据'
+      //     },
+      //     {
+      //       label: '关注'
+      //     },
+      //     {
+      //       label: '取消关注'
+      //     },
+      //     {
+      //       label: '删除'
+      //     }
+      let asins = sel.map(e => e.asin)
+      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
+        this.$message.warning('只能全部选择父产品或者全部选择子产品')
+        return
+      }
+      const type = sel[0]._level == 1 ? 1 : 0
+      switch (val[0]) {
+        case '加入可跟卖库':
+          this.addToLib(asins, type)
+          break
+        case '重新抓取源数据':
+          this.recrwal(asins, type)
+          break
+        case '关注':
+          this.atx(asins, type, true)
+          break
+        case '取消关注':
+          this.atx(asins, type, false)
+          break
+        case '删除':
+          this.del(asins, type)
+          break
+
+        default:
+          break
+      }
+    },
+    recrwal(asins, type) {
+      this.showTips({ msg: '此操作将重新抓取源数据, 是否继续?' }, () => {
+        return this.$api[`ss/sellingReCrawlSrc`]({
+          ...this.storeInfo,
+          siteId: this.curSiteId,
+          asins,
+          type
+        })
+      })
+    },
+    del(asins, type) {
+      this.showTips({ msg: '此操作将删除源数据, 是否继续?' }, () => {
+        return this.$api[`ss/sellingRemoveSrc`]({
+          ...this.storeInfo,
+          siteId: this.curSiteId,
+          asins,
+          type
+        })
+      })
+    },
+    atx(asins, type, attentionFlag) {
+      this.showTips(
+        { msg: `此操作将${attentionFlag ? '关注' : '取消关注'}数据, 是否继续` },
+        () => {
+          return this.$api[`ss/sellingAttention`]({
+            ...this.storeInfo,
+            siteId: this.curSiteId,
+            attentionFlag,
+            asins,
+            type
+          })
+        }
+      )
+    },
+    addToLib(asins, type) {
+      this.$_dialog({
+        size: 'medium',
+        title: '加入可跟卖库',
+        params: { asins, curSiteId: this.curSiteId, type },
+        cancelBtnText: '取消',
+        okBtnText: '确认',
+        component: () => import('./dialogs/addToLib.vue')
+      })
+    },
+    searchFunc(data) {
+      let { category, ...info } = data
+      if (category) {
+        category = category.join(':')
+      }
+      return {
+        category,
+        ...info
+      }
+    }
+  }
+}
+</script>

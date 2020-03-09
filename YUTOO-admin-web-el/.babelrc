@@ -1,0 +1,19 @@
+{
+  "presets": [
+    "es2015",
+    "stage-3",
+    ["env", { "modules": false }]
+  ],
+  "plugins": [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ],
+    "transform-runtime",
+    "syntax-dynamic-import",
+    "transform-async-to-generator"
+  ]
+}

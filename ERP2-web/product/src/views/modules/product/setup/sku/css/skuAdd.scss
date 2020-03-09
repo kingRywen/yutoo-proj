@@ -1,0 +1,104 @@
+.rule_content {
+    .form_item {
+        .lebelBox {
+            display: flex;
+            flex-direction: row;
+			.lebelBtn{
+				min-height: 200px;
+				width: 280px;
+				padding: 10px;				
+				border: 1px solid #dcdfe6;
+				border-radius: 5px;
+				margin-right: 10px;
+			}
+            .lebel {
+                min-height: 200px;
+                width: 330px;
+                padding: 10px;
+                border: 1px solid #dcdfe6;
+                border-radius: 5px;
+                margin-right: 10px;
+                .el-checkbox {
+                    &:first-child {
+                        margin-right: 10px;
+                    }
+                }
+                .el-checkbox.is-bordered + .el-checkbox.is-bordered {
+                    margin: 0 10px 0 0;
+                }
+                &:last-child {
+                    flex: 1;
+                    margin-right: 0;
+                    .tag {
+                        margin-right: 10px;
+                        margin-bottom: 15px;
+                        position: relative;
+                        .rulehint {
+                            position: absolute;
+                            left: 0;
+                            bottom: -26px;
+                            color: #f56c6c;
+                        }
+                    }
+                    .ruleinput {
+                        width: 30px;
+                        .el-input__inner {
+                            padding: 0;
+                            text-align: center;
+                        }
+                    }
+                }
+				.draggable {
+				  padding: 5px 0 5px 10px;
+				  display: flex;
+				  flex-wrap: wrap;
+				  .formula-btn {
+				    margin-right: 10px;
+					margin-bottom:10px;
+				    font-size: 12px;
+				    display: flex;
+				    height: 25px;
+				    line-height: 25px;
+				    .btn-txt {
+				      cursor: move;
+				      padding-top: 3px;
+				    }
+				    /deep/ [class^='el-icon-'] {
+				      font-size: 10px;
+				      width: 10px;
+				      height: 10px;
+				      color: red;
+				      cursor: pointer;
+				    }
+				  }
+				}
+            }
+        }
+        .preview_inputBox {
+            .el-input {
+                width: 160px;
+                input {
+                    text-align: center;
+                }
+            }
+            span {
+                line-height: 40px;
+                margin-left: 10px;
+            }
+        }
+        &:last-child {
+            div {
+                margin-left: 80px;
+            }
+        }
+        .textarea {
+            .el-textarea__inner {
+                resize: none;
+                height: 83px;
+            }
+        }
+    }
+}
+.dialog-footer {
+    text-align: center;
+}

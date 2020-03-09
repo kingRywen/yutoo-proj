@@ -1,0 +1,126 @@
+export default [
+  {
+    name: 'GlStoreList',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-列表查询',
+    path: '/GlStore/list',
+    params: {}
+  },
+  {
+    name: 'SMpermissionUserList',
+    method: 'POST',
+    desc: '获取人员',
+    path: '/permission/user/list',
+    params: {}
+  },
+  {
+    name: 'SMGlPlatSiteList',
+    method: 'POST',
+    desc: '平台站点查询',
+    path: '/GlPlatSite/list',
+    params: {}
+  },
+  {
+    name: 'SMGlPlatList',
+    method: 'POST',
+    desc: '销售平台查询',
+    path: '/GlPlat/list',
+    params: {}
+  },
+  {
+    name: 'SMGlPlatSiteContinentList',
+    method: 'POST',
+    desc: '平台区域站点查询',
+    path: '/GlPlatSite/continentList',
+    params: {}
+  },
+  {
+    name: 'GlStoreAdAuthAmz',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-广告授权状态-立即授权（Amazon）',
+    path: '/GlStore/adAuth/amz',
+    params: {},
+    //showSuccess:true,
+  },
+  {
+    name: 'GlStoreWmsAuthAmz',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-店铺授权状态-立即授权（Amazon）',
+    path: '/GlStore/wmsAuth/amz',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreAuthEbay',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-店铺授权状态-立即授权（eBay）',
+    path: '/GlStore/auth/ebay',
+    params: {},
+    //showSuccess:true,
+  },
+  {
+    name: 'GlStoreSave',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-新增',
+    path: '/GlStore/save',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreInfo',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-查看详情',
+    path: '/GlStore/info',
+    params: {},
+    //showSuccess:true,
+  },
+  {
+    name: 'GlStoreUpdate',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-编辑',
+    path: '/GlStore/update',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreActivate',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-开启（也就是激活）',
+    path: '/GlStore/activate',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStorecancelActivate',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-禁用（也就是取消激活）',
+    path: '/GlStore/cancelActivate',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreRemove',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-删除',
+    path: '/GlStore/remove',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreInvoiceSet',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-设置发货单',
+    path: '/GlStore/invoice/set',
+    params: {},
+    showSuccess:true,
+  },
+  {
+    name: 'GlStoreInvoiceInfo',
+    method: 'POST',
+    desc: '店铺管理-店铺信息-设置发货单-查看详情',
+    path: '/GlStore/invoice/info',
+    params: {},
+    //showSuccess:true,
+  },
+  
+]

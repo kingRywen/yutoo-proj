@@ -1,0 +1,55 @@
+// 背景色
+$bgColor: #ececec;
+
+// 方框背景色
+$boxBgColor: #f6f6f8;
+// 方框边框
+$boxBorderColor: #e5e5e5;
+
+// 主题色
+$titleColor: #666;
+$hoverColor: #2196f3;
+$bghoverColor: #08599b;
+$btnClickBgColor: #bbb;
+
+// plain按钮主色
+$plainBtnColor: #bbb;
+// plain按钮文字色
+$plainBtnTextColor: #777;
+$btnColor: #f8991d;
+$btnHoverBgColor: mix($btnColor, rgb(105, 49, 3), 90%);
+// 主题副色
+$subTitleColor: mix($titleColor, #fff, 40%);
+// 背景颜色
+$bgColor: #fafafa;
+//文字颜色
+$textColor: #5e5e5e;
+// 弹窗字体颜色
+$dialogItemColor: #67c23a;
+// 辅色
+$subColor: #f8991d;
+
+// 自定义颜色
+$customBtnColor: #00a7e2;
+$customBtnColorActive: linear-gradient(90deg, #10b5ec, #0eb5ec);
+
+$box_width: 1200px;
+
+@mixin flex-wrapper($justify: center) {
+  display: flex;
+  justify-content: $justify;
+  align-items: center;
+}
+@mixin flex($direction: row, $inline: block) {
+  display: if($inline==block, flex, inline-flex) !important;
+  flex-direction: $direction;
+  flex-wrap: wrap;
+}
+@mixin wrap-overflow($clamp: 3) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $clamp;
+  /* autoprefixer: ignore next */
+  -webkit-box-orient: vertical;
+}

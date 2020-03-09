@@ -1,0 +1,64 @@
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+div:focus {
+  outline: none;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+//全局方法
+@mixin flex($direction:columin, $inline:block) {
+  display: if($inline==block, flex, inline-flex);
+  flex-direction: $direction;
+  flex-wrap: wrap;
+}
+
+//全局样式
+ul,
+li,
+p {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.title {
+  font-weight: 700;
+  font-style: normal;
+  font-size: 16px;
+  color: #4877E6;
+  cursor: pointer;
+}

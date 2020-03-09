@@ -1,0 +1,45 @@
+.box{
+    .box-query-title{
+         font-size: 14px;
+         background-color: @boxQueryBGColor;
+         padding: 15px;
+         border-top:1px solid @borderColor;
+         border-bottom:1px solid @borderColor;
+    }
+    .box-query{
+        padding: 15px;
+        border-bottom:1px solid @borderColor;
+         .el-form--inline{
+             height: 40px;
+         }
+         .el-form-item__content{
+            .el-input{
+                width: 150px;
+            }
+            .el-select{
+                width: 120px;
+            }
+            .el-range-editor{
+                width: 240px;
+                /deep/.el-range-separator{
+                    width: 20px;
+                }
+            }
+        }
+    }
+    .box-update{
+        // margin-left: 10px;
+        margin-top: 10px;
+    }
+    .box-data{
+        .el-table{
+             border-left-width: 0;
+             border-right-width: 0;
+             
+        }
+        .el-pagination{
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    }
+ }

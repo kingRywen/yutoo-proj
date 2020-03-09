@@ -1,0 +1,31 @@
+[{
+  "name": "组件",
+  "groups": [{
+    "groupName": "Basic",
+    "list": [{
+        "path": "/table",
+        "title": "扩展表格 yt-table"
+      },
+      {
+        "path": "/page",
+        "title": "表格布局 yt-page"
+      },
+      {
+        "path": "/transition",
+        "title": "动画 yt-transition"
+      }
+    ]
+  }, {
+    "groupName": "市场",
+    "list": [{
+      "path": "/layout",
+      "title": "表格布局组件 yt-layout"
+    }]
+  }, {
+    "groupName": "ERP",
+    "list": [{
+      "path": "/ERP/example",
+      "title": "ERP example"
+    }]
+  }]
+}]

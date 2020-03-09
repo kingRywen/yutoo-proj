@@ -1,0 +1,59 @@
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to{
+    opacity: 0;
+  }
+
+  .query-box{
+    display: flex;
+    background-color: #ffffff;
+    box-shadow:0 0 15px #DCDFE6;
+    padding: 10px;
+    .el-date-editor--daterange{
+      width: 220px;
+      /deep/.el-range-separator{
+        width: 20px;
+      }
+    }
+    .el-button--warning,
+    .el-button--danger{
+      margin-left: 5px;
+    }
+  }
+
+  .orderby-query{
+    background-color:#ffffff;
+    box-shadow:0 0 15px #DCDFE6;
+  .order-by{
+    width:100%;
+    display: flex; 
+    border-bottom: 1px solid #d7d7d7; 
+    margin-bottom: 5px;
+    background-color: #ffffff;
+  }
+  /deep/.el-range-editor{
+    width: 250px;
+  }
+  /deep/.el-input{
+    width: 250px;
+  }
+  .asc,.desc{
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    color: #606266;
+    font-size: 14px;
+  }
+  .asc{
+    width:50%;
+    border-right:1px solid #d7d7d7;
+  }
+  .desc{
+    width:50%
+  }
+  /deep/.el-range-separator{
+    width: 25px;
+  }
+}

@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "联盟-商户端",
+    "description": "",
+    "version": "0.0.1",
+    "options_page": "options.html",
+    "browser_action": {
+        "default_popup": "popup.html"
+    },
+    "permissions": ["proxy", "webRequest", "storage", "http://*/*", "https://*/*"],
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["js/content.js"],
+        "run_at": "document_start",
+        "all_frames": true
+    }],
+    "web_accessible_resources": ["js/inject.js", "js/aliexpress/main.js", "js/aliexpress/passport.js", "js/jquery-3.4.1.min.js"],
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+F",
+                "mac": "MacCtrl+Shift+F"
+            },
+            "description": "Opens hello.html"
+        }
+    },
+    "background": {
+        "page": "background.html"
+    }
+}

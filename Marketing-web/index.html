@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <META
+    HTTP-EQUIV="pragma"
+    CONTENT="no-cache"
+  >
+  <!-- <meta
+    http-equiv="Content-Security-Policy"
+    content="upgrade-insecure-requests"
+  > -->
+  <META
+    HTTP-EQUIV="Cache-Control"
+    CONTENT="no-cache, must-revalidate"
+  >
+  <META
+    HTTP-EQUIV="expires"
+    CONTENT="0"
+  >
+  <!-- 仅针对IOS的Safari顶端状态条的样式（可选default/black/black-translucent ）-->
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black"
+  />
+  <!-- IOS中禁用将数字识别为电话号码/忽略Android平台中对邮箱地址的识别 -->
+  <meta
+    name="format-detection"
+    content="telephone=no, email=no"
+  />
+  <!-- 启用360浏览器的极速模式(webkit) -->
+  <meta
+    name="renderer"
+    content="webkit"
+  >
+  <!-- 避免IE使用兼容模式 -->
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="IE=edge"
+  >
+  <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+  <meta
+    name="HandheldFriendly"
+    content="true"
+  >
+  <!-- 微软的老式浏览器 -->
+  <meta
+    name="MobileOptimized"
+    content="320"
+  >
+  <!-- uc强制竖屏 -->
+  <meta
+    name="screen-orientation"
+    content="portrait"
+  >
+  <!-- QQ强制竖屏 -->
+  <meta
+    name="x5-orientation"
+    content="portrait"
+  >
+  <!-- UC强制全屏 -->
+  <meta
+    name="full-screen"
+    content="yes"
+  >
+  <!-- QQ强制全屏 -->
+  <meta
+    name="x5-fullscreen"
+    content="true"
+  >
+  <!-- UC应用模式 -->
+  <meta
+    name="browsermode"
+    content="application"
+  >
+  <!-- QQ应用模式 -->
+  <meta
+    name="x5-page-mode"
+    content="app"
+  >
+  <!-- windows phone 点击无高光 -->
+  <meta
+    name="msapplication-tap-highlight"
+    content="no"
+  >
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1.0"
+  >
+  <!-- <script type="text/javascript" src="https://cdn.bootcss.com/echarts/3.6.2/echarts.min.js"></script> -->
+  <title>BSR</title>
+</head>
+
+
+<body style="margin:auto">
+  <style>
+    #show {
+          display: none;
+          background: #fffbd4;
+          color: rgb(219, 100, 31);
+          padding: 10px;
+          text-align: center;
+        }
+      </style>
+  <div id="show">为保证页面正常显示，请使用Chrome或Firefox浏览器，点击下载
+    <a
+      type="text"
+      href="https://en.softonic.com/download/chrome/windows/post-download?sl=1"
+      @click="download('https://en.softonic.com/download/chrome/windows/post-download?sl=1')"
+    >Chrome</a>或
+    <a
+      type="text"
+      href="https://download-ssl.firefox.com.cn/releases-sha2/stub/official/zh-CN/Firefox-latest.exe"
+      @click="download('https://download-ssl.firefox.com.cn/releases-sha2/stub/official/zh-CN/Firefox-latest.exe')"
+    >Firefox</a>浏览器。如使用360、搜狗、QQ等国产浏览器请设置为“极速模式”</div>
+  <script>
+    var DEFAULT_VERSION = 9.0;
+    var ua = navigator.userAgent.toLowerCase();
+    var isIE = ua.indexOf("msie") > -1;
+    var safariVersion;
+    var ms_ie = false;
+    var old_ie = ua.indexOf('MSIE');
+    var new_ie = ua.indexOf('trident/');
+    var is360 = false;
+    var append = document.getElementById("append");
+    if ((old_ie > -1) || (new_ie > -1)) {
+      ms_ie = true;
+    }
+    if (window.navigator.appName.indexOf("Microsoft") != -1) {
+      me_ie = true;
+    }
+    if ((window.navigator.mimeTypes[40] || !window.navigator.mimeTypes.length)) {
+      is360 = true;
+    }
+    if (ms_ie) {
+
+      // 检测ie
+      if (isIE) {
+        safariVersion = ua.match(/msie ([\d.]+)/)[1];
+      }
+
+      if (safariVersion <= DEFAULT_VERSION) {
+        document.getElementById('show').style.display = 'block'
+      }
+
+
+
+      if (isIE) {
+        safariVersion = ua.match(/msie ([\d.]+)/)[1];
+      }
+      if (safariVersion <= DEFAULT_VERSION) {
+        document.getElementById('show').style.display = 'block'
+      }
+    }
+
+  </script>
+  <!-- <body> -->
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+  <script>
+    window.GLOBAL = {
+      vbus: {}
+    }
+
+  </script>
+</body>
+
+</html>

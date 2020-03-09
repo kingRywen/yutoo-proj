@@ -1,0 +1,33 @@
+// /* 改变主题色变量 */
+// $--color-primary: #00c0de;
+// /* 改变 icon 字体路径变量，必需 */
+// $--font-path: '~element-ui/lib/theme-chalk/fonts';
+@import "../../theme/index.css";
+
+.el-date-editor .el-range__icon,
+.el-date-editor .el-range__close-icon,
+.el-date-editor .el-range-separator,
+.el-input__icon,
+.el-input__suffix {
+  line-height: 24px;
+  display: block;
+}
+
+.el-textarea__inner {
+  font-family: inherit !important
+}
+
+// .el-switch.is-checked .el-switch__core {
+//   border-color: #089a45;
+//   background-color: #089a45;
+// }
+
+.el-input-number__increase,
+.el-input-number__decrease {
+  top: 2px;
+}
+
+.el-input-number.is-controls-right[class*=small] [class*=increase],
+.el-input-number.is-controls-right[class*=small] [class*=decrease] {
+  line-height: 14px;
+}

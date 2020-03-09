@@ -1,0 +1,902 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('iconfont.eot?t=1541666086928');
+  /* IE9*/
+  src: url('iconfont.eot?t=1541666086928#iefix') format('embedded-opentype'),
+    /* IE6-IE8 */
+    url('data:application/x-font-woff;charset=utf-8;base64,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') format('woff'),
+    url('iconfont.ttf?t=1541666086928') format('truetype'),
+    /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+    url('iconfont.svg?t=1541666086928#iconfont') format('svg');
+  /* iOS 4.1- */
+}
+
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-lianjie:before {
+  content: "\e600";
+  color: #00c0de;
+  ;
+  font-weight: 400;
+  padding: 2px 10px 2px 10px;
+  cursor: pointer
+}
+
+.icon-mima:before {
+  content: "\e620";
+}
+
+.icon-yonghu:before {
+  content: "\e633";
+}
+
+.icon-guanbi:before {
+  content: "\e676";
+}
+
+.icon-wenhao1:before {
+  content: "\e61a";
+  color: #00c0de;
+  font-weight: 400;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.icon-xiazai:before {
+  content: "\e675";
+}
+
+.icon-dianpu:before {
+  content: "\e641";
+}
+
+.icon-mima1:before {
+  content: "\e603";
+}
+
+.icon-loading:before {
+  content: "\e644";
+}
+
+.icon-jingzhengduishou:before {
+  content: "\e70b";
+  color: #00c0de;
+  ;
+  font-weight: 400;
+  padding: 2px 10px 2px 10px;
+  cursor: pointer
+}
+
+.icon-youxiang:before {
+  content: "\e70c";
+}
+
+.icon-icon-test:before {
+  content: "\e666";
+}
+
+.icon-shouji:before {
+  content: "\e602";
+}
+
+.icon-wushuju:before {
+  content: "\e642";
+}
+
+.icon-shaixuan:before {
+  content: "\e661";
+  color: #666;
+  font-size: 14px;
+}
+
+.icon-guanzhu:before {
+  content: "\e653";
+  color: #00c0de;
+  ;
+  font-weight: 400;
+  padding: 2px 10px 2px 10px;
+  cursor: pointer
+}
+
+.icon-tongzhi:before {
+  content: "\e649";
+}
+
+.icon-yijianfankui:before {
+  content: "\e60f";
+}
+
+.icon-guanzhu1:before {
+  content: "\e62c";
+  font-size: 18px;
+}
+
+.icon-tupian:before {
+  content: "\e618";
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+}
+
+.color_999 {
+  color: #999 !important;
+}
+
+/* 防跟卖 */
+/* 添加的弹窗 */
+/* .__box_wrapper__local_page .el-form-item__label {
+  border-radius: 4px 0 0 4px;
+  color: #909399;
+  height: 34px;
+  display: inline-block;
+  border: 1px solid #dcdfe6;
+  background: #fafafa;
+  position: relative;
+  top:4px;
+  text-align: center;
+  border-right: 0;
+} */
+/* .__box_wrapper__local_page .el-form-item {
+  display: flex !important;
+  align-items: center !important;
+} */
+
+.preventSalesMonitoring .el-dialog__body {
+  padding: 20px 20px 30px !important;
+}
+
+.__box_wrapper__local_page .el-input__inner {
+  font-size: 12px !important;
+  /* height: 34px !important; */
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+}
+
+/* 防跟卖upload的样式 */
+.preventSalesMonitoring .el-upload {
+  display: inline !important;
+}
+
+/* 头部消息 */
+.el-header .el-badge__content.is-fixed {
+  top: 15px !important;
+  right: 6px !important;
+}
+
+/* 添加关注弹窗的按钮 */
+.addFollow .el-button {
+  padding: 8px 16px !important;
+}
+
+.margin_bottom8 {
+  margin-bottom: 8px;
+}
+
+.placeholder_color {
+  color: #C0CFE3;
+}
+
+/* 关键词挖掘查看的table */
+.keywordExcavateIndexSee .el-table td,
+.keywordExcavateIndexSee .el-table th {
+  padding: 5px 0px !important;
+}
+
+/* 字体 */
+.title_h1 {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #424f62;
+}
+
+/* 竖线 */
+.title_icon {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: #777;
+  position: relative;
+  top: 3px;
+  margin-right: 5px;
+}
+
+/* 加粗字体 */
+.titleBox {
+  text-indent: 1em;
+  color: #777;
+  font-weight: 600;
+}
+
+/* 蓝色字体 */
+.searchText {
+  text-indent: 1em;
+  color: #00c0de;
+}
+
+.inline_block {
+  display: inline-block !important;
+}
+
+/* 关键词，类目的ASIN弹窗的body的内边距 */
+.keyQuerySee .el-dialog__body,
+.CatalogQuerySee .el-dialog__body {
+  padding: 15px 0px !important;
+}
+
+.paddingLeft10 {
+  padding-left: 10px;
+}
+
+/* 排名查询的的图表的关键词下拉框，多选的时候，文字溢出处理 */
+.chartRank .el-select__tags-text {
+  display: inline-block;
+  max-width: 70px;
+  overflow: hidden;
+}
+
+.chartRank .el-select .el-tag__close.el-icon-close {
+  top: -11px;
+}
+
+/* 查看里面的搜索的search_container */
+.search_container .el-form-item {
+  display: inline-block !important;
+}
+
+.fontColor {
+  color: #606266 !important;
+}
+
+.font12 {
+  font-size: 12px !important;
+}
+
+.font13 {
+  font-size: 13px !important;
+}
+
+.color_message {
+  color: rgb(255, 208, 75)
+}
+
+.font14 {
+  font-size: 14px !important;
+}
+
+.font15 {
+  font-size: 15px !important;
+}
+
+.font16 {
+  font-size: 16px !important;
+}
+
+.font18 {
+  font-size: 18px !important;
+}
+
+.font20 {
+  font-size: 20px !important;
+}
+
+/* .选择平台，个人中心bottom */
+.el-menu--horizontal {
+  border-bottom: none !important;
+}
+
+/* 输入框字体 */
+.el-input__inner {
+  font-size: 12px !important;
+  height: 30px !important;
+}
+
+/* .regContainer .el-input__inner,
+.centerComtainer .el-input__inner,
+.changePass .el-input__inner {
+  font-size: 12px !important;
+  height: 38px !important;
+} */
+
+/* .多文本输入框 */
+.el-textarea__inner {
+  font-size: 12px !important;
+}
+
+/* 日期组件高度 */
+.el-date-editor--daterange {
+  height: 30px !important;
+}
+
+/* 日期组件字体 */
+.el-range-editor .el-range-input {
+  font-size: 12px !important;
+}
+
+/* 今日 7天30日字体 */
+.el-radio-button__inner {
+  font-size: 12px !important;
+}
+
+/* 单选框 多选框字体 */
+.el-radio__label,
+.el-checkbox__label {
+  font-size: 12px !important;
+}
+
+/* 系统消息条数 */
+.header-wrapper .el-badge__content {
+  background-color: #f56c6c;
+  border-radius: 10px;
+  color: #fafafa;
+  display: inline-block;
+  font-size: 12px;
+  height: 14px;
+  line-height: 12px;
+  padding: 0 6px;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #fafafa;
+}
+
+.fix__row_1 {
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* 弹窗关闭按钮 */
+.el-dialog__headerbtn {
+  position: absolute;
+  top: 11px;
+  right: 20px;
+  padding: 0;
+  padding: 3px 5px;
+  border-radius: 50%;
+  border: 1px solid #999;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 竞品分析产品详情四个字 */
+.el-collapse-item__header {
+  color: #606266 !important;
+  font-size: 12px;
+  border: none !important;
+  border-color: #606266 !important;
+}
+
+/* 输入框前面的label */
+.el-form-item__label {
+  font-size: 12px !important;
+}
+
+.el-collapse {
+  border: none !important;
+}
+
+/* 按钮的padding和字体 */
+/* .el-button {
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+} */
+
+.font_14px {
+  font-size: 14px;
+}
+
+.color_666 {
+  color: #666;
+}
+
+.color_blue {
+  color: #00c0de;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.commonStyle {
+  padding: 8px !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.keywordIndexContainer,
+.parentPosition,
+.keyQuerys,
+.keywordQuery,
+.keyQuerySee,
+.categoryRanking,
+.adkeywordRanking,
+.salesMonitoring,
+.salesMonitoringSee,
+.preventSalesMonitoring,
+.keywordExcavateIndexSee,
+.KeywordIndexSee,
+.CatalogQuerySee,
+.space_wrapper {
+  height: 100%;
+}
+
+.parentPosition,
+.salesMonitoringSee,
+.imgSpace,
+.preventSalesMonitoring,
+.CatalogQuerySee,
+.keywordExcavateIndexSee,
+.keyQuerySee,
+.KeywordIndexSee,
+.switchingLocalList {
+  display: flex;
+  flex-direction: column;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+/* header颜色 */
+
+.el-header {
+  background-color: rgb(28, 53, 68) !important;
+}
+
+.el-pagination {
+  text-align: right;
+}
+
+/* header选择平台下拉框的颜色 */
+
+.el-dropdown {
+  display: inline-block;
+  position: relative;
+  color: #606266;
+}
+
+/* sideBar一级菜单鼠标点击 */
+
+.el-aside .el-submenu__title:hover {
+  background: #000 !important;
+  /* color:#fafafa !important; */
+}
+
+/* .el-aside .el-submenu__title:hover i,.el-aside .el-submenu__title:hover span{
+  color:#fafafa !important;
+} */
+
+/* 修改sideBar的二级菜单的hover */
+
+.el-aside .el-menu-item:hover {
+  outline: none;
+  background-color: #000 !important;
+  color: #fafafa !important;
+}
+
+.el-aside .el-menu-item:focus {
+  outline: none;
+  background-color: #000 !important;
+  color: #fafafa;
+}
+
+/* 修改sideBar的二级菜单的active */
+
+.el-aside .el-menu-item.is-active {
+  color: #fafafa;
+  background: #000 !important;
+}
+
+.el-button+.el-button {
+  margin-left: 0px !important;
+}
+
+/* 关键词竞争分析页面修改‘删除按钮’到‘添加按钮’的距离 */
+
+.keywordIndexContainer .el-button--success {
+  /* margin-right: 20px !important; */
+}
+
+/* 改变删除按钮的长度 */
+
+/* .keywordIndexContainer .is-plain {
+  width: 100px;
+} */
+
+/* 改变所有table的th样式 */
+
+.el-table th {
+  background: #fafafa !important;
+  font-size: 14px;
+  color: #666;
+  border: 1px solid #EBEEF5;
+  border-right: none;
+  padding: 8px 0;
+}
+
+/* 鼠标放在面包屑上改变 */
+
+/* 鼠标放在面包屑0 */
+
+.el-breadcrumb__inner {
+  cursor: pointer !important;
+}
+
+/* .el-breadcrumb__inner:hover {
+  text-decoration: underline;
+} */
+
+/* main的padding margin */
+
+#app .el-main {
+  padding: 10px !important;
+  display: block;
+  flex-direction: column;
+  flex: auto;
+  padding-top: 6px !important;
+  /* background: #fafafa; */
+}
+
+/* header选择平台 */
+.el-header .el-submenu__title {
+  font-size: 14px !important;
+}
+
+/* 分析添加任务 */
+.__wrapper_i .el-dialog__header {
+  border-bottom: 1px solid #ccc;
+  margin: 0 16px;
+  padding: 10px 0px;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+/* 分析添加任务 */
+
+.__wrapper_i .el-dialog__header .el-dialog__title {
+  color: #00c0de !important;
+  font-weight: 600;
+}
+
+/* 弹窗站点 */
+
+.keywordIndexContainer .pCon {
+  width: 300px;
+  margin: 0px auto 10px;
+}
+
+/* 三个输入框依赖父元素居中 */
+
+.keywordIndexContainer .siteContainer .el-input,
+.keywordIndexContainer .categoryContainer .el-input,
+.keywordIndexContainer .pageContainer .el-input {
+  width: 200px !important;
+}
+
+/* 按钮长度 */
+
+.keywordIndexContainer .saveContainer .el-button {
+  width: 150px;
+}
+
+/* 类目选择的按钮 */
+
+.keywordIndexContainer .categoryContainer {
+  position: relative;
+}
+
+/* 类目选择的按钮 */
+
+.keywordIndexContainer .categoryButton {
+  position: absolute;
+  top: 0px;
+  right: 55px;
+  width: 80px !important;
+  height: 40px !important;
+  line-height: 40px;
+  text-align: center;
+  z-index: 999;
+}
+
+.keywordIndexContainer .categoryButton {
+  color: #fafafa;
+  background: #00c0de !important;
+}
+
+/* 五 竞争分析 */
+
+/* 5.1竞品分析 */
+
+/* 5.1.1查看竞品分析 */
+
+/* 产品分析几个字以及背景颜色 */
+
+.detalisExplainCon .el-collapse-item__header {
+  background: #F5F7FA;
+}
+
+/* // 折叠面板 see折叠面板*/
+.d_search .el-collapse-item__header {
+  font-weight: 600 !important;
+  background: #FAFAFA !important;
+  padding-left: 1em;
+  margin-bottom: 0.8em;
+}
+
+.margin_top8 {
+  margin-top: 8px !important;
+}
+
+.d_search .el-collapse-item__content {
+  padding-bottom: 0px !important;
+}
+
+/* 店铺授权的北美站点下的容器的内边距 */
+.shopAuthorization .el-tabs__content {
+  padding: 8px !important;
+}
+
+/* 改变竞品分析和店铺分析列表页的右上角的时间方框的长度 */
+
+.productDate .el-date-editor {
+  width: 240px !important;
+}
+
+/* 所有图标的header的字体颜色 */
+
+.chart1 header,
+.chart2 header,
+.chart3 header,
+.chart4 header,
+.chart5 header,
+.chart6 header,
+.chart7 header,
+.chart8 header,
+.chart9 header {
+  color: #909399 !important;
+}
+
+.commonColor {
+  color: #909399 !important;
+}
+
+/* 充值页面去掉border */
+
+.recharge,
+.payContainer,
+.orderPage,
+.personalCenter,
+.feedbackCenter,
+.messageCenter {
+  border: none !important;
+}
+
+/* 消息通知页面的每一条的卡card头 */
+.messageCenter .el-card__header {
+  padding: 5px 20px !important;
+}
+
+.messageCenter .el-button {
+  padding: 0 !important;
+}
+
+/* 竞品分析跟卖 表格去掉table：before */
+
+.dialogContainer .el-table:before {
+  content: "";
+  position: absolute;
+  background-color: #fff !important;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* 7天30天右浮动 */
+.checkProductAnalysis .sku1Echart .el-tabs__nav,
+.checkProductAnalysis .sku2Echart .el-tabs__nav {
+  float: right !important;
+  /* transform: translateX(-445px) !important; */
+  transform: translateX(445px) !important;
+}
+
+/* 所有分页的当前数字 */
+.el-pager li.active {
+  padding: 0 4px !important;
+  background: #fff !important;
+  vertical-align: top !important;
+  display: inline-block !important;
+  font-size: 15px !important;
+  min-width: 35.5px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  cursor: default !important;
+  -webkit-box-sizing: border-box !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  margin: 0 !important;
+  color: #303133;
+  font-weight: 600 !important;
+}
+
+.el-pager li {
+  padding: 0 4px;
+  background: #fff;
+  vertical-align: top;
+  display: inline-block;
+  font-size: 13px;
+  min-width: 35.5px;
+  height: 28px;
+  line-height: 28px;
+  cursor: pointer;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-align: center;
+  margin: 0;
+  font-weight: 500 !important;
+}
+
+/* 弹窗tips */
+.dialogTips {
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #30cca5;
+}
+
+/* 弹窗的padding */
+/* 竞品和店铺详情的弹窗头部下划线 */
+.checkProductAnalysis .el-dialog__header,
+.checkShopAnalysis .el-dialog__header,
+.shopAuthorization .el-dialog__header {
+  border-bottom: 1px solid #ccc !important;
+}
+
+/* 竞品和店铺详情的弹窗头部字体颜色 */
+.checkProductAnalysis .el-dialog__header .el-dialog__title,
+.checkShopAnalysis .el-dialog__header .el-dialog__title,
+.shopAuthorization .el-dialog__header .el-dialog__title {
+  color: #00c0de !important;
+  font-weight: 600;
+}
+
+/* // 注册协议的行高 */
+.regAgreementCom {
+  line-height: 20px !important;
+}
+
+/* 修改密码组件的去掉星星 */
+.changePass .el-form-item.is-required .el-form-item__label:before {
+  content: " " !important;
+}
+
+.changePass .el-form-item__label {
+  border-radius: 4px 0 0 4px;
+  color: #909399;
+  width: 93px;
+  height: 38px;
+  line-height: 36px;
+  display: inline-block;
+  border: 1px solid #dcdfe6;
+  background: #fafafa;
+  margin-top: 1px;
+  text-align: center;
+  border-right: 0;
+}
+
+.changePass .el-input__inner {
+  height: 38px;
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+}
+
+/* 一些日期选择框的宽度，居中 */
+.autoAngCenter {
+  width: 350px !important;
+  position: absolute;
+  left: 45px;
+  top: 1px;
+}
+
+/* 滚动条begin */
+::-webkit-scrollbar-track {
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2); */
+  /* border-radius: 10px; */
+  background-color: #EBEEF5
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #EBEEF5
+}
+
+::-webkit-scrollbar-thumb {
+  /* border-radius: 10px; */
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #e2e2e2;
+}
+
+/* 滚动条end */
+/* .el-popper[x-placement^="bottom"] {
+  margin-top: 23px !important;
+} */
+
+/* 每一个echart图的导出数据按钮的位置 */
+.echart_buttom_right {
+  position: absolute;
+  top: 60px;
+  right: 30px;
+  z-index: 2000;
+}
+.cate__ .el-popper[x-placement^="bottom"]{
+  margin-top:23px !important;
+}
+.echart_buttom_right2 {
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  z-index: 2000;
+}
+
+/* 店铺单选框的大小 */
+.shopCon .el-radio__inner {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* 竞品分析卖点el-tag */
+.checkProductAnalysis .el-tag {
+  /* background-color: rgba(0, 192, 222, 0.1); */
+  background-color: #fafafa;
+  display: inline-block;
+  padding: 0 10px;
+  height: 32px;
+  line-height: 30px;
+  font-size: 12px;
+  color: #777;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  /* border: 1px solid rgba(0, 192, 222, 0.2); */
+  border: 1px solid #fff;
+  white-space: nowrap;
+}
+
+/* 防跟卖添加产品，添加监控，修改监控 */
+.required {
+  color: #f56c6c;
+  position: relative;
+  top: 2px;
+  left: -0.5em;
+}
+
+.__inputPrepend .el-input-group__prepend {
+  width: 70px !important;
+}
+
+.box-card {
+  width: 98%;
+  margin-bottom: 20px;
+}
+/* 反馈消息隐藏label */
+.recordCom .el-checkbox__label {
+  display: none !important;
+}
+.__Analyse .el-collapse-item__wrap{
+  overflow: visible;
+}

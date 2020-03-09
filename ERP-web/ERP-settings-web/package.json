@@ -1,0 +1,63 @@
+{
+  "name": "erp-order",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:con": "vue-cli-service build --mode con",
+    "build:online": "vue-cli-service build --mode online",
+    "build:test": "vue-cli-service build --mode test",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@vue-materials/basic-container": "^1.0.0",
+    "axios": "^0.18.0",
+    "element-ui": "^2.4.8",
+    "lodash": "^4.17.11",
+    "normalize.css": "^8.0.0",
+    "vue": "^2.5.17",
+    "vue-lazyload": "^1.2.6",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.4",
+    "@vue/cli-plugin-eslint": "^3.0.4",
+    "@vue/cli-service": "^3.0.4",
+    "crypto-js": "^3.1.9-1",
+    "element-theme-chalk": "^2.4.9",
+    "node-sass": "^4.9.3",
+    "sass-loader": "^7.1.0",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8",
+    "ie 11",
+    "ie 10",
+    "ie 9"
+  ]
+}

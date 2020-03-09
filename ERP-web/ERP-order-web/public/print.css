@@ -1,0 +1,24 @@
+@media print {
+  * {
+    font-size: 1pt;
+  }
+
+  section {
+    page-break-before: always;
+  }
+
+  h1 {
+    page-break-after: always;
+  }
+
+  p {
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 2;
+  }
+}
+
+@page {
+  size: auto​;
+  margin: 0;
+}

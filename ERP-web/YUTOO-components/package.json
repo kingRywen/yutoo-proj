@@ -1,0 +1,53 @@
+{
+  "name": "@yutoo/components",
+  "version": "0.1.1",
+  "description": "宇图公用组件，基于element-ui",
+  "main": "lib/YutooUI.umd.min.js",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test": "vue-cli-service test:unit",
+    "build:package": "vue-cli-service build --target lib --name YutooUI --dest lib ./src/components/index.js",
+    "build:components": "vue-cli-service build",
+    "build:utils": "vue-cli-service build --target lib --name Utils --dest utils ./src/utils/index.js",
+    "build:prod": "concurrently \"npm run build:package\" \"npm run build:utils\""
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "highlight.js": "^9.15.6",
+    "lodash": "^4.17.11",
+    "throttle-debounce": "^2.1.0",
+    "vue": "^2.5.22",
+    "vue-lazyload": "^1.2.6",
+    "vue-markdown-loader": "^2.4.1",
+    "vue-router": "^3.0.2",
+    "vuex": "^3.1.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-e2e-cypress": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.4.0",
+    "@vue/cli-plugin-unit-mocha": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/test-utils": "^1.0.0-beta.20",
+    "babel-eslint": "^10.0.1",
+    "chai": "^4.1.2",
+    "concurrently": "^4.1.0",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "fs": "^0.0.1-security",
+    "markdown-it": "^8.4.2",
+    "markdown-it-anchor": "^5.0.2",
+    "markdown-it-container": "^2.0.0",
+    "node-sass": "^4.11.0",
+    "path": "^0.12.7",
+    "sass-loader": "^7.1.0",
+    "transliteration": "^2.1.3",
+    "vue-template-compiler": "^2.5.21",
+    "webpack-node-externals": "^1.7.2"
+  }
+}

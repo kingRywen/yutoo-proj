@@ -1,0 +1,167 @@
+@mixin flex($direction: columin, $inline: block) {
+  display: if($inline==block, flex, inline-flex);
+  flex-direction: $direction;
+  flex-wrap: wrap;
+}
+
+$bgColor: #ececec; //背景色
+$textColor: #409eff; //文字颜色
+$dialogItemColor: #67c23a;
+$bgPurpleLight: #e5e9f2;
+
+.pad10 {
+  padding: 10px;
+}
+
+.mar10 {
+  margin: 10px;
+}
+
+.pb20 {
+  padding-bottom: 20px !important;
+}
+
+.mb20 {
+  margin-bottom: 20px !important;
+}
+
+.mb10 {
+  margin-bottom: 10px !important;
+}
+
+.marleft10 {
+  margin-left: 10px;
+}
+
+.marright10 {
+  margin-right: 10px;
+}
+
+.marbottom10 {
+  margin-bottom: 10px;
+}
+
+.pad8 {
+  padding: 0 10px;
+}
+
+.martop {
+  margin-top: 10px;
+}
+
+.border {
+  border: 1px dashed #ccc;
+  padding: 18px 10px 0 10px;
+  border-radius: 5px;
+}
+
+.dialogItemTitle {
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.textOverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabs {
+  .el-tabs__header {
+    margin-bottom: 0;
+  }
+
+  .UniversalLayout {
+    position: inherit;
+  }
+}
+
+.iconBtn {
+  font-size: 20px;
+  padding: 0 10px;
+  cursor: pointer;
+  color: $textColor;
+}
+
+.bg-purple-light {
+  background: $bgPurpleLight;
+}
+
+.bg-color {
+  background: $bgColor;
+}
+
+.grid-content {
+  border-radius: 4px;
+  min-height: 0;
+}
+
+.search-wrap {
+  padding: 12px 0 12px 20px;
+}
+
+.saveBtn {
+  display: flex;
+  justify-content: center;
+
+  button {
+    width: 140px;
+  }
+}
+
+.normal-table-icon {
+  border: none;
+  padding: 2px 4px;
+  margin-left: 0px !important;
+  background: rgba(255, 255, 255, 0);
+
+  i {
+    font-size: 20px;
+  }
+}
+
+.el-icon-check {
+  color: green;
+  font-size: 20px;
+}
+
+.el-icon-close {
+  color: red;
+  font-size: 20px;
+}
+
+.ibtn {
+  i {
+    font-size: 17px;
+    color: #666;
+  }
+
+  &:hover {
+    i {
+      color: $textColor;
+    }
+  }
+}
+
+.el-dialog__footer {
+  text-align: center;
+
+  color: red;
+  font-size: 20px;
+}
+
+.ellipsis-abbreviation {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 30px;
+  box-sizing: border-box;
+}
+
+.edui-toolbar {
+  &>.edui-box {
+    line-height: 1;
+  }
+}

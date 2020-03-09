@@ -1,0 +1,38 @@
+// 背景色
+$bgColor: #ececec;
+
+// 方框背景色
+$boxBgColor: #f6f6f8;
+// 方框边框
+$boxBorderColor: #e5e5e5;
+
+// 主题色
+$titleColor: #3ab6fe;
+$hoverColor: #3ab6fe;
+// 按钮色
+$btnColor: #3ab6fe;
+// 主题副色
+$subTitleColor: mix($titleColor, #fff, 40%);
+// 背景颜色
+$bgColor: #fafafa;
+//文字颜色
+$textColor: #5e5e5e;
+// 弹窗字体颜色
+$dialogItemColor: #67c23a;
+// 辅色
+$subColor: #ff9900;
+//
+// $siderBarhoverColor: #eee;
+
+$box_width: 1200px;
+
+@mixin flex-wrapper($justify: center) {
+  display: flex;
+  justify-content: $justify;
+  align-items: center;
+}
+@mixin flex($direction: row, $inline: block) {
+  display: if($inline==block, flex, inline-flex);
+  flex-direction: $direction;
+  flex-wrap: wrap;
+}

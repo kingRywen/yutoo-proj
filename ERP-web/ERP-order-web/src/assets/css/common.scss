@@ -1,0 +1,85 @@
+@mixin flex($direction: row, $inline: block) {
+  display: if($inline==block, flex, inline-flex);
+  flex-direction: $direction;
+  flex-wrap: wrap;
+}
+
+$bgColor: #ececec; //背景色
+$textColor: #409eff; //文字颜色
+$dialogItemColor: #67c23a;
+
+.pad10 {
+  padding: 10px;
+}
+
+.mar10 {
+  margin: 10px;
+}
+
+.pb20 {
+  padding-bottom: 20px !important;
+}
+
+.mb20 {
+  margin-bottom: 20px !important;
+}
+
+.mb10 {
+  margin-bottom: 10px !important;
+}
+
+.marleft10 {
+  margin-left: 10px;
+}
+
+.marright10 {
+  margin-right: 10px;
+}
+
+.martop {
+  margin-top: 10px;
+}
+
+.border {
+  border: 1px dashed #ccc;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.dialogItemTitle {
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 10px;
+  color: $dialogItemColor;
+}
+
+.textOverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tabs {
+  .el-tabs__header {
+    margin-bottom: 0;
+  }
+
+  .UniversalLayout {
+    position: inherit;
+  }
+}
+
+.iconBtn {
+  font-size: 16px;
+  padding: 4px 4px;
+  cursor: pointer;
+  color: #666;
+
+  &:hover {
+    color: #40a5ed;
+  }
+}
+
+.iconfont {
+  cursor: pointer;
+}

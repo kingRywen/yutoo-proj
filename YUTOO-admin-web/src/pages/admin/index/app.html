@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>管理平台</title>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+  <div class="wrapper" id="root" v-cloak  :class="smallNav? 'menu-collapse': ''">
+    <header class="main-header">
+      <nav class="navbar navbar-expand navbar-dark bg-primary bg-faded">
+          <a class="navbar-brand" href="#">YUTOO</a>
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+              <li class="nav-item active">
+                  <a class="nav-link" @click="toggleNav" href="#"><i class="fa fa-xs fa-align-justify"></i> 欢迎Admin <span class="sr-only">(current)</span></a>
+              </li>
+          </ul>
+          <div class="my-2 my-lg-0">
+              <ul class="nav_right">
+                <li><a href="/admin/index.html"><i class="fa fa-xs fa-home"></i> 首页</a></li>
+                <!-- <li><a href=""><i class="fa fa-xs fa-unlock"></i> 修改密码</a></li> -->
+                <li><a href="#" @click="logout"><i class="fa fa-xs fa-sign-out-alt"></i> 退出系统</a></li>
+              </ul>
+          </div>
+      </nav>
+    </header>
+
+    <!-- 导航菜单 -->
+    <aside class="main-sidebar">
+      <section class="sidebar">
+        <ul class="sidebar-menu" id="sidebar-menu">
+          <menu-item :item="item" v-for="item in menuList"></menu-item>
+        </ul>
+      </section>
+    </aside>
+    <!-- 路径导航 -->
+    <div class="content-wrapper">
+      <!-- 主界面 -->
+      <section class="content" style="background: #fff;">
+        <iframe scrolling="yes" frameborder="0" style="width: 100%; min-height: 720px; overflow: visible; background: #fff;" :src="main"
+          id="main" name="main"></iframe>
+      </section>
+    </div>
+
+    <footer class="main-footer">
+      <div class="pull-right hidden-xs">Version 1.0.0</div>
+      Copyright &copy; 2017 YUTOO All Rights Reserved
+    </footer>
+
+    <div class="control-sidebar-bg"></div>
+
+    <!-- 修改密码 -->
+    <div id="passwordLayer" class="container-fluid" style="display: none;">
+      <table class="form">
+        <tr>
+          <td class="formTitle">账号</td>
+          <td class="formValue">
+            <span class="label label-success" style="vertical-align: bottom;">{{user.username}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="formTitle">原密码</td>
+          <td class="formValue">
+            <input type="password" class="form-control" v-model="pswd" placeholder="原密码" />
+          </td>
+        </tr>
+        <tr>
+          <td class="formTitle">新密码
+            <font face="宋体">*</font>
+          </td>
+          <td class="formValue">
+            <input type="text" class="form-control" v-model="newPswd" placeholder="新密码" />
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+  <script src="/static/scripts/layui/layui.all.js"></script>
+</body>
+</html>

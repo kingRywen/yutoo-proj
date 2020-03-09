@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>编辑</title>
+</head>
+
+<body>
+  <div id="app">
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+      <el-form-item label="类型" prop="type">
+        <el-select v-model="ruleForm.type" placeholder="类型">
+          <el-option v-for="item in typeSelect" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+  
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="ruleForm.name"></el-input>
+      </el-form-item>
+      <el-form-item label="上级菜单" prop="treeSelect">
+        <el-cascader :options="options" :show-all-levels="false" v-model="treeSelect" change-on-select></el-cascader>
+      </el-form-item>
+      <el-form-item label="菜单URL" prop="url">
+        <el-input v-model="ruleForm.url"></el-input>
+      </el-form-item>
+      <el-form-item label="授权标识" prop="perms">
+        <el-input v-model="ruleForm.perms"></el-input>
+      </el-form-item>
+      <el-form-item label="排序" prop="orderNum">
+        <el-input v-model="ruleForm.orderNum"></el-input>
+        </el-switch>
+      </el-form-item>
+      <el-form-item label="图标" v-if="ruleForm.type != 2" prop="icon">
+        <el-input placeholder="请输入内容" v-model="ruleForm.icon" disabled class="input-with-select">
+          <el-button slot="append" icon="el-icon-search" v-popover:popover4></el-button>
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <el-popover ref="popover4" placement="right" width="400" trigger="click" popper-class="fff">
+      <Icon></Icon>
+    </el-popover>
+  </div>
+</body>
+
+</html>

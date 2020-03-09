@@ -1,0 +1,77 @@
+export default [
+    //类目分析
+    {
+        name: 'ebProductCategoryGetCategory',
+        method: 'POST',
+        desc: '产品类目-选择类目',
+        path: '/ebProductCategory/getCategory',
+        mock: false,
+        // showSuccess: true,
+        params: {},
+        must:['platformId','siteId','parentPcid']
+    },
+	{
+	    name: 'ebTaskCateAysList',
+	    method: 'POST',
+	    desc: '类目分析-列表',
+	    path: '/ebTaskCateAys/list',
+	    mock: true,
+	    // showSuccess: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysSave',
+	    method: 'POST',
+	    desc: '类目分析-添加任务',
+	    path: '/ebTaskCateAys/save',
+	    mock: true,
+	    showSuccess: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysRemove',
+	    method: 'POST',
+	    desc: '类目分析-删除',
+	    path: '/ebTaskCateAys/remove',
+	    mock: true,
+	    showSuccess: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysReCrawl',
+	    method: 'POST',
+	    desc: '类目分析-重新发送任务',
+	    path: '/ebTaskCateAys/reCrawl',
+	    mock: true,
+	    showSuccess: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysDetails',
+	    method: 'POST',
+	    desc: '类目分析-查看类目分析详情',
+	    path: '/ebTaskCateAys/details',
+	    mock: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysExportDetails',
+	    method: 'POST',
+	    desc: '类目分析-查看类目分析详情导出',
+	    path: '/ebTaskCateAys/exportDetails',
+	    mock: true,
+		config:{
+			responseType: 'blob'
+		},
+		showSuccess: true,
+	    params: {},
+	},
+	{
+	    name: 'ebTaskCateAysListToProdOrderCnt',
+	    method: 'POST',
+	    desc: '类目分析-类目新增订单数',
+	    path: '/ebTaskCateAys/listToProdOrderCnt',
+	    mock: true,
+	    params: {},
+	},
+]

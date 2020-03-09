@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  background: #404040;
+  padding: 0;
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    flex: 0 0 200px;
+
+    img {
+      width: 120px;
+      height: auto;
+      margin: 0 auto;
+    }
+  }
+
+  .el-menu.el-menu--horizontal {
+    border-bottom: 0 !important;
+  }
+
+  .el-menu--horizontal>.el-menu-item {
+    height: 68px;
+    line-height: 68px;
+  }
+}

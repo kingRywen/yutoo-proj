@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <title>YU-TOO 管理登录</title>
+</head>
+
+<body>
+  <div id="root" v-cloak>
+    <div class="login_wrapper">
+      <div class="main_title">
+        YU-TOO
+      </div>
+      <el-form :model="userValidateForm" ref="userValidateForm" class="demo-ruleForm">
+        <el-form-item label="" prop="username" :rules="[
+                { required: false, message: '用户名不能为空'}
+              ]">
+          <el-input type="text" v-model="userValidateForm.username" auto-complete="off" clearable><i slot="prefix" class="el-input__icon iconfont">&#xe8c8;</i></el-input>
+        </el-form-item>
+        <el-form-item label="" prop="password" :rules="[
+                        { required: false, message: '密码不能为空'}
+                      ]">
+          <el-input type="password" v-model="userValidateForm.password" auto-complete="off" clearable><i slot="prefix" class="el-input__icon iconfont">&#xe8d4;</i></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click.native="submitForm('userValidateForm')" round style="width: 100%">登 录</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<template>
+  <!-- <el-tabs v-model="code">
+    <el-tab-pane
+      lazy
+      v-for="item in $store.state.platformList"
+      :key="item.code"
+      :label="item.cnName"
+      :name="item.platformSiteId"
+    >
+      <moneySettingInfo :code="code" />
+    </el-tab-pane>
+  </el-tabs>-->
+  <moneySettingInfo :code="code" />
+</template>
+<script>
+import moneySettingInfo from './moneySettingInfo'
+export default {
+  components: {
+    moneySettingInfo
+  },
+  data() {
+    return {
+      code: this.$store.state.currentSiteInfo.selectedSite[0]
+    }
+  },
+  computed: {
+    currentSiteInfo() {
+      return this.$store.state.currentSiteInfo
+    }
+  }
+}
+</script>

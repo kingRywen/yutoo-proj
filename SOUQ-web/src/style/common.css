@@ -1,0 +1,171 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+/* header颜色 */
+
+.el-header {
+  background-color: rgb(28, 53, 68) !important;
+}
+
+/* header选择平台下拉框的颜色 */
+
+.el-dropdown {
+  display: inline-block;
+  position: relative;
+  color: #606266;
+  font-size: 18px;
+}
+
+/* sideBar一级菜单鼠标点击 */
+
+/* .el-submenu.is-active .el-submenu__title {
+      background:#1C3544;
+      color:#fafafa !important;
+  } */
+
+/* 修改sideBar的二级菜单的hover */
+
+/* .el-menu-item:hover {
+      outline: none;
+      background-color: rgb(153, 173, 173) !important;
+      color:#fafafa;
+  }
+  .el-menu-item:focus {
+      outline: none;
+      background-color: rgb(112,121,122) !important;
+      color:#fafafa;
+  } */
+
+/* 修改sideBar的二级菜单的active */
+
+.el-menu-item.is-active {
+  color: #fafafa;
+  background: rgb(112, 121, 122) !important;
+}
+
+/* 关键词竞争分析页面修改‘删除按钮’到‘添加按钮’的距离 */
+
+.keywordIndexContainer .el-button--success {
+  margin-right: 40px !important;
+}
+
+/* 改变删除按钮的长度 */
+
+.keywordIndexContainer .is-plain {
+  width: 100px;
+}
+
+/* 改变所有table的th样式 */
+
+/* .el-table th{
+    background:#f2f2f2 !important;
+    font-size: 15px;
+    color: #333;
+    border: 1px solid #D7D3D3;
+    border-right:none;
+  } */
+
+/* 鼠标放在面包屑上改变 */
+
+/* 鼠标放在面包屑0 */
+
+.el-breadcrumb__inner {
+  cursor: pointer !important;
+}
+
+.el-breadcrumb__inner:hover {
+  text-decoration: underline;
+}
+
+/* main的padding margin */
+
+#app .el-main {
+  padding: 20px !important;
+}
+
+/* 分析添加任务 */
+
+.keywordIndexContainer .el-dialog__header,
+.checkProductAnalysis .el-dialog__header,
+.shopStatuContainer .el-dialog__header,
+.dialogContainer .el-dialog__header {
+  border-bottom: 1px solid #ccc;
+  margin: 0 10px;
+  padding: 10px 0px;
+}
+
+/* 分析添加任务 */
+
+.keywordIndexContainer .el-dialog__header .el-dialog__title,
+.checkProductAnalysis .el-dialog__header .el-dialog__title,
+.shopStatuContainer .el-dialog__header .el-dialog__title,
+.dialogContainer .el-dialog__header .el-dialog__title {
+  color: #3A8EE6 !important;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* 弹窗站点 */
+
+.keywordIndexContainer .pCon {
+  width: 300px;
+  margin: 0px auto 10px;
+}
+
+/* 三个输入框依赖父元素居中 */
+
+.keywordIndexContainer .siteContainer .el-input,
+.keywordIndexContainer .categoryContainer .el-input,
+.keywordIndexContainer .pageContainer .el-input {
+  width: 200px !important;
+}
+
+/* 按钮长度 */
+
+.keywordIndexContainer .saveContainer .el-button {
+  width: 150px;
+}
+
+/* 类目选择的按钮 */
+
+.keywordIndexContainer .categoryContainer {
+  position: relative;
+}
+
+/* 类目选择的按钮 */
+
+.keywordIndexContainer .categoryButton {
+  position: absolute;
+  top: 0px;
+  right: 55px;
+  width: 80px !important;
+  height: 40px !important;
+  line-height: 40px;
+  text-align: center;
+  z-index: 999;
+}
+
+.keywordIndexContainer .categoryButton {
+  color: #fafafa;
+  background: #0094E9 !important;
+}
+
+/* 五 竞争分析 */
+
+/* 5.1竞品分析 */
+
+/* 5.1.1查看竞品分析 */
+
+/* 产品分析几个字以及背景颜色 */
+
+.detalisExplainCon .el-collapse-item__header {
+  font-size: 16px !important;
+  background: #f2f2f2;
+}
