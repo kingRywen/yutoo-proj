@@ -1,7 +1,8 @@
 <template>
   <main-layout
     class="w1100"
-    url="fba/FbmOrderInfoViewItems"
+    :showSelection="false"
+    url="fbm/fbm-orderOrderItems"
     :outerParams="queries"
     :isShowPag="false"
     :columns="columns"
@@ -15,7 +16,7 @@ export default {
       columns: [
         {
           label: 'SKU',
-          value: 'seller_sku'
+          value: 'sellerSku'
         },
         {
           label: 'ASIN',
@@ -24,11 +25,11 @@ export default {
         {
           label: '主图',
           img: true,
-          value: 'img'
+          value: 'imagePath'
         },
         {
           label: '数量',
-          value: 'count'
+          value: 'itemCount'
         }
       ]
     }

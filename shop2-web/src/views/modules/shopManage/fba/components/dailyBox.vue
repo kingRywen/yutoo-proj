@@ -58,7 +58,9 @@ export default {
 
 <style lang="scss" scoped>
 .box {
+  font-size: 12px;
   min-width: 800px;
+  min-height: 200px;
   border: 1px solid #ddd;
   padding: 4px;
   background: #fff;
@@ -71,14 +73,15 @@ export default {
       display: flex;
       flex-direction: column;
       div {
-        padding: 4px 10px;
+        padding: 0;
         width: 80px;
         height: 24px;
         display: flex;
         align-items: center;
         justify-content: center;
         &._title {
-          font-weight: bold;
+          // font-weight: bold;
+          color: #000;
           background: #eaebf1;
         }
         &.main {

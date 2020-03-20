@@ -10,6 +10,7 @@
       :object-merge="true"
       :checkStrictly="false"
       editWidth="200px"
+      reserveSelection="asin"
       :right-edit-btns="editBtns"
       :edit-btns="edits"
       tbRightFixed="right"
@@ -35,7 +36,6 @@ export default {
     let columns = [
       {
         label: '序号',
-        expand: true,
         type: 'index'
       },
       {
@@ -43,6 +43,17 @@ export default {
         value: 'asin',
         url: true,
         expand: true,
+        async: true,
+        asyncFunc: row => {
+          const params = {
+            ...this.storeInfo,
+            srcSiteId: this.curSiteId,
+            parentAsin: row.asin
+          }
+          return this.$api[`ss/sellingSrcGetChildProductList`](params).then(
+            data => data.data
+          )
+        },
         btnClick: scope => {
           window.open(this.storeUrls.asinUrl + scope.row['asin'])
         },
@@ -114,7 +125,30 @@ export default {
       {
         label: '跟卖数量',
         sortable: 'custom',
-        value: 'sellingCnt'
+        value: 'sellingCnt',
+        isClick: scope => {
+          return (
+            scope.row._level !== 1 &&
+            scope.row.sellingCnt !== 0 &&
+            scope.row.sellingCnt != null
+          )
+        },
+        url: true,
+        btnClick: scope => {
+          this.$_dialog({
+            size: 'medium',
+            title: '跟卖源跟卖列表',
+            params: {
+              siteId: this.curSiteId,
+              srcSiteId: this.curSiteId,
+              asin: scope.row.asin
+            },
+            cancelBtnText: '取消',
+            okBtnText: '确认',
+            component: () =>
+              import('Views/modules/ss/vallib/Index/dialogs/sellList.vue')
+          })
+        }
       },
       {
         label: '发货方式',
@@ -165,9 +199,9 @@ export default {
       key: '1111',
       apiName: 'ss/sellingSrcAllProductList',
       treeTableOtions: {
-        childs: 'childList',
+        childs: 'childs',
         expandFunc: row => {
-          return row.childList && row.childList.length
+          return row._level == 1
         }
       },
       topBatchBtn: {

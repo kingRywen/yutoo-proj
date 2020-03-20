@@ -16,9 +16,7 @@
     url="proPick/categoryTaskMerchantDetails"
     ref="layout"
     :scroll="true"
-  >
-
-  </main-layout>
+  ></main-layout>
 </template>
 <script>
 import { downloadFile } from 'Utils'
@@ -105,8 +103,8 @@ export default {
     }
     let reviewClick = num => scope => {
       const { category } = scope.row
-      const asin = scope.row[`top${num}Asin`]
-      this.openReviewDialog({ category, asin })
+      const asin = scope.row[`top${num}ParentAsin`]
+      this.openReviewDialog({ category, parentAsin: asin })
     }
     function getTop(num = 1) {
       return {
@@ -308,7 +306,7 @@ export default {
           url: true,
           btnClick: scope => {
             let { category } = scope.row
-            this.openReviewDialog({ category })
+            this.openReviewDialog({ category, type: 'category' })
           },
           headerTooltip: 'TOP100产品评价数',
           sortable: 'custom',
@@ -370,14 +368,16 @@ export default {
         component: () => import('./dialogs/bsr.vue')
       })
     },
-    openReviewDialog({ category, asin }) {
+    openReviewDialog({ category, asin, type, parentAsin }) {
       this.$_dialog({
         size: 'medium',
         title: '评价曲线',
         params: {
           merchantTaskId: this.merchantTaskId,
           category,
-          asin
+          parentAsin,
+          asin,
+          type
         },
         cancelBtnText: '关闭',
         component: () => import('./dialogs/reviewChart.vue')

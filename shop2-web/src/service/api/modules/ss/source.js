@@ -73,5 +73,20 @@ export default [
     desc: "跟卖-策略库复制api数据 - 删除任务",
 
     showSuccess: true
+  },
+  {
+    path: "sellingSrc/getChildProductList",
+    name: "sellingSrcGetChildProductList",
+    method: "POST",
+    desc: "产品列表-获取子产品列表",
+    mock: false
+  },
+  {
+    path: "sellingSrc/removeTask",
+    name: "sellingSrcRemoveTask",
+    method: "POST",
+    desc: "跟卖-跟卖源 - 删除任务",
+    mock: true,
+    newShowSuccess: true
   }
 ];

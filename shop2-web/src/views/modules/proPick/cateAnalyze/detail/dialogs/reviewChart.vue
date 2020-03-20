@@ -237,7 +237,7 @@ export default {
         '{y}-{m}-{d}'
       )
     } else {
-      ({ today, computedDay } = this.cfuns.getDay(
+      ;({ today, computedDay } = this.cfuns.getDay(
         this.defaultTime,
         this.dataTime
       ))
@@ -279,6 +279,7 @@ export default {
       Object.assign(params, this.storeInfo, {
         category: this.category,
         asin: this.$attrs.asin,
+        parentAsin: this.$attrs.parentAsin,
         type: this.styleName ? 0 : 1,
         name: this.styleName || this.name,
         merchantTaskId: this.merchantTaskId,
@@ -291,7 +292,9 @@ export default {
         `proPick/${
           this.type == 'depth'
             ? 'categoryDepthTaskMerchantListToNewReviewCntByProduct'
-            : 'listToNewReviewCntByCate'
+            : this.type == 'category'
+            ? 'listToNewReviewCntByCate'
+            : 'categoryTaskMerchantListToNewReviewCntByProduct'
         }`
       ](params)
         .then(data => {

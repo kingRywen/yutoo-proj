@@ -9,6 +9,9 @@
       edit-width="160px"
       showFilter
       :sortType="1"
+      :fixedMinusOne="true"
+      :big-data="true"
+      reserveSelection="asin"
       tbRightFixed="right"
       :right-edit-btns="editBtns"
       :edit-btns="edits"
@@ -16,7 +19,6 @@
       :treeTable="true"
       :checkStrictly="false"
       :treeTableOtions="treeTableOtions"
-      :tableRowClassName="tableRowClassName"
       @left-batch-change="handleLeftBatchChange"
       url="fba/FbaReplenishProductList"
       ref="layout"
@@ -29,10 +31,11 @@
         <el-button type="text" style="padding: 0" icon="iconfont icongongju"></el-button>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="a">生命周期管理</el-dropdown-item>
-        <el-dropdown-item command="b">运输方式</el-dropdown-item>
+        <el-dropdown-item command="f">FBA管理</el-dropdown-item>
         <el-dropdown-item command="c">补货记录</el-dropdown-item>
         <el-dropdown-item command="d">发货计划</el-dropdown-item>
+        <el-dropdown-item command="a">生命周期管理</el-dropdown-item>
+        <el-dropdown-item command="b">运输方式</el-dropdown-item>
         <el-dropdown-item command="e">设置滞销预警天数</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -40,17 +43,17 @@
 </template>
 <script>
 import { timeField, getSearchNumField } from 'Utils/table-render.js'
-import { downloadFile } from 'Utils'
+import { downloadCsv } from 'Utils'
 import mixin from './mixin'
-// import { downloadFile } from 'Utils'
+import dropdownMixin from './dropdown-mixin'
+import { mapActions, mapMutations } from 'vuex'
 export default {
-  mixins: [mixin],
+  mixins: [mixin, dropdownMixin],
   data() {
     return {
-      isMount: false,
       searchData: {},
       treeTableOtions: {
-        childs: 'children',
+        childs: 'childs',
         expandFunc: row => {
           return row.variationType == 1
         }
@@ -86,6 +89,13 @@ export default {
         keyword: {
           placeholder: 'ASIN、SKU、FNSKU'
         },
+        storeId: {
+          widget: 'select',
+          options: [],
+          // hidden: true,
+          labelWidth: '55px',
+          label: '店铺'
+        },
         sale: getSearchNumField.call(this, '销量范围', 'sale', '80px'),
         lifeCircle: {
           widget: 'select',
@@ -94,13 +104,7 @@ export default {
           options: this.$const['FBA/lifecircles'],
           label: '产品生命周期'
         },
-        storeId: {
-          widget: 'select',
-          options: [],
-          hidden: true,
-          labelWidth: '55px',
-          label: '店铺'
-        },
+
         lifeCycleMustFlag: {
           widget: 'select',
           hidden: true,
@@ -160,7 +164,8 @@ export default {
           numField: 'childsCount',
           fixed: 'left',
           noTooltip: true,
-          minWidth: 180,
+          minWidth: 260,
+          width: 260,
           expand: true,
           async: true,
           asyncFunc: row => {
@@ -177,7 +182,7 @@ export default {
         {
           label: 'ASIN',
           value: 'asin',
-          minWidth: 140
+          width: 140
         },
         {
           label: 'FNSKU',
@@ -198,10 +203,11 @@ export default {
           label: '店铺',
           noTooltip: true,
           width: 150,
-          value: 'storeId'
+          value: 'storeName'
         },
         {
           label: '价格',
+          width: 120,
           value: 'price'
         },
         {
@@ -213,11 +219,13 @@ export default {
         },
         {
           label: '缺货数量',
+          width: 120,
           sortable: 'custom',
           value: 'allLackCount'
         },
         {
           label: '待补数量',
+          width: 120,
           minWidth: 100,
           headerTooltip: '还需要补货的数量',
           sortable: 'custom',
@@ -226,47 +234,55 @@ export default {
         {
           label: '在补数量',
           minWidth: 100,
+          width: 120,
           headerTooltip: '确认并导出补货的数量，点击查看具体批次号',
           sortable: 'custom',
           value: 'qtyNowReplenish',
-          render: this.renderRestTable.bind(this)
+          render: this.renderRestTable('qtyNowReplenish')
         },
         {
           label: '剩余备货天数',
           minWidth: 120,
+          width: 140,
           headerTooltip:
             '只展示1个备货剩余时间最少的，鼠标移入可以展示所有批次的剩余时间',
           sortable: 'custom',
           value: 'lastSendDays',
-          render: this.renderRestTable.bind(this)
+          render: this.renderRestTable('lastSendDays')
         },
         {
           label: '保底天数',
+          width: 110,
           sortable: 'custom',
           value: 'daysInsured'
         },
         {
           label: '运输天数',
+          width: 110,
           sortable: 'custom',
           value: 'daysShipping'
         },
         {
           label: '备货天数',
+          width: 110,
           sortable: 'custom',
           value: 'daysStock'
         },
         {
           label: '本地库存',
+          width: 110,
           sortable: 'custom',
           value: 'qtyLocalInventory'
         },
         {
           label: '总库存',
+          width: 110,
           sortable: 'custom',
           value: 'qtyAll'
         },
         {
           sortable: 'custom',
+          width: 110,
           label: 'FBA总库存',
           value: 'qtyAllFbaInventory',
           minWidth: 90
@@ -274,22 +290,26 @@ export default {
         {
           label: '可售库存',
           sortable: 'custom',
+          width: 110,
           value: 'qtyAvailableSale'
         },
         {
           label: '待接收',
           sortable: 'custom',
+          width: 110,
           headerTooltip: '还未到FBA仓库的产品数量',
           value: 'qtySendWaitReceive'
         },
         {
           sortable: 'custom',
           label: '待入库',
+          width: 120,
           headerTooltip: '已到达FBA仓库还未入库的产品数量',
           value: 'qtyReceiveWaitIn'
         },
         {
           label: '转运库存',
+          width: 120,
           minWidth: 100,
           sortable: 'custom',
           headerTooltip:
@@ -300,25 +320,34 @@ export default {
           label: '不可售库存量',
           minWidth: 110,
           sortable: 'custom',
+          width: 120,
           value: 'nonSalableInventory'
         },
-        { sortable: 'custom', label: '当日销量', value: 'salesDay' },
+        {
+          sortable: 'custom',
+          label: '当日销量',
+          width: 110,
+          value: 'salesDay'
+        },
         {
           label: '日均销量',
           sortable: 'custom',
           value: 'salesAvg',
+          width: 110,
           render: this.renderAva.bind(this)
         },
         {
           label: '可售天数',
           sortable: 'custom',
           minWidth: 100,
+          width: 110,
           headerTooltip: '可售天数=（可售库存+待入库）/ 平均销量',
           value: 'availableSaleDays'
         },
         {
           sortable: 'custom',
           minWidth: 110,
+          width: 140,
           label: '已配送订单数',
           value: 'orderQtyShipping'
         },
@@ -331,6 +360,7 @@ export default {
         // },
         {
           label: '取消订单数',
+          width: 110,
           minWidth: 100,
           sortable: 'custom',
           value: 'orderQtyCancell'
@@ -339,31 +369,38 @@ export default {
           sortable: 'custom',
           label: '退款订单数',
           minWidth: 100,
+          width: 110,
           value: 'orderQtyReturn'
         },
         {
           label: '退款率',
+          width: 110,
           sortable: 'custom',
           value: 'returnRate'
         },
         {
           label: '滞销预警天数',
           minWidth: 110,
+          width: 110,
           sortable: 'custom',
           value: 'unsalableWarningDays'
         },
         {
           label: '滞销库存',
           sortable: 'custom',
+          width: 110,
           value: 'unsalableInventory'
         },
         {
           label: '生命周期',
-          value: 'lifeCycle'
+          value: 'lifeCycle',
+          width: 110,
+          _enum: this.cfuns.arrayToObj(this.$const['FBA/lifecircles'])
         },
         {
           label: '固定补货天数',
           minWidth: 110,
+          width: 110,
           sortable: 'custom',
           value: 'daysFixed'
         }
@@ -376,7 +413,8 @@ export default {
             this.rep({
               data: [
                 { storeId: scope.row.storeId, sellerSku: scope.row.sellerSku }
-              ]
+              ],
+              transportId: scope.row.transportId
             })
           }
         },
@@ -387,7 +425,8 @@ export default {
             this.setLifeCycle(
               '设置生命周期',
               [{ storeId: scope.row.storeId, sellerSku: scope.row.sellerSku }],
-              scope.row.lifeCycle
+              scope.row.lifeCycle,
+              [scope.row]
             )
           }
         },
@@ -446,6 +485,8 @@ export default {
   },
 
   methods: {
+    ...mapActions('fba', ['clearCacheProj']),
+    ...mapMutations('fba', ['setSelectedPro']),
     tableRowClassName(row) {
       if (!this.selectTran.label) {
         return ''
@@ -456,48 +497,67 @@ export default {
       }
     },
 
-    renderRestTable(h, scope) {
-      const columns = [
-          { label: '批次号', value: 'batchNumber' },
+    renderRestTable(str) {
+      return (h, scope) => {
+        const columns = [
+          { label: '批次号', value: 'batchNumber', width: 150 },
           { label: '补货时间', value: 'replenishTime', width: 150 },
           { label: '数量', value: 'count' },
-          { label: '备货剩余天数', value: 'replenishRemainingDays', width: 120 }
-        ],
-        tableData = [{}]
-      return (
-        <el-popover
-          open-delay={300}
-          trigger="hover"
-          onShow={() => {
-            if (!scope.row.__hasList) {
-              const { storeId, sellerSku } = scope.row
-              let params = {
-                storeId,
-                sellerSku
+          {
+            label: '备货剩余天数',
+            value: 'replenishRemainingDays',
+            render(h, scope) {
+              const { replenishRemainingDays } = scope.row
+              if (replenishRemainingDays < 0) {
+                return (
+                  <span class="danger">
+                    已延期{Math.abs(replenishRemainingDays)}天
+                  </span>
+                )
               }
-              this.$set(scope.row, '__loading', true)
-              this.$api[`fba/FbaReplenishProductNowReplenishList`](params).then(
-                data => {
+              return <span>{replenishRemainingDays}天</span>
+            },
+            width: 120
+          }
+        ]
+        // tableData = [{}]
+        return (
+          <el-popover
+            open-delay={300}
+            trigger="hover"
+            onShow={() => {
+              if (!scope.row.__hasList) {
+                const { storeId, sellerSku, asin } = scope.row
+                let params = {
+                  storeId,
+                  sellerSku,
+                  asin
+                }
+                this.$set(scope.row, '__loading', true)
+
+                this.$api[`fba/FbaReplenishProductNowReplenishList`](
+                  params
+                ).then(data => {
                   this.$set(scope.row, '__loading', false)
                   this.$set(scope.row, '__list', data.row)
                   this.$set(scope.row, '__hasList', true)
-                }
-              )
-            }
-          }}
-          placement="right"
-        >
-          <yt-table
-            vLoading={scope.row.__loading}
-            selection={false}
-            columns={columns}
-            data={tableData}
-          ></yt-table>
-          <el-button slot="reference" type="text">
-            {32}
-          </el-button>
-        </el-popover>
-      )
+                })
+              }
+            }}
+            placement="right"
+          >
+            <yt-table
+              vLoading={scope.row.__loading}
+              selection={false}
+              columns={columns}
+              data={scope.row.__list}
+            ></yt-table>
+            <el-button slot="reference" type="text">
+              {scope.row[str]}
+            </el-button>
+          </el-popover>
+        )
+      }
     },
     handleLeftBatchChange(val, sel) {
       let datas = sel.map(el => ({
@@ -506,10 +566,19 @@ export default {
       }))
       switch (val[0]) {
         case '补货':
-          this.rep({ data: datas })
+          this.rep({
+            data: datas,
+            transportId: this.selectTran.value,
+            transportLabel: this.selectTran.label
+          })
           break
         case '设置生命周期':
-          this.setLifeCycle(val[0], datas)
+          this.setLifeCycle(
+            val[0],
+            datas,
+            sel.length == 1 ? sel[0].lifeCircle : null,
+            sel
+          )
           break
         case '恢复生命周期':
           this.reLife(datas)
@@ -537,7 +606,7 @@ export default {
           )
           break
         case '创建FBA发货计划':
-          // FIXME:后面再做
+          this.createProj(sel)
           break
         case '删除':
           this.showTips({ msg: '此操作将删除产品, 是否继续?' }, () => {
@@ -554,9 +623,35 @@ export default {
           break
       }
     },
+    async createProj(sel) {
+      let hasParent = false
+      if (
+        sel.filter(el => {
+          if (el.variationType == 1) {
+            hasParent = true
+          }
+          return el.storeId === sel[0].storeId
+        }).length !== sel.length
+      ) {
+        return this.$message.warning('只能选择同一店铺下的产品创建')
+      }
+      if (hasParent) {
+        return this.$message.warning('请选择子产品或独立产品')
+      }
+
+      await this.clearCacheProj()
+      this.setSelectedPro(sel)
+      this.$router.push({
+        path: '/shopManage/fba/warehouse/create',
+        query: {
+          storeId: sel[0].storeId,
+          storeName: sel[0].storeName
+        }
+      })
+    },
     reLife(datas) {
       this.showTips({ msg: '此操作将恢复生命周期, 是否继续?' }, () => {
-        return this.$api[`fba/FbaReplenishProductSetLifeCycle`]({
+        this.$api[`fba/FbaReplenishProductSetLifeCycle`]({
           data: datas.map(el => ({
             ...el,
             lifeCycle: -1
@@ -569,7 +664,7 @@ export default {
       return this.$api[`fba/FbaReplenishProductExportList`](this.searchData)
         .then(data => {
           this.topBatchBtn.loading = false
-          downloadFile(data, 'FBA产品列表.xlsx')
+          downloadCsv(data)
         })
         .catch(() => {
           this.topBatchBtn.loading = false
@@ -581,10 +676,9 @@ export default {
         size: 'large',
         title: '导入本地库存',
         params: {
-          data: (this.$refs.layout.selection.length
+          data: this.$refs.layout.selection.length
             ? this.$refs.layout.selection
-            : this.$refs.layout.dataList
-          ).map(e => ({ storeId: e.storeId, sellerSku: e.sellerSku }))
+            : null
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
@@ -595,6 +689,7 @@ export default {
       this.$_dialog({
         size: 'medium',
         title,
+        // noShowLoading: type == 1,
         params: { data, type },
         cancelBtnText: '取消',
         okBtnText: '保存',
@@ -613,13 +708,21 @@ export default {
       })
     },
 
-    setLifeCycle(title, data, lifeCircle) {
+    setLifeCycle(title, data, lifeCircle, sel) {
       this.$_dialog({
         size: 'medium',
         title,
         params: {
           data,
-          lifeCircle
+          lifeCircle,
+          fn: ({ lifeCycle, lifeCycleString }) => {
+            sel.map(e => {
+              console.log(lifeCycle, lifeCycleString)
+
+              e.lifeCycle = lifeCycle
+              e.lifeCycleString = lifeCycleString
+            })
+          }
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
@@ -628,56 +731,28 @@ export default {
     },
 
     rep({ data }) {
-      this.$router.push({
-        path: '/shopManage/fba/rep',
-        query: {
-          data: data.map(e => e.storeId + '_-_' + e.sellerSku),
-          transportId: this.selectTran.value
-        }
-      })
-    },
-
-    handleCommand(command) {
-      switch (command) {
-        case 'a':
-          // 生命周期管理
-          this.$router.push({
-            path: '/shopManage/fba/lifecycle'
-          })
-          break
-        case 'b':
-          // 运输方式
-          this.$router.push({
-            path: '/shopManage/fba/shipping'
-          })
-          break
-        case 'c':
-          // 补货记录
-          this.$router.push({
-            path: '/shopManage/fba/reprecord'
-          })
-          break
-        case 'd':
-          // 发货计划
-          this.$router.push({
-            path: '/shopManage/fba/plan'
-          })
-          break
-
-        case 'e':
-          // 设置滞销预警天数
-          this.$_dialog({
-            size: 'medium',
-            title: '设置滞销预警',
-            params: {},
-            cancelBtnText: '取消',
-            okBtnText: '确认',
-            component: () => import('./dialogs/warning.vue')
-          })
-          break
-
-        default:
-          break
+      if (!this.selectTran.value) {
+        this._openDialog({
+          fullscreen: false,
+          size: 'medium',
+          title: '选择运输方式',
+          params: {
+            options: this.transportList,
+            data
+          },
+          okBtnText: '确认',
+          cancelBtnText: '取消',
+          component: () => import('./dialogs/selectTran.vue')
+        })
+      } else {
+        this.$router.push({
+          path: '/shopManage/fba/rep',
+          query: {
+            data: data.map(e => e.storeId + '_-_' + e.sellerSku),
+            transportId: this.selectTran.value,
+            transportLabel: this.selectTran.transportLabel
+          }
+        })
       }
     }
   }

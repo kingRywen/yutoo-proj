@@ -5,7 +5,7 @@ export default [
     method: "POST",
     desc: "跟卖-跟卖库 - 同步跟卖发货方式",
 
-    newShowSuccess: true
+    showSuccess: true
   },
   {
     path: "sellingLib/sellingLibList",
@@ -32,5 +32,27 @@ export default [
     name: "sellingLibChildProductList",
     method: "POST",
     desc: "跟卖-跟卖库 - 产品列表-按子统计"
+  },
+  {
+    path: "sellingLib/getChildProductList",
+    name: "sellingLibGetChildProductList",
+    method: "POST",
+    desc: "获取子产品列表 - 获取子产品列表",
+    mock: false
+  },
+  {
+    path: "sellingLib/saveConfig",
+    name: "sellingLibSaveConfig",
+    showSuccess: true,
+    method: "POST",
+    desc: "跟卖-跟卖库 - 跟卖配置-保存"
+    // mock: true
+  },
+  {
+    path: "sellingLib/configInfo",
+    name: "sellingLibConfigInfo",
+    method: "POST",
+    desc: "跟卖-跟卖库 - 跟卖配置-详情"
+    // mock: true
   }
 ];

@@ -1,5 +1,6 @@
 <template>
   <main-layout
+    class="w1200"
     url="proPick/categoryDepthTaskMerchantListToBuyBoxSellerByProduct"
     :simple="true"
     :outerParams="{...storeInfo,merchantTaskId,parentAsin}"
@@ -15,6 +16,7 @@ export default {
         {
           label: '卖家名',
           url: 'sellerUrl',
+          minWidth: 200,
           value: 'sellerName'
         },
         {

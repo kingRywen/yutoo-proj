@@ -3,7 +3,7 @@
     <new-form ref="form" label-width="80px" :form-schema="formSchema" :value="value"></new-form>
     <el-divider class="mt10" content-position="left">库存策略</el-divider>
 
-    <new-form class="mt20" ref="form1" inline label-width="120px" :form-schema="formSchema1" :value="value1"></new-form>
+    <!-- <new-form class="mt20" ref="form1" inline label-width="120px" :form-schema="formSchema1" :value="value1"></new-form> -->
     <label class="lb">
       <span class="mr10">取值方式</span>
       <el-radio class="mt10" size="mini" v-model="calculation" :label="0">动态库存</el-radio>
@@ -109,8 +109,8 @@ export default {
         }
         this.calculation = data.calculation
         this.value1 = {
-          ...this.value1,
-          stockThreshold: data.stockThreshold
+          ...this.value1
+          // stockThreshold: data.stockThreshold
         }
         if (data.calculation == 1) {
           this.value2 = {
@@ -122,7 +122,7 @@ export default {
       })
     },
     validate() {
-      let forms = ['form', 'form1']
+      let forms = ['form']
       if (this.calculation) {
         forms.push('form2')
       }
@@ -143,7 +143,7 @@ export default {
           ...botVal,
           defaultFlag: !!this.value.defaultFlag[0],
           calculation: this.calculation,
-          stockThreshold: this.value1.stockThreshold,
+          // stockThreshold: this.value1.stockThreshold,
 
           strategyId: this.strategyId
         }

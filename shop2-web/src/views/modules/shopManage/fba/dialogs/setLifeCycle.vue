@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  props: ['data', 'lifeCircle'],
+  props: ['data', 'lifeCircle', 'fn'],
   data() {
     return {
       formSchema: {
@@ -20,13 +20,24 @@ export default {
   methods: {
     _submit() {
       return this.$refs.form.validate().then(() => {
+        let lifeCycle = this.value.lifeCycle
         let params = {
           data: this.data.map(el => ({
             ...el,
-            lifeCycle: this.value.lifeCycle
+            lifeCycle: lifeCycle
           }))
         }
-        return this.$api[`fba/FbaReplenishProductSetLifeCycle`](params)
+        return this.$api[`fba/FbaReplenishProductSetLifeCycle`](params).then(
+          () => {
+            this.fn({
+              lifeCycle: lifeCycle,
+              lifeCycleString: this.$const['FBA/lifecircles'].find(
+                e => e.value === lifeCycle
+              ).label
+            })
+            return Promise.resolve('close')
+          }
+        )
       })
     }
   }

@@ -84,6 +84,29 @@
   align-items: center;
 }
 
+.flex-c {
+  @include flex();
+  justify-content: center;
+  align-items: center;
+}
+.flex-v {
+  @include flex();
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.flex-t-b {
+  @include flex();
+  flex-direction: column;
+  justify-content: space-between;
+}
+.just-sb {
+  justify-content: space-between !important;
+}
+.just-sa {
+  justify-content: space-around !important;
+}
+
 .toggle-wrapper {
   .el-tooltip {
     z-index: 2 !important;
@@ -98,7 +121,8 @@ table.custom-table {
 
   td {
     word-wrap: break-word;
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 18px;
     border: 1px solid #dcdfe6;
     padding: 12px;
     border-width: 1px 1px 0 0;

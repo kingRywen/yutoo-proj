@@ -1,4 +1,6 @@
-import "@babel/polyfill";
+// import "@babel/polyfill";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import Vue from "vue";
 import ElementUI from "element-ui";
 import VueLazyload from "vue-lazyload";
@@ -14,6 +16,8 @@ import * as config from "Config";
 import Interceptors from "Config/interceptors";
 // 引入插件
 import inject from "@yutoo/utils";
+import { STORAGE_NAME } from "./_CONFIG";
+
 // import yutoo from '@yutoo/yutoo'
 import store from "@/store/index";
 import router from "@/router/index";
@@ -32,7 +36,7 @@ export const INJECT_CONFIG = {
   env: {
     NODE_ENV: process.env.NODE_ENV
   },
-  STORAGE_NAME: "SHOP2"
+  STORAGE_NAME
 };
 
 // 全局 event bus 用来发布订阅

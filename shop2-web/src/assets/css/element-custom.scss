@@ -860,3 +860,24 @@ li.el-cascader-node {
     }
   }
 }
+.el-cascader-menu__list {
+  .el-cascader-menu__hover-zone {
+    display: none;
+  }
+}
+.el-steps {
+  .el-step__title {
+    font-size: 13px;
+    font-weight: normal;
+    &.is-success {
+      color: #666;
+    }
+  }
+  .is-process {
+    .is-text {
+      background: #f90;
+      color: #fff;
+      border: none;
+    }
+  }
+}

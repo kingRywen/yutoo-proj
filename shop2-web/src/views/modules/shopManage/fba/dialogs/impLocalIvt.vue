@@ -9,8 +9,14 @@
       :action="action"
     />
     <div v-if="info.items.length" class="hr"></div>
-    <div v-if="info.errorInfos.length" class="mb10">
-      <el-tag size="small" class="mr10" v-for="(item,index) in info.errorInfos" :key="index" type="danger">{{item}}</el-tag>
+    <div v-if="info.errorInfos.length">
+      <el-tag
+        class="mr10 mb10"
+        size="small"
+        v-for="(item,index) in info.errorInfos"
+        :key="index"
+        type="warning"
+      >{{item}}</el-tag>
     </div>
     <div v-if="info.items.length">
       <yt-table :columns="columns" :data="info.items"></yt-table>
@@ -48,7 +54,7 @@ export default {
         },
         {
           label: '当前库存',
-          value: 'inventory'
+          value: 'nowInventory'
         }
       ]
     }
@@ -68,13 +74,13 @@ export default {
           render(h, scope) {
             return (
               <span>
-                {scope.row.errorInfo && scope.row.errorInfo.length
-                  ? scope.row.errorInfo.map(e => (
-                      <el-tag size="small" type="danger">
-                        {e}
-                      </el-tag>
-                    ))
-                  : '-'}
+                {scope.row.errorInfo ? (
+                  <el-tag size="small" type="warning">
+                    {scope.row.errorInfo}
+                  </el-tag>
+                ) : (
+                  '-'
+                )}
               </span>
             )
           }
@@ -104,7 +110,7 @@ export default {
     updateInfo(res) {
       this.uploadCode = res.uploadCode
       this.info.errorInfos = res.info.errorInfos || []
-      this.info.items = Object.values(res.info)
+      this.info.items = Object.values(res.info.items)
     },
     validate() {
       let vm = this
@@ -113,13 +119,13 @@ export default {
           vm.$message.error('请添加导入文件')
           reject()
         }
-        if (
-          vm.info.errorInfos.length ||
-          vm.info.items.some(el => el.errorInfo && el.errorInfo.length > 0)
-        ) {
-          vm.$message.error('请修改错误问题后再试')
-          reject()
-        }
+        // if (
+        //   vm.info.errorInfos.length ||
+        //   vm.info.items.some(el => el.errorInfo && el.errorInfo.length > 0)
+        // ) {
+        //   vm.$message.error('请修改错误问题后再试')
+        //   reject()
+        // }
         resolve()
       })
     },

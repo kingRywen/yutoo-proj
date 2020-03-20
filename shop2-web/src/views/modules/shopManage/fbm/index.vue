@@ -13,18 +13,18 @@
       :edit-btns="edits"
       :topBatchBtn="topBatchBtn"
       @left-batch-change="handleLeftBatchChange"
-      url="fba/FbmOrderInfoList"
+      url="fbm/fbm-orderOrderPage"
       tip="每日6点和16点更新数据"
       ref="layout"
     ></main-layout>
-    <el-dropdown v-if="isMount" class="anay" @command="handleCommand">
+    <!-- <el-dropdown v-if="isMount" class="anay" @command="handleCommand">
       <span class="el-dropdown-link">
         <el-button type="text" style="padding: 0" icon="iconfont icongongju"></el-button>
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="a">发货期限</el-dropdown-item>
       </el-dropdown-menu>
-    </el-dropdown>
+    </el-dropdown>-->
   </div>
 </template>
 <script>
@@ -42,40 +42,51 @@ export default {
           labelWidth: '55px',
           label: '店铺'
         },
-        orderTime: timeField('下单时间', 'orderTime', '80px'),
-        sendStatus: {
+        purchaseDate: timeField(
+          '下单时间',
+          'purchaseDate',
+          '80px',
+          'daterange',
+          true,
+          true
+        ),
+        fbmOrderStatus: {
           label: '发货状态',
           widget: 'select',
           options: [
             {
               label: '已发货',
-              value: 1
+              value: 'Shipped'
             },
             {
               label: '未发货',
-              value: 0
+              value: 'Unshipped'
             }
           ]
         },
-        orderPrice: getSearchNumField.call(
-          this,
-          '订单金额',
-          'orderPrice',
-          '85px'
-        ),
-        returnPrice: getSearchNumField.call(
+        amount: getSearchNumField.call(this, '订单金额', 'amount', '85px'),
+        adjAmouts: getSearchNumField.call(
           this,
           '退款金额',
-          'returnPrice',
+          'adjAmouts',
           '85px'
         ),
-        orderNumber: {
+        amazonOrderId: {
           label: '订单号',
           labelWidth: '65px'
         },
-        shippingWay: {
+        shipMethod: {
           label: '发货方式',
-          options: [],
+          options: [
+            {
+              label: 'Standard',
+              value: 'Standard'
+            },
+            {
+              label: 'Express',
+              value: 'Express'
+            }
+          ],
           widget: 'select'
         }
       },
@@ -83,77 +94,97 @@ export default {
         {
           label: '订单号',
           noTooltip: true,
-          value: 'orderNumber',
+          value: 'amazonOrderId',
           width: 170
         },
         {
           label: '下单时间',
           width: 170,
-          value: 'orderTime',
+          value: 'purchaseDate',
           sortable: 'custom'
         },
         {
           label: '店铺',
           noTooltip: true,
-          value: 'storeName'
+          value: 'storeId',
+          render: (h, scope) => {
+            const opts = this.searchFields.storeId.options
+            if (!opts) {
+              return <span>-</span>
+            } else {
+              return (
+                <span>
+                  {opts.find(e => e.value === scope.row.storeId).label}
+                </span>
+              )
+            }
+          }
         },
         {
           label: '剩余发货时间',
-          value: 'lastDay',
+          value: 'remainDays',
           sortable: 'custom',
+          width: 140,
           render(h, scope) {
-            const { lastDay, lastHour } = scope.row
-            return (
-              <span>
-                <span class="danger">{lastDay}</span>天
-                <span class="danger">{lastHour}</span>小时
-              </span>
-            )
+            const { remainDays, fbmOrderStatus } = scope.row
+            if (fbmOrderStatus == 'Shipped') {
+              return <span>-</span>
+            }
+            return <span>{remainDays}</span>
           }
         },
         {
           label: '订购产品',
-          value: 'qtyProduct',
+          value: 'numberItems',
           url: true,
           btnClick: scope => {
-            const { storeId, orderNumber } = scope.row
+            const { amazonOrderId } = scope.row
             this.$_dialog({
               size: 'medium',
               title: '产品列表',
               params: {
                 queries: {
-                  orderNumber,
-                  storeId
+                  amazonOrderId
                 }
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
+              // okBtnText: '确认',
               component: () => import('./dialogs/proList.vue')
             })
           }
         },
         {
           label: '订单金额',
-          value: 'orderPrice'
+          value: 'amount',
+          width: 130,
+          money: true,
+          currency: row => {
+            return row.currencyCode
+          }
         },
         {
           label: '退款金额',
-          value: 'priceReturn'
+          width: 130,
+          value: 'adjAmouts',
+          money: true,
+          currency: row => {
+            return row.currencyCode
+          }
         },
         {
           label: '发货状态',
-          value: 'sendStatus',
-          _enum: ['未发货', '已发货']
+          value: 'fbmOrderStatus'
+          // _enum: ['未发货', '已发货']
         },
         {
           label: '运单号',
           width: 160,
           noTooltip: true,
-          value: 'trankingNumber'
+          value: 'trackingNumbers'
         },
         {
           label: '运输方式',
-          value: 'shippingWayName'
+          value: 'shipMethods'
         }
       ],
       editBtns: [
@@ -173,46 +204,21 @@ export default {
           name: '修改运单号',
           perm: 'addTask',
           fn: scope => {
-            this.deliver(
-              [
-                {
-                  orderNumber: scope.row.orderNumber,
-                  trankingNumber: scope.row.trankingNumber,
-                  shippingWay: scope.row.shippingWay
-                }
-              ],
-              true
-            )
+            this.deliver([scope.row], true)
           }
         },
         {
           name: '设置已发货',
           perm: 'addTask',
           fn: scope => {
-            this.updateSendStatus(
-              [
-                {
-                  orderNumber: scope.row.orderNumber,
-                  storeId: scope.row.storeId,
-                  status: 1
-                }
-              ],
-              1
-            )
+            this.updateSendStatus([scope.row], 1)
           }
         },
         {
           name: '退款',
           perm: 'addTask',
           fn: scope => {
-            this.refund([
-              {
-                orderNumber: scope.row.orderNumber,
-                storeId: scope.row.storeId,
-                orderPrice: scope.row.orderPrice,
-                returnPrice: undefined
-              }
-            ])
+            this.refund(scope.row)
           }
         }
       ],
@@ -232,9 +238,9 @@ export default {
           {
             label: '设为未发货'
           },
-          {
-            label: '退款'
-          },
+          // {
+          //   label: '退款'
+          // },
           {
             label: '导出'
           }
@@ -246,9 +252,9 @@ export default {
     this.$store.dispatch('storeInfo/getStoreList').then(data => {
       this.searchFields.storeId.options = data
     })
-    this.$store.dispatch('fba/getTransportList').then(data => {
-      this.searchFields.shippingWay.options = data
-    })
+    // this.$store.dispatch('fba/getTransportList').then(data => {
+    //   this.searchFields.shipMethod.options = data
+    // })
   },
   methods: {
     handleCommand(command) {
@@ -271,52 +277,22 @@ export default {
     handleLeftBatchChange(val, sel) {
       switch (val[0]) {
         case '发货':
-          this.deliver(sel.map(e => ({ orderNumber: e.orderNumber })))
+          this.deliver(sel)
           break
         case '修改运单号':
-          this.deliver(
-            sel.map(e => ({
-              orderNumber: e.orderNumber,
-              trankingNumber: e.trankingNumber,
-              shippingWay: e.shippingWay
-            })),
-            true
-          )
+          this.deliver(sel, true)
           break
         case '设为已发货':
-          this.updateSendStatus(
-            sel.map(el => ({
-              orderNumber: el.orderNumber,
-              storeId: el.storeId,
-              status: 1
-            })),
-            1
-          )
+          this.updateSendStatus(sel, 1)
           break
         case '设为未发货':
-          this.updateSendStatus(
-            sel.map(el => ({
-              orderNumber: el.orderNumber,
-              storeId: el.storeId,
-              status: 0
-            })),
-            0
-          )
+          this.updateSendStatus(sel, 0)
           break
-        case '退款':
-          this.refund(
-            sel.map(e => ({
-              orderNumber: e.orderNumber,
-              storeId: e.storeId,
-              orderPrice: e.orderPrice,
-              returnPrice: undefined
-            }))
-          )
-          break
+        // case '退款':
+        //   this.refund(sel)
+        //   break
         case '导出':
-          this._export(
-            sel.map(e => ({ storeId: e.storeId, orderNumber: e.orderNumber }))
-          )
+          this._export(this.searchData)
           break
 
         default:
@@ -326,40 +302,33 @@ export default {
     _import() {
       this.$_dialog({
         size: 'medium',
-        fullscreen: false,
-        title: '导入运单号和运输方式',
+        title: '选择店铺',
         params: {
-          downApi: 'fba/fbmOrderInfoImportTrankingNumberDownload',
-          confirmApi: 'fba/FbmOrderInfoImportTrankingNumberConfirm',
-          uploadUrl: '/fbmOrderInfo/import/trankingNumber',
-          fileName: '导入运单模板',
-          cols: [
-            {
-              label: '订单号',
-              value: 'orderNumber'
-            },
-            {
-              label: '运单号',
-              value: 'trankingNumber'
-            },
-            {
-              label: '运输方式',
-              value: 'shippingWay'
-            }
-          ]
+          options: this.$store.state.storeInfo.curStoreList,
+          fn: storeId => {
+            this._openDialog({
+              size: 'medium',
+              fullscreen: false,
+              title: '导入运单号和运输方式',
+              params: { storeId },
+              cancelBtnText: '取消',
+              okBtnText: '确认',
+              component: () => import('./dialogs/importDe.vue')
+            })
+          }
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () =>
-          import('Views/modules/shopManage/fba/dialogs/impLocalIvt.vue')
+          import('Views/modules/shopManage/fba/plan/selectStore.vue')
       })
     },
     _export(data) {
       data && (this.topBatchBtn.loading = true)
-      return this.$api[`fba/FbmOrderInfoExport`](data ? { data } : null)
+      return this.$api[`fbm/fbm-orderOrderExport`](data)
         .then(data => {
           data && (this.topBatchBtn.loading = false)
-          downloadFile(data.path, null)
+          downloadFile(data, '下载.xls')
           return Promise.resolve()
         })
         .catch(() => {
@@ -367,6 +336,15 @@ export default {
         })
     },
     refund(data) {
+      // data = data.map(e => ({
+      //   amazonOrderId: e.amazonOrderId,
+      //   actionType: 'Refund',
+      //   orderItemId: e.orderItemId,
+      //   currency: e.currencyCode,
+      //   itemPriceAdj: undefined,
+      //   shippingPriceAdj: undefined,
+      //   amount: e.amount
+      // }))
       this.$_dialog({
         size: 'medium',
         title: '退款',
@@ -377,15 +355,26 @@ export default {
       })
     },
     updateSendStatus(data, status) {
+      data = data.map(e => ({
+        amazonOrderId: e.amazonOrderId,
+        fbmOrderStatus: status ? 'Shipped' : 'unShipped'
+      }))
       this.showTips(
         { msg: `此操作将修改为${status ? '已' : '未'}发货, 是否继续?` },
         () => {
-          return this.$api[`fba/FbmOrderInfoUpdateSendStatus`]({ data })
+          return this.$api[`fbm/fbm-orderOrderEdit`]({ orders: data })
         }
       )
     },
     deliver(orderNumbers, edit) {
-      const ways = this.searchFields.shippingWay.options
+      let obj = {}
+      orderNumbers.forEach(el => {
+        obj[el] = true
+      })
+      if (Object.keys(obj).length > 1) {
+        return this.$message.warning('只能选择同一店铺的产品进行操作')
+      }
+      const ways = this.searchFields.shipMethod.options
       this.$_dialog({
         size: 'medium',
         title: edit ? '修改运单号' : '发货',

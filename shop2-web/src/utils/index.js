@@ -1,4 +1,6 @@
 import download from "./download";
+import axios from "axios";
+import Vue from "vue";
 /**
  * 获取数据的数据类型
  * @param {*} params  需要获取的数据
@@ -61,16 +63,56 @@ export function formatDate(time, cFormat) {
 }
 
 /**
+ *下载CSV文件
+ *
+ * @param {*} data 后台返回的数据 {path: 'csv下载路径'}
+ */
+export function downloadCsv(data) {
+  if (data && data.path) {
+    data = data.path;
+  }
+  if (data.split(".").pop() !== "csv") {
+    return downloadFile(data, null);
+  }
+
+  return axios({
+    // url: data.replace("http://127.0.0.1", "http://192.168.0.112"),
+    method: "get",
+    url: data,
+    responseType: "blob",
+    transformResponse: function(data1) {
+      let reader = new FileReader();
+      reader.readAsText(data1, "GBK");
+      reader.onload = function() {
+        downloadFile(
+          "data:text/csv;charset=utf-8,\ufeff" + reader.result,
+          null,
+          null,
+          data.split("/").pop()
+        );
+      };
+      reader.onerror = function() {
+        Vue.prototype.$message.error("下载失败，请重试");
+      };
+      return data1;
+    }
+  }).catch(() => {
+    Vue.prototype.$message.error("下载失败，请重试");
+    return Promise.reject();
+  });
+}
+
+/**
  * 下载文件
  * @param {String, data} url 下载路径或二进制流
  * @param {Boolean} txt 下载为txt
  *
  */
-export function downloadFile(
-  url,
-  txt = "下载-" + formatDate(new Date(), "{y}{m}{d}{h}{i}{s}"),
-  _blank
-) {
+export function downloadFile(url, txt, _blank, downloadName) {
+  if (url == null) {
+    Vue.prototype.$message.warning("没有任何数据可导出");
+    return;
+  }
   if (!(url instanceof Blob)) {
     process.env.NODE_ENV !== "production" &&
       console.info(
@@ -80,7 +122,7 @@ export function downloadFile(
   var link;
   // debugger;
   if (typeof url === "string") {
-    console.log(22);
+    // console.log(22);
 
     // 如果是url
     if (!txt) {
@@ -91,7 +133,7 @@ export function downloadFile(
         link.target = "_blank";
       }
       link.href = url;
-      link.download = url.split("/").pop();
+      link.download = downloadName || url.split("/").pop();
       link.click();
       window.URL.revokeObjectURL(link.href);
       document.body.removeChild(link);
@@ -103,7 +145,7 @@ export function downloadFile(
     // 接口传入
     // config : {responseType: 'blob'}
     // console.log(url);
-    let name = url.name || txt;
+    let name = txt || url.name;
     // console.log(name);
 
     url = window.URL.createObjectURL(

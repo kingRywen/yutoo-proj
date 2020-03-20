@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { downloadFile } from 'Utils'
+import { downloadFile, downloadCsv } from 'Utils'
 /* eslint-disable */
 export default {
   inheritAttrs: false,
@@ -106,16 +106,18 @@ export default {
     },
     download() {
       this.downloadLoading = true
-      this.$api[`${this.downloadApi}`](this.downloadParams)
+      return this.$api[`${this.downloadApi}`](this.downloadParams)
         .then(data => {
-          let filename = `${this.filename || '下载'}.xlsx`
+          let filename = !this.filename
+            ? null
+            : `${this.filename || '下载'}.xlsx`
           this.downloadLoading = false
           if (data.code && data.code !== 0) {
             return
           }
           if (data.path && typeof data.path == 'string') {
-            data = data.path
-            filename = null
+            downloadCsv(data)
+            return
           }
           downloadFile(data, filename)
         })

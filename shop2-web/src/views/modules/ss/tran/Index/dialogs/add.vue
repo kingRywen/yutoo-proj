@@ -58,7 +58,7 @@ export default {
           ...this.value
         }
         return this.$api[
-          `ss/${this.row ? 'sellingGroupUpdate' : 'sellingGroupSave'}`
+          `ss/${this.row ? 'sellingFareUpdate' : 'sellingFareSave'}`
         ](params)
       })
     }

@@ -71,15 +71,14 @@ export default {
   },
   created() {
     if (this.reAuth) {
-      this.value = { ...this.info, regionCode: 'NA' }
+      this.value = { ...this.info }
       this.initChange(this.value)
     }
   },
   methods: {
     initChange(data) {
       this.formSchema.siteIds.options = this.region.find(
-        // FIXME: NA => data.regionCode
-        e => e.regionCode == 'NA'
+        e => e.regionCode == data.regionCode
       ).sites
     },
     _submit() {

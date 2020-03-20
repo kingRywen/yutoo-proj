@@ -9,6 +9,7 @@
     :right-edit-btns="editBtns"
     :topBatchBtn="topBatchBtn"
     @left-batch-change="handleLeftBatchChange"
+    tip="没有运费模板的店铺将不能用于跟卖"
   ></main-layout>
 </template>
 <script>
@@ -137,7 +138,10 @@ export default {
       this.$_dialog({
         size: 'medium',
         title: row ? '编辑运费模板' : '添加运费模板',
-        params: { row: { ...row }, getStoreList: this.getStoreList.bind(this) },
+        params: {
+          row: row ? { ...row } : null,
+          getStoreList: this.getStoreList.bind(this)
+        },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/add.vue')

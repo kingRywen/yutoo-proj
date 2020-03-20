@@ -10,6 +10,7 @@
     :object-merge="true"
     editWidth="200px"
     :edit-btns="edits"
+    :right-edit-btns="rightEditBtns"
     :btnTip="true"
     tbRightFixed="right"
     :treeTable="treeTable"
@@ -43,9 +44,9 @@ export default {
       apiName: 'ss/sellingLibAllProductList',
       treeTable: true,
       treeTableOtions: {
-        childs: 'childList',
+        childs: 'childs',
         expandFunc: row => {
-          return row.childList && row.childList.length
+          return row._level == 1
         }
       },
       topBatchBtn: {
@@ -62,6 +63,15 @@ export default {
           }
         ]
       },
+      rightEditBtns: [
+        {
+          name: '编辑跟卖设置',
+          perm: 'add',
+          fn: () => {
+            this.editSell()
+          }
+        }
+      ],
       edits: [
         {
           name: '修改跟卖策略',
@@ -172,6 +182,17 @@ export default {
           value: 'asin',
           url: true,
           expand: true,
+          async: true,
+          asyncFunc: row => {
+            const params = {
+              ...this.storeInfo,
+              siteId: this.curSiteId,
+              parentAsin: row.asin
+            }
+            return this.$api[`ss/sellingLibGetChildProductList`](params).then(
+              data => data.data
+            )
+          },
           btnClick: scope => {
             window.open(this.storeUrls.asinUrl + scope.row['asin'])
           },
@@ -223,6 +244,14 @@ export default {
           url: true,
           btnClick: scope => {
             // FIXME:
+            this.$_dialog({
+              size: 'medium',
+              title: '跟卖店铺列表',
+              params: {},
+              cancelBtnText: '取消',
+              okBtnText: '确认',
+              component: () => import('./storeList.vue')
+            })
           }
         },
         {
@@ -233,7 +262,11 @@ export default {
           value: 'sellingCnt',
           url: true,
           isClick: scope => {
-            return !!scope.row.childList
+            return (
+              scope.row._level !== 1 &&
+              scope.row.sellingCnt !== 0 &&
+              scope.row.sellingCnt != null
+            )
           },
           btnClick: scope => {
             this.$_dialog({
@@ -273,9 +306,9 @@ export default {
         },
 
         {
-          label: '目标更新时间',
+          label: '跟卖更新时间',
           width: 150,
-          value: 'baseUpdateTime'
+          value: 'updateTime'
         },
         {
           label: '跟卖创建时间',
@@ -291,9 +324,9 @@ export default {
     }
   },
   methods: {
-    getStoreList(sellingFlag) {
+    getStoreList(info) {
       const asin = this.$refs.layout.searchData.searchText
-      let params = { ...this.storeInfo, sellingFlag, asin }
+      let params = { ...this.storeInfo, asin, ...info }
       return this.$api[`ss/sellingMySellerList`](params).then(data =>
         data.data.map(e => ({ label: e.sellerAlias, value: e.sellerId }))
       )
@@ -301,8 +334,8 @@ export default {
     getGroups() {
       if (!this._groups) {
         return this.$api[`ss/sellingGroupList`]({
-          pageSize: 1,
-          pageNumber: 10000,
+          pageSize: 10000,
+          pageNumber: 1,
           platformId: this.storeInfo.platformId
         }).then(data => {
           return (this._groups = data.rows.map(e => ({
@@ -313,6 +346,7 @@ export default {
       }
       return Promise.resolve(this._groups)
     },
+
     handleLeftBatchChange(val, sel) {
       switch (val[0]) {
         case '修改跟卖策略':
@@ -340,6 +374,18 @@ export default {
           asins: sel.map(e => e.asin || e.parentAsin),
           type: sel[0]._level == 1 ? 1 : 0
         })
+      })
+    },
+    editSell() {
+      this.$_dialog({
+        size: 'medium',
+        title: '编辑跟卖设置',
+        params: {
+          siteId: this.curSiteId
+        },
+        cancelBtnText: '取消',
+        okBtnText: '确认',
+        component: () => import('./editSell.vue')
       })
     },
     editStrage(sel) {

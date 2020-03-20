@@ -1,7 +1,7 @@
 <template>
   <main-layout
     class="w1100"
-    :outerParams="storeInfo"
+    :outerParams="{...storeInfo,replenishInfoId }"
     :columns="columns"
     :isShowPag="false"
     :topBatchBtn="topBatchBtn"
@@ -18,7 +18,7 @@ export default {
       columns: [
         {
           label: 'SKU',
-          value: 'seller_sku'
+          value: 'sellerSku'
         },
         {
           label: 'ASIN',
@@ -55,7 +55,7 @@ export default {
             data: {
               replenishInfoId: this.replenishInfoId,
               data: sel.map(el => ({
-                sellerSKU: el.seller_sku,
+                sellerSKU: el.sellerSku,
                 count: el.count
               }))
             },

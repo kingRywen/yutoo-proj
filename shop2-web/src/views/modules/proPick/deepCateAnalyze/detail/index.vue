@@ -138,7 +138,7 @@ export default {
         mergeFlag: {
           hidden: true,
           defaultVal: true,
-          labelWidth:108,
+          labelWidth: 108,
           widget: 'select',
           options: [
             {
@@ -419,7 +419,7 @@ export default {
           perm: 'add',
           icon: 'el-icon-download',
           type: 'dropdown',
-          showLoading: true,
+          showLoading: false,
           btns: [
             {
               name: '导出属性值',
@@ -527,16 +527,22 @@ export default {
         ...this.storeInfo,
         merchantTaskId: this.merchantTaskId
       }
-      !isRight && (this.topBatchBtn.loading = true)
+      !isRight
+        ? (this.topBatchBtn.loading = true)
+        : (this.editBtns[1].showLoading = true)
       return this.$api[`proPick/categoryDepthTaskMerchantProductAttrExport`](
         params
       )
         .then(data => {
-          !isRight && (this.topBatchBtn.loading = false)
+          !isRight
+            ? (this.topBatchBtn.loading = false)
+            : (this.editBtns[1].showLoading = false)
           downloadFile(data, '产品属性值列表.xlsx')
         })
         .catch(() => {
-          !isRight && (this.topBatchBtn.loading = false)
+          !isRight
+            ? (this.topBatchBtn.loading = false)
+            : (this.editBtns[1].showLoading = false)
         })
     },
     setSame(styleNames, parentAsins) {
@@ -600,7 +606,9 @@ export default {
       })
     },
     _export(params, isRight) {
-      !isRight && (this.topBatchBtn.loading = true)
+      !isRight
+        ? (this.topBatchBtn.loading = true)
+        : (this.editBtns[1].showLoading = true)
       return this.$api[`proPick/categoryDepthTaskMerchantProductDetailsExport`](
         {
           ...params,
@@ -610,11 +618,15 @@ export default {
         }
       )
         .then(data => {
-          !isRight && (this.topBatchBtn.loading = false)
+          !isRight
+            ? (this.topBatchBtn.loading = false)
+            : (this.editBtns[1].showLoading = false)
           downloadFile(data, '产品列表.xlsx')
         })
         .catch(() => {
-          !isRight && (this.topBatchBtn.loading = false)
+          !isRight
+            ? (this.topBatchBtn.loading = false)
+            : (this.editBtns[1].showLoading = false)
         })
     },
 

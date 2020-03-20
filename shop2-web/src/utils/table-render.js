@@ -64,13 +64,13 @@ export function getSearchNumField(
 export function timeField(
   label,
   field,
-
   labelWidth = "80px",
   widget = "daterange",
-  hidden = true
+  hidden = true,
+  startEnd
 ) {
-  let min = field + "Min",
-    max = field + "Max";
+  let min = field + (startEnd ? "Start" : "Min"),
+    max = field + (startEnd ? "End" : "Max");
   return {
     hidden,
     labelWidth,

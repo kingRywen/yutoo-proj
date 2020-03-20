@@ -35,7 +35,7 @@ export const ROUTER_DEFAULT_CONFIG = {
 
 // axios 默认配置
 export const AXIOS_DEFAULT_CONFIG = {
-  timeout: 100000,
+  timeout: 2000000,
   maxContentLength: 2000,
   withCredentials: true,
   credentials: "include",

@@ -18,6 +18,7 @@ export default [
   {
     path: "sellingStrategy/infoByPrice",
     name: "sellingStrategyInfoByPrice",
+    singleLoading: true,
     method: "POST",
     desc: "跟卖-策略库 - 策略-价格策略详情"
   },
@@ -71,6 +72,7 @@ export default [
     path: "sellingStrategy/list",
     name: "sellingStrategyList",
     method: "POST",
+    singleLoading: true,
     desc: "跟卖-策略库 - 策略-列表"
   },
   {

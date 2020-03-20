@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 15:42:31 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-09 12:16:59
+ * @Last Modified time: 2020-03-18 17:28:25
  */
 <template>
   <main-layout
@@ -12,9 +12,14 @@
     :columns="columns"
     :url="apiName"
     ref="layout"
+    :btnFn="btnFn"
+    :bigData="true"
+    reserveSelection="asin"
+    :checkStrictly="false"
     :object-merge="true"
     editWidth="200px"
     :edit-btns="edits"
+    @searchTrueData="val => searchData = val"
     :btnTip="true"
     tbRightFixed="right"
     :treeTable="treeTable"
@@ -44,13 +49,16 @@ export default {
   data() {
     let vm = this
     return {
+      searchData: {
+        displayType: true
+      },
       key: '1111',
       apiName: 'ss/sellingMaybeAllProductList',
       treeTable: true,
       treeTableOtions: {
-        childs: 'childList',
+        childs: 'childs',
         expandFunc: row => {
-          return row.childList && row.childList.length
+          return row._level == 1
         }
       },
       topBatchBtn: {
@@ -73,6 +81,9 @@ export default {
           },
           {
             label: '修改库存'
+          },
+          {
+            label: '修改库存阀值'
           },
           {
             label: '跟卖'
@@ -124,6 +135,13 @@ export default {
           fn: scope => {
             this.editStorage([scope.row])
           }
+        },
+        {
+          name: '修改库存阀值',
+          perm: 'add',
+          fn: scope => {
+            this.editThreshold([scope.row])
+          }
         }
       ],
       searchFields: {
@@ -139,6 +157,13 @@ export default {
               ? 'ss/sellingMaybeAllProductList'
               : 'ss/sellingMaybeChildProductList'
             vm.columns[1].expand = data.displayType
+            if (data.displayType) {
+              this.columns[9].noDisplay = false
+              this.columns[10].noDisplay = false
+            } else {
+              this.columns[9].noDisplay = true
+              this.columns[10].noDisplay = true
+            }
           },
           defaultVal: true,
           options: [
@@ -218,30 +243,29 @@ export default {
             value: 'siteId'
           },
           options: () => Promise.resolve(this.sites)
-        },
-
-        sellingSellerIds: {
-          hidden: true,
-          label: '已上架店铺',
-          labelWidth: 96,
-          widget: 'select',
-          multi: true,
-          options: () => this.getStoreList(true)
-        },
-        noSellingSellerIds: {
-          hidden: true,
-          label: '未上架店铺',
-          labelWidth: 96,
-          multi: true,
-          widget: 'select',
-          options: () => this.getStoreList(false)
         }
+
+        // sellingSellerIds: {
+        //   hidden: true,
+        //   label: '已上架店铺',
+        //   labelWidth: 96,
+        //   widget: 'select',
+        //   multi: true,
+        //   options: () => this.getStoreList(true)
+        // },
+        // noSellingSellerIds: {
+        //   hidden: true,
+        //   label: '未上架店铺',
+        //   labelWidth: 96,
+        //   multi: true,
+        //   widget: 'select',
+        //   options: () => this.getStoreList(false)
+        // }
       },
       columns: [
         {
           label: '序号',
           fixed: 'left',
-          expand: true,
           width: 80,
           type: 'index'
         },
@@ -251,6 +275,17 @@ export default {
           value: 'asin',
           url: true,
           expand: true,
+          async: true,
+          asyncFunc: row => {
+            const params = {
+              ...this.storeInfo,
+              siteId: this.curSiteId,
+              parentAsin: row.asin
+            }
+            return this.$api[`ss/sellingMayBeGetChildProductList`](params).then(
+              data => data.data
+            )
+          },
           btnClick: scope => {
             window.open(this.storeUrls.asinUrl + scope.row['asin'])
           },
@@ -307,11 +342,13 @@ export default {
         {
           label: '评价数',
           width: 80,
+          noDisplay: false,
           sortable: 'custom',
           value: 'reviewCnt'
         },
         {
           label: '评分',
+          noDisplay: false,
           width: 80,
           sortable: 'custom',
           value: 'starCnt'
@@ -320,11 +357,19 @@ export default {
           label: '最低售价',
           width: 80,
           sortable: 'custom',
+          money: true,
+          symbol: row => {
+            return row.srcSiteId
+          },
           value: 'minPrice'
         },
         {
           label: '最高售价',
           width: 80,
+          symbol: row => {
+            return row.srcSiteId
+          },
+          money: true,
           sortable: 'custom',
           value: 'maxPrice'
         },
@@ -340,21 +385,28 @@ export default {
           sortable: 'custom',
           value: 'sellingCnt',
           isClick: scope => {
-            return !!scope.row.childList
+            return (
+              (scope.row._level !== 1 &&
+                scope.row.sellingCnt !== 0 &&
+                scope.row.sellingCnt != null) ||
+              !this.searchData.displayType
+            )
           },
           url: true,
           btnClick: scope => {
+            const { asin, srcSiteId } = scope.row
             this.$_dialog({
               size: 'medium',
-              title: '跟卖源跟卖列表',
+              title: '跟卖列表',
               params: {
+                asin,
                 siteId: this.curSiteId,
-                srcSiteId: scope.row.srcSiteId,
-                asin: scope.row.asin
+                // FIXME: 需要修改
+                deliverySiteId: srcSiteId
               },
               cancelBtnText: '取消',
               okBtnText: '确认',
-              component: () => import('./dialogs/sellList.vue')
+              component: () => import('./dialogs/followList.vue')
             })
           }
         },
@@ -396,14 +448,26 @@ export default {
           value: 'targetCreateTime'
         },
         {
-          label: '成本价(美元)',
+          label: '采购价(美元)',
           width: 100,
-          value: 'cost'
+          money: 'US',
+          value: 'purchasePrice'
+        },
+        {
+          label: '运费(美元)',
+          width: 100,
+          money: 'US',
+          value: 'targetFare'
         },
         {
           label: '库存',
           width: 80,
           value: 'localStockQty'
+        },
+        {
+          label: '库存阀值',
+          width: 80,
+          value: 'stockThreshold'
         },
         {
           label: '校验状态',
@@ -412,10 +476,67 @@ export default {
           _enum: this.cfuns.arrayToObj(this.$const['SS/checkStatus'])
         },
         {
-          label: '跨站运费',
-          width: 80,
+          label: '是否跨站配送',
+          width: 100,
+          value: 'deliveryCrossFlag',
+          _enum: {
+            true: '是',
+            false: '否'
+          }
+        },
+        {
+          label: 'FBA跨站运费',
+          width: 100,
           sortable: 'custom',
-          value: 'targetFare'
+          value: 'fareCrossFba'
+        },
+        {
+          label: '跨站最低售价',
+          width: 100,
+          sortable: 'custom',
+          value: 'crossMinPrice'
+        },
+        {
+          label: '跨站最高售价',
+          width: 100,
+          sortable: 'custom',
+          value: 'crossMaxPrice'
+        },
+        {
+          label: '跨站跟卖卖家数',
+          width: 120,
+          sortable: 'custom',
+          value: 'crossSellerCnt'
+        },
+        {
+          label: '跨站跟卖数量',
+          width: 100,
+          sortable: 'custom',
+          value: 'crossSellingCnt',
+          url: true,
+          isClick: scope => {
+            return (
+              (scope.row._level == 1 &&
+                scope.row.crossSellingCnt !== 0 &&
+                scope.row.crossSellingCnt != null) ||
+              !this.searchData.displayType
+            )
+          },
+          btnClick: scope => {
+            const { asin, srcSiteId } = scope.row
+            this.$_dialog({
+              size: 'medium',
+              title: '跨站跟卖列表',
+              params: {
+                asin,
+                siteId: srcSiteId,
+                deliverySiteId: this.curSiteId
+              },
+              cancelBtnText: '取消',
+              okBtnText: '确认',
+              component: () => import('./dialogs/followList.vue')
+            })
+          }
         },
         {
           label: '目标最低售价',
@@ -441,14 +562,23 @@ export default {
           sortable: 'custom',
           value: 'targetSellingCnt',
           url: true,
+          isClick: scope => {
+            return (
+              (scope.row._level == 1 &&
+                scope.row.targetSellingCnt !== 0 &&
+                scope.row.targetSellingCnt != null) ||
+              !this.searchData.displayType
+            )
+          },
           btnClick: scope => {
-            const { asin, srcSiteId } = scope.row
+            const { asin } = scope.row
             this.$_dialog({
               size: 'medium',
               title: '跟卖列表',
               params: {
                 asin,
-                srcSiteId
+                siteId: this.curSiteId,
+                deliverySiteId: this.curSiteId
               },
               cancelBtnText: '取消',
               okBtnText: '确认',
@@ -474,10 +604,18 @@ export default {
       ]
     }
   },
+
   methods: {
-    getStoreList(sellingFlag) {
+    btnFn(row) {
+      if (row.asin == row.parentAsin) {
+        return [1]
+      } else {
+        return [2, 3, 4, 5, 6, 7]
+      }
+    },
+    getStoreList({ fareTempFlag }) {
       const asin = this.$refs.layout.searchData.searchText
-      let params = { ...this.storeInfo, sellingFlag, asin }
+      let params = { ...this.storeInfo, fareTempFlag, asin }
       return this.$api[`ss/sellingMySellerList`](params).then(data =>
         data.data.map(e => ({ label: e.sellerAlias, value: e.sellerId }))
       )
@@ -485,8 +623,8 @@ export default {
     getGroups() {
       if (!this._groups) {
         return this.$api[`ss/sellingGroupList`]({
-          pageSize: 1,
-          pageNumber: 10000,
+          pageSize: 10000,
+          pageNumber: 1,
           platformId: this.storeInfo.platformId
         }).then(data => {
           return (this._groups = data.rows.map(e => ({
@@ -500,6 +638,7 @@ export default {
     handleLeftBatchChange(val, sel) {
       switch (val[0]) {
         case '加入分组':
+          this.addGroup(sel)
           break
         case '加入跨站点可跟卖库':
           this.addToSite(sel)
@@ -516,6 +655,9 @@ export default {
         case '修改库存':
           this.editStorage(sel)
           break
+        case '修改库存阀值':
+          this.editThreshold(sel)
+          break
         case '跟卖':
           this.sellWith(sel)
           break
@@ -528,7 +670,12 @@ export default {
       }
     },
     addGroup(sel) {
-      const parentAsins = sel.map(e => e.parentAsin || e.asin)
+      const parentAsins = sel
+        .filter(e => e._level == 1)
+        .map(e => e.parentAsin || e.asin)
+      if (!parentAsins.length) {
+        return this.$message.warning('请选择父产品')
+      }
       this.$_dialog({
         size: 'medium',
         title: '加入分组',
@@ -570,18 +717,28 @@ export default {
         params: {
           curSiteId: this.curSiteId,
           getStoreList: this.getStoreList.bind(this),
-          sel
+          sel: JSON.parse(JSON.stringify(sel))
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/sellWith.vue')
       })
     },
+    editThreshold(sel) {
+      this.$_dialog({
+        size: 'medium',
+        title: '修改库存阀值',
+        params: { sel: JSON.parse(JSON.stringify(sel)) },
+        cancelBtnText: '取消',
+        okBtnText: '确认',
+        component: () => import('./dialogs/editThreshold.vue')
+      })
+    },
     editStorage(sel) {
       this.$_dialog({
         size: 'medium',
         title: '修改库存',
-        params: { sel },
+        params: { sel: JSON.parse(JSON.stringify(sel)) },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/editStorage.vue')
@@ -591,7 +748,7 @@ export default {
       this.$_dialog({
         size: 'medium',
         title: '修改成本价',
-        params: { sel },
+        params: { sel: JSON.parse(JSON.stringify(sel)) },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/editCost.vue')
@@ -611,6 +768,7 @@ export default {
       this.showTips({ msg: `此操作将${name}, 是否继续?` }, () => {
         let params = {
           ...this.storeInfo,
+          siteId: this.curSiteId,
           asins: sel.map(e => e.asin || e.parentAsin),
           type: sel[0]._level == 1 ? 1 : 0
         }

@@ -34,10 +34,14 @@ export default {
             }, 200);
           }
           if (action === "confirm") {
-            instance.confirmButtonLoading = true;
-            instance.cancelButtonLoading = true;
-            // instance.confirmButtonText = '执行中...';
             let res = cb();
+            if (res && res.then) {
+              instance.confirmButtonLoading = true;
+              instance.cancelButtonLoading = true;
+            } else {
+              close();
+              return;
+            }
             // close()
             res
               .then(() => {
@@ -98,19 +102,22 @@ export default {
             // 挂载调用的mainlayout组件
             this.layoutVm = self.$refs.layout;
             handleData.apply(this, [].concat.apply([_arg], [com]));
+            setTimeout(() => {
+              this.innerDialogOpts.visible = true;
+            });
           });
         },
         data() {
           let vm = this;
           return {
             innerDialogOpts: {
-              visible: true,
+              visible: false,
               size: null,
               width: null,
               closeOnClickModal: false,
               title: null,
               okBtnText: "",
-              fullscreen: true,
+              fullscreen: false,
               cancelBtnText: "",
               showMaxBtn: false
             },
@@ -206,7 +213,11 @@ export default {
               events={this.events}
               style={
                 this.innerDialogOpts.visible
-                  ? { animation: "dialog-fade-in 0.1s" }
+                  ? {
+                      animation: "dialog-fade-in 0.3s",
+                      width: this.innerDialogOpts.width,
+                      margin: "0 auto"
+                    }
                   : null
               }
               ref="Dialog"
@@ -224,15 +235,18 @@ export default {
                 }
               }}
             >
-              <transition-type name="fadeIn-fadeOut">
-                {this.innerDialogOpts.visible ? (
+              {this.innerDialogOpts.visible ? (
+                <transition-type name="fadeIn-fadeOut">
                   <component
                     is={this.dialogComponent.component}
                     {...{
                       attrs: this.dialogComponent.params,
                       on: {
                         // 关闭弹窗方法
-                        "dialog.close": () => {
+                        "dialog.close": refresh => {
+                          if (refresh && this.layoutVm) {
+                            this.layoutVm.getList && this.layoutVm.getList();
+                          }
                           if (listeners.close) {
                             listeners.close();
                           }
@@ -244,8 +258,8 @@ export default {
                     }}
                     ref="component"
                   ></component>
-                ) : null}
-              </transition-type>
+                </transition-type>
+              ) : null}
             </Dialog>
           );
         }

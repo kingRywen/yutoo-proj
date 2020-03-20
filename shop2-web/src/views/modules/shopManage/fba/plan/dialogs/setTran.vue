@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  props: ['data'],
+  props: ['data', 'shippingId'],
   data() {
     return {
       formSchema: {
@@ -16,6 +16,7 @@ export default {
         sendTime: {
           label: '发送时间',
           required: true,
+          time: true,
           width: '100%',
           widget: 'date'
         },
@@ -37,7 +38,11 @@ export default {
   methods: {
     _submit() {
       return this.$refs.form.validate().then(() => {
-        const params = { data: this.data, ...this.value }
+        const params = {
+          data: this.data,
+          ...this.value,
+          shippingId: this.shippingId
+        }
         return this.$api[`fba/FbaReplenishShippingSetTransport`](params)
       })
     }

@@ -22,6 +22,7 @@ export default {
       return this.$refs.form.validate().then(() => {
         const params = {
           shippingId: this.shippingId,
+          storeId: this.storeId,
           trackingNumber: this.value.trackingNumber
             .split('\n')
             .map(e => e.trim())

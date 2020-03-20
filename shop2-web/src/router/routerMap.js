@@ -2,7 +2,8 @@ import { importComponent } from "./index";
 export default {
   layout: {
     default: () => importComponent(import(`Layout/Layout.vue`)),
-    w1100: () => importComponent(import(`Layout/w1100.vue`))
+    w1100: () => importComponent(import(`Layout/w1100.vue`)),
+    full: () => importComponent(import(`Layout/fullSreen.vue`))
   },
   common: {
     importLogs: {
@@ -184,7 +185,24 @@ export default {
         importComponent(import(`Views/modules/shopManage/fba/shipping`)),
       reprecord: () =>
         importComponent(import(`Views/modules/shopManage/fba/reprecord`)),
-      plan: () => importComponent(import(`Views/modules/shopManage/fba/plan`))
+      plan: {
+        default: () =>
+          importComponent(import(`Views/modules/shopManage/fba/plan`)),
+        sycrecord: () =>
+          importComponent(import(`Views/modules/shopManage/fba/plan/sycrecord`))
+      },
+      warehouse: {
+        default: () =>
+          importComponent(import(`Views/modules/shopManage/fba/plan`)),
+        create: () =>
+          importComponent(
+            import(`Views/modules/shopManage/fba/warehouse/create`)
+          ),
+        print: () =>
+          importComponent(
+            import(`Views/modules/shopManage/fba/warehouse/print`)
+          )
+      }
     },
     fbm: {
       default: () => importComponent(import(`Views/modules/shopManage/fbm`))

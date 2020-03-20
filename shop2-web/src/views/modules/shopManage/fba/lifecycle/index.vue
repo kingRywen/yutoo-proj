@@ -1,19 +1,36 @@
 <template>
-  <main-layout
-    :outerParams="storeInfo"
-    :columns="columns"
-    edit-width="120px"
-    :isShowPag="false"
-    :showSelection="false"
-    tbRightFixed="right"
-    :fixedPageFunc="fixedPageFunc"
-    :edit-btns="edits"
-    url="fba/FbaReplenishInfoCalculateList"
-    ref="layout"
-  ></main-layout>
+  <div>
+    <main-layout
+      :outerParams="storeInfo"
+      :columns="columns"
+      edit-width="120px"
+      :isShowPag="false"
+      :showSelection="false"
+      tbRightFixed="right"
+      :edit-btns="edits"
+      url="fba/FbaReplenishInfoCalculateList"
+      ref="layout"
+    ></main-layout>
+    <el-dropdown class="anay" @command="handleCommand">
+      <span class="el-dropdown-link">
+        <!-- <i class="iconfont">&#xe60e;</i> -->
+        <el-button type="text" style="padding: 0" icon="iconfont icongongju"></el-button>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item command="f">FBA管理</el-dropdown-item>
+        <el-dropdown-item command="c">补货记录</el-dropdown-item>
+        <el-dropdown-item command="d">发货计划</el-dropdown-item>
+        <el-dropdown-item command="a">生命周期管理</el-dropdown-item>
+        <el-dropdown-item command="b">运输方式</el-dropdown-item>
+        <el-dropdown-item command="e">设置滞销预警天数</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+  </div>
 </template>
 <script>
+import dropdownMixin from '../dropdown-mixin'
 export default {
+  mixins: [dropdownMixin],
   data() {
     return {
       edits: [
@@ -92,65 +109,6 @@ export default {
     }
   },
   methods: {
-    // FIXME: moCK数据 要删除
-    fixedPageFunc(data) {
-      return {
-        rows: [
-          {
-            cycleType: 3,
-            cycleMonitorParm: {
-              autoFlag: true,
-              avgSaleDays: 14,
-              weeks: 2,
-              jumpLv: '10.98'
-            },
-            shortageMonitorParm: [
-              {
-                id: '699D457E8A8F5B6F',
-                transportId: 'JEUFHFYKV',
-                insuredDays: 3,
-                stockDays: 5,
-                transportDays: 7,
-                fixedDays: 30
-              },
-              {
-                id: '699D457E8A8F5B6F',
-                transportId: 'JEUFHFYKVWEE3',
-                insuredDays: 3,
-                stockDays: 5,
-                transportDays: 7,
-                fixedDays: 30
-              }
-            ]
-          },
-          {
-            cycleType: 1,
-            cycleMonitorParm: {
-              autoFlag: true,
-              avgSaleDays: 14,
-              weeks: 2,
-              jumpLv: '10.98'
-            },
-            shortageMonitorParm: [
-              {
-                id: '699D457E8A8F5B6F',
-                transportId: 'JEUFHFYKV',
-                insuredDays: 3,
-                stockDays: 5,
-                transportDays: 7
-              },
-              {
-                id: '699D457E8A8F5B6F',
-                transportId: 'JEUFHFYKVWEE3',
-                insuredDays: 3,
-                stockDays: 5,
-                transportDays: 7
-              }
-            ]
-          }
-        ]
-      }
-    },
     edit(cycleType) {
       this.$_dialog({
         size: 'medium',
@@ -164,3 +122,13 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.anay {
+  position: absolute;
+  right: 23px;
+  top: -26px;
+  /deep/ i {
+    font-size: 24px;
+  }
+}
+</style>

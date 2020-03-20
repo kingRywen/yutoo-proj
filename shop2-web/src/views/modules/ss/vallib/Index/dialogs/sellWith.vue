@@ -28,7 +28,7 @@
         </el-table-column>
         <el-table-column label="品牌名" prop="brand" show-overflow-tooltip></el-table-column>
         <el-table-column label="源站点" prop="srcSiteName" width="80"></el-table-column>
-        <el-table-column label="固定售价">
+        <el-table-column label="固定售价" key="pricing" v-if="strageInfo.pricing">
           <template slot-scope="scope">
             <el-form-item
               :key="scope.$index + 'fixedPrice'"
@@ -46,7 +46,7 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column prop="localStockQty">
+        <el-table-column key="localStockQty" prop="localStockQty">
           <template slot="header" slot-scope="scope">
             <div>
               库存
@@ -56,7 +56,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column>
+        <el-table-column key="purchasePrice">
           <template slot="header" slot-scope="scope">
             <div>
               采购价(美元)
@@ -66,11 +66,13 @@
             </div>
           </template>
           <template slot-scope="scope">
-            <el-form-item
+            <!-- <el-form-item
               :key="scope.$index + 'purchasePrice'"
               :rules="notEmpty"
               :prop="`list.${scope.$index}.purchasePrice`"
-            >
+            >-->
+
+            <el-form-item :key="scope.$index + 'purchasePrice'">
               <el-input-number
                 class="w100"
                 v-model="scope.row.purchasePrice"
@@ -82,7 +84,7 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column>
+        <el-table-column key="fare">
           <template slot="header" slot-scope="scope">
             <div>
               运费(美元)
@@ -92,7 +94,8 @@
             </div>
           </template>
           <template slot-scope="scope">
-            <el-form-item :key="scope.$index + 'fare'" :rules="notEmpty" :prop="`list.${scope.$index}.fare`">
+            <!-- <el-form-item :key="scope.$index + 'fare'" :rules="notEmpty" :prop="`list.${scope.$index}.fare`"> -->
+            <el-form-item :key="scope.$index + 'fare'">
               <el-input-number
                 class="w100"
                 v-model="scope.row.fare"
@@ -104,12 +107,12 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="成本价-指定卖家">
+        <el-table-column key="fixedSiteId" :width="150" label="成本价-指定站点采购" v-if="strageInfo.purchaseObject">
           <template slot-scope="scope">
-            <el-form-item :rules="notEmpty" v-if="scope.row.sellers" :prop="`list.${scope.$index}.fixedSeller`">
-              <el-select v-model="scope.row.fixedSeller" placeholder>
+            <el-form-item :rules="notEmpty" :prop="`list.${scope.$index}.fixedSiteId`">
+              <el-select v-model="scope.row.fixedSiteId" @change="getSellers(scope.row, $event)">
                 <el-option
-                  v-for="(item, index) in scope.row.sellers"
+                  v-for="(item, index) in siteTypes.slice(0, curSiteId == scope.row.srcSiteId ? 1 :2)"
                   :key="index"
                   :label="item.label"
                   :value="item.value"
@@ -118,17 +121,21 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="成本价-指定发货方式" :width="150">
+        <el-table-column key="fixedSeller" label="成本价-指定卖家采购" v-if="strageInfo.purchaseObject" :width="150">
           <template slot-scope="scope">
-            <el-form-item :rules="notEmpty" :prop="`list.${scope.$index}.fixedFbpFlag`">
-              <el-select v-model="scope.row.fixedFbpFlag" placeholder>
-                <el-option label="FBA" :value="0"></el-option>
-                <el-option label="FBM" :value="1"></el-option>
+            <el-form-item :rules="notEmpty" :prop="`list.${scope.$index}.fixedSeller`">
+              <el-select :disabled="!scope.row._loading" v-model="scope.row.fixedSeller">
+                <el-option
+                  v-for="(item, index) in scope.row.sellers ||[]"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="60">
+        <el-table-column label="操作" v-if="sellingInfo.list.length > 1" width="60">
           <template slot-scope="scope">
             <el-button type="text" @click="sellingInfo.list.splice(scope.$index, 1)">删除</el-button>
           </template>
@@ -142,6 +149,21 @@ export default {
   props: ['curSiteId', 'getStoreList', 'sel'],
   data() {
     return {
+      siteTypes: [
+        {
+          label: '源站点',
+          value: 0
+        },
+        {
+          label: '目标站点',
+          value: 1
+        }
+      ],
+      hasStrag: {},
+      strageInfo: {
+        purchaseObject: null,
+        pricing: null
+      },
       formSchema: {
         siteId: {
           label: '源站点',
@@ -159,20 +181,29 @@ export default {
           required: true,
           span: 12,
           multi: true,
+          placeholder: '请选择店铺',
           widget: 'select',
-          options: () => this.getStoreList()
+          options: () => this.getStoreList({ fareTempFlag: true })
         },
         inventoryStrategyId: {
           label: '库存策略',
           required: true,
           span: 12,
           widget: 'select',
+
           options: []
         },
         priceStrategyId: {
           label: '价格策略',
           required: true,
           span: 12,
+          change: data => {
+            if (this.hasStrag[data.priceStrategyId]) {
+              this.strageInfo = this.hasStrag[data.priceStrategyId]
+              return
+            }
+            this.getStraInfo(data.priceStrategyId, 1)
+          },
           widget: 'select',
           options: []
         },
@@ -188,15 +219,16 @@ export default {
           required: true,
           span: 12,
           widget: 'select',
-          options: []
-        },
-        frequencyStrategyId: {
-          label: '频率策略',
-          required: true,
-          span: 12,
-          widget: 'select',
+
           options: []
         }
+        // frequencyStrategyId: {
+        //   label: '频率策略',
+        //   required: true,
+        //   span: 12,
+        //   widget: 'select',
+        //   options: []
+        // }
       },
       sellingInfo: {
         list: [...this.sel]
@@ -214,31 +246,53 @@ export default {
   },
   created() {
     this.getStras()
-    this.sellingInfo.list.forEach(el => {
-      this.getSellers(el.asin).then(data => {
-        this.$set(el, 'sellers', data)
-      })
-    })
+    // this.sellingInfo.list.forEach(el => {
+    //   this.getSellers(el.asin, el.srcSiteId).then(data => {
+    //     this.$set(el, 'sellers', data || [])
+    //   })
+    // })
   },
   methods: {
-    getSellers(asin) {
+    getSellers(row, val) {
+      const { asin, srcSiteId } = row
       const params = {
         ...this.storeInfo,
-        srcSiteId: this.curSiteId,
+        deliverySiteId: val ? this.curSiteId : srcSiteId,
+        siteId: this.curSiteId,
+        // srcSiteId: this.curSiteId,
         asin
       }
+      this.$set(row, '_loading', false)
       return this.$api[`ss/sellingSellerAllList`](params).then(data => {
-        return data.data.map(el => ({
-          label: el.sellerName,
-          value: el.sellerId
-        }))
+        row._loading = true
+        this.$set(
+          row,
+          'sellers',
+          data.data &&
+            data.data.map(el => ({
+              label: el.sellerName,
+              value: el.sellerId
+            }))
+        )
+      })
+    },
+    getStraInfo(strategyId) {
+      const params = {
+        ...this.storeInfo,
+        siteId: this.curSiteId,
+        strategyId
+      }
+      this.$api[`ss/sellingStrategyInfoByPrice`](params).then(data => {
+        this.strageInfo = data.data
+        this.hasStrag[strategyId] = data.data
       })
     },
     getStras() {
       let params = {
           ...this.storeInfo,
-          pageSize: 1,
-          pageNumber: 10000
+          siteId: this.curSiteId,
+          pageSize: 10000,
+          pageNumber: 1
         },
         vm = this
 
@@ -262,9 +316,9 @@ export default {
         vm.formSchema.timeStrategyId.options = list.filter(
           e => e.strategyType == 3
         )
-        vm.formSchema.frequencyStrategyId.options = list.filter(
-          e => e.strategyType == 4
-        )
+        // vm.formSchema.frequencyStrategyId.options = list.filter(
+        //   e => e.strategyType == 4
+        // )
 
         vm.value = {
           ...vm.value,
@@ -283,12 +337,13 @@ export default {
           timeStrategyId:
             (cur = vm.formSchema.timeStrategyId.options.find(
               e => e.defaultFlag
-            )) && cur.value,
-          frequencyStrategyId:
-            (cur = vm.formSchema.frequencyStrategyId.options.find(
-              e => e.defaultFlag
             )) && cur.value
+          // frequencyStrategyId:
+          //   (cur = vm.formSchema.frequencyStrategyId.options.find(
+          //     e => e.defaultFlag
+          //   )) && cur.value
         }
+        this.getStraInfo(vm.value.priceStrategyId)
       })
     },
     validate() {
@@ -302,7 +357,16 @@ export default {
         let params = {
           ...this.storeInfo,
           ...this.value,
-          sellingInfo: this.sellingInfo.list,
+          siteId: this.curSiteId,
+          sellingInfo: this.sellingInfo.list.map(e => ({
+            asin: e.asin,
+            srcSiteId: e.srcSiteId,
+            purchasePrice: e.purchasePrice,
+            fare: e.fare,
+            fixedPrice: e.fixedPrice,
+            fixedSeller: e.fixedSeller,
+            fixedSiteId: e.fixedSiteId ? this.curSiteId : e.srcSiteId
+          })),
           op: 0
         }
         return this.$api[`ss/sellingSaveLib`](params)
@@ -312,7 +376,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.w1100 {
+.w1200 {
   /deep/ .el-form-item--mini.el-form-item {
     margin-bottom: 0;
   }

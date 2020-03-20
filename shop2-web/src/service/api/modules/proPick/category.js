@@ -71,7 +71,7 @@ export default [
     desc: "产品新增评价数",
     path: "/categoryTaskMerchant/listToNewReviewCntByProduct",
     mock: false
-  },
+  }, { "path": "categoryTaskMerchant/listToNewReviewCntByProduct", "name": "categoryTaskMerchantListToNewReviewCntByProduct", "method": "POST", "desc": "选品-类目分析 - 产品新增评价数" },
   {
     name: "listToBsrByProduct",
     method: "POST",

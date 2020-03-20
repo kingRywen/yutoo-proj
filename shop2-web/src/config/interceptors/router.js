@@ -44,7 +44,9 @@ async function getRoutes(next, to) {
       return next({
         path: "/networkError",
         replace: true,
-        query: { back: to.fullPath }
+        query: {
+          back: to.fullPath
+        }
       });
     }
   }

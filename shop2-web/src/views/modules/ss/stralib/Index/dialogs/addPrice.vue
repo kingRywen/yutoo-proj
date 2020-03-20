@@ -33,15 +33,7 @@
         <i class="el-icon-info"></i>
       </el-tooltip>
     </el-radio>
-    <new-form
-      v-show="purchaseObject === 0"
-      ref="form0"
-      inline
-      label-width="120px"
-      :form-schema="formSchema0"
-      :value="value0"
-      style="overflow: auto;"
-    ></new-form>
+    <new-form ref="form0" inline label-width="120px" :form-schema="formSchema0" :value="value0" style="overflow: auto;"></new-form>
     <el-divider style="margin-top: 40px" content-position="left">价格策略</el-divider>
     <label class="lb">定价方式</label>
     <el-radio class="mt10 mb20" size="mini" v-model="pricing" :label="0">
@@ -391,13 +383,12 @@ export default {
     validate() {
       let forms = [
         'form',
+        'form0',
         'form3',
         'form4',
         this.pricing == 0 ? 'form1' : 'form2'
       ]
-      if (this.purchaseObject == 0) {
-        forms.push('form0')
-      }
+
       return Promise.all(forms.map(f => this.$refs[f].validate()))
     },
     _submit() {

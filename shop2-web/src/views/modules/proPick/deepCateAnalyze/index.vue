@@ -37,6 +37,7 @@ export default {
         {
           label: '类目',
           copyProps: 'category',
+          minWidth: 250,
           noTooltip: true,
           render(h, scope) {
             let { category, categoryUrl } = scope.row

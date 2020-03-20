@@ -18,7 +18,7 @@
       <i class="iconfont1 iconfangda bigIcon" v-if="options.showMaxBtn" @click="isFullMethod"></i>
     </template>
     <el-scrollbar
-      v-loading="loadingBtn || $store.state.isloading"
+      v-loading="curLoading"
       wrap-class="default-scrollbar__wrap"
       view-class="p20-scrollbar__view"
       :key="diaKey"
@@ -38,7 +38,7 @@
           v-if="options.okBtnText && copyText !== undefined"
           ref="copyBtn"
           type="primary"
-          :loading="loadingBtn || $store.state.isloading"
+          :loading="curLoading"
         >复制</el-button>
 
         <!-- 没有复制功能 -->
@@ -47,7 +47,7 @@
           type="primary"
           :plain="okDisabled"
           :disabled="okDisabled"
-          :loading="loadingBtn || $store.state.isloading"
+          :loading="curLoading"
           @click="handleOkClick"
         >{{options.okBtnText}}</el-button>
         <slot name="btns"></slot>
@@ -55,6 +55,7 @@
         <el-button
           v-if="options.cancelBtnText"
           :type="options.cancelBtnText ==='关闭' ? 'primary':''"
+          :loading="curLoading"
           @click="handleCancelClick"
         >{{options.cancelBtnText || '取消'}}</el-button>
       </template>
@@ -124,6 +125,12 @@ export default {
     }
   },
   computed: {
+    curLoading() {
+      if (this.options.noShowLoading) {
+        return false
+      }
+      return this.loadingBtn || this.$store.state.isloading
+    },
     options: {
       get() {
         return Object.assign(

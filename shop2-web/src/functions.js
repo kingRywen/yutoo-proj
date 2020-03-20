@@ -6,8 +6,20 @@ let cfuns = {
   arrayToObj,
   openASINLink,
   timeInterval,
-  copyText
+  copyText,
+  hasEmptyValue
 };
+
+/**
+ *判断表单元素的值 是否有空值
+ *
+ * @param {*} el 传入的查询
+ * @returns 查找到的元素，如果为空表示查询不到
+ */
+function hasEmptyValue(el) {
+  el = document.querySelectorAll(el);
+  return [].find.call(el, e => e.value == "");
+}
 
 /**
  * 获取两个时间的天数间隔

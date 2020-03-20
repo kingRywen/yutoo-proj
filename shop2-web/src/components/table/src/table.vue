@@ -7,7 +7,6 @@
       @row-contextmenu="rowContextmenu"
       style="width: 100%;"
       @selection-change="selectChange"
-      :reserve-selection="false"
       :row-key="reserveSelection"
       :cell-style="cellStyle"
       :row-style="showRow"
@@ -35,7 +34,7 @@
         v-if="selection && selection !== 'radio'"
         :resizable="bigData ? false : true"
         :selectable="selectableFunc"
-        :reserve-selection="false"
+        :reserve-selection="!!reserveSelection"
       ></el-table-column>
       <el-table-column
         type="selection"
@@ -44,7 +43,7 @@
         align="left"
         v-if="selection === 'radio'"
         :selectable="selectableFunc"
-        :reserve-selection="false"
+        :reserve-selection="!!reserveSelection"
       >
         <template slot-scope="scope" v-if="selection === 'radio'">
           <el-radio class="custom-selection-radio" :label="scope.row" :value="radioVal">&nbsp;</el-radio>
@@ -95,6 +94,7 @@
                   :pageSize="$attrs.pageSize"
                   :pageNo="$attrs.pageNo"
                   :arr="data"
+                  :fixedMinusOne="fixedMinusOne"
                   :treeTableOtions="treeTableOtions"
                 />
               </template>
@@ -105,6 +105,7 @@
               <table-colvalue
                 :arr="data"
                 :item="item"
+                :fixedMinusOne="fixedMinusOne"
                 :pageSize="$attrs.pageSize"
                 :pageNo="$attrs.pageNo"
                 :scope="scope"
@@ -122,6 +123,7 @@
     </el-table>
     <big-table
       v-if="bigData"
+      :fixedMinusOne="fixedMinusOne"
       :table-data="listToArray"
       @table-body-scroll="handleTableScroll"
       :columns="currentCol"
@@ -132,6 +134,7 @@
       :treeTableOtions="treeTableOtions"
       :pageSize="$attrs.pageSize"
       :pageNo="$attrs.pageNo"
+      @select="handleSelect"
     >
       <template slot="topleft">
         <slot name="topleft1"></slot>
@@ -149,6 +152,8 @@ import BigTable from './big-table'
 // import tableMixin from './table-mixin'
 // eslint-disable-next-line no-unused-vars
 import { handleExpand } from './table-utils'
+
+import { showRow } from './common-utils'
 
 //123/
 export default {
@@ -181,6 +186,7 @@ export default {
   },
 
   props: {
+    fixedMinusOne: Boolean,
     // 是否优化大数据表格
     bigData: Boolean,
     //是否展开所有
@@ -280,7 +286,7 @@ export default {
       return func.apply(null, args)
     },
     currentCol() {
-      let data = this.columns || [],
+      let data = this.columns.filter(e => !e.noDisplay) || [],
         ret = []
       data.forEach(el => {
         if (el.type === 'array') {
@@ -350,6 +356,10 @@ export default {
         setTimeout(() => {
           span.classList.add('is-checked')
         }, 50)
+      } else {
+        setTimeout(() => {
+          span.classList.remove('is-checked')
+        }, 50)
       }
     },
     handleExpand,
@@ -372,6 +382,9 @@ export default {
     handleSelect(select, row) {
       // this.$emit('select', select, row)
       // debugger
+      const table = this.bigData
+        ? this.$refs.bigTab.$refs.table
+        : this.$refs.table
       if (this.treeTable && !this.checkStrictly) {
         let first = this.listToArray.indexOf(row)
         let newChild = []
@@ -381,21 +394,50 @@ export default {
                 this.treeTableOtions.childs
               ] // sameCount
             : row[this.treeTableOtions.childs]
-        if (child && child.length) {
+
+        if (child && child.length && row._expanded) {
           let childNum = child.length
+
           for (let index = first; index <= first + childNum; index++) {
             if (!this.listToArray[index]._root && this.spanMethod) {
               continue
             }
             newChild.push(this.listToArray[index])
-            this.$refs.table.toggleRowSelection(
-              this.listToArray[index],
-              !!~select.indexOf(row)
-            )
+            if (!this.bigData) {
+              table.toggleRowSelection(
+                this.listToArray[index],
+                !!~select.indexOf(row)
+              )
+            }
           }
+        }
+        if (this.bigData) {
+          table.toggleRowSelection(
+            newChild.map(el => ({
+              row: el,
+              selected: !!~select.indexOf(row)
+            }))
+          )
+          this.$nextTick(() => {
+            this.$emit(
+              'selectChange',
+              table.$refs.singleTable.$refs.xTable.selection
+            )
+          })
+          return
         }
         this.$emit('select', select.concat(newChild), row)
       } else {
+        if (this.bigData) {
+          this.$nextTick(() => {
+            this.$emit(
+              'selectChange',
+              table.$refs.singleTable.$refs.xTable.selection
+            )
+            this.$emit('select', select[0], row)
+          })
+          return
+        }
         this.$emit('select', select, row)
       }
     },
@@ -496,25 +538,7 @@ export default {
       //
     },
 
-    showRow(row) {
-      let style =
-          'animation:treeTableShow 1s;-webkit-animation:treeTableShow 1s;',
-        color = ''
-      if (this.treeColor) {
-        color =
-          'background-color: ' +
-          (typeof this.treeColor === 'string' ? this.treeColor : '#f2f6fc')
-      }
-      const show = row.row.parent
-        ? row.row.parent._expanded && row.row.parent.__show
-        : true
-      row.row.__show = show
-      return show
-        ? row.row._level !== 1
-          ? style + color
-          : style
-        : { display: 'none' }
-    },
+    showRow,
     rowClassName(row) {
       let cls = []
       if (this.treeStripe) {
@@ -565,15 +589,24 @@ export default {
         }
         if (record._expanded === undefined) {
           Vue.set(record, '_expanded', expandAll)
+          if (expandAll) {
+            Vue.set(record, '__show', true)
+          }
         }
         let _level = 1
         if (level !== undefined && level !== null) {
           _level = level + 1
         }
         Vue.set(record, '_level', _level)
-        // 如果有父元素
         if (parent) {
-          Vue.set(record, 'parent', parent)
+          // 如果有父元素 在大数据表格时会有循环引用的bug
+          if (vm.bigData) {
+            const p = { ...parent }
+            delete p[children]
+            Vue.set(record, 'parent', p)
+          } else {
+            Vue.set(record, 'parent', parent)
+          }
         }
         tmp.push(record)
         if (record[children] && record[children].length > 0) {

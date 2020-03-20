@@ -53,7 +53,7 @@ export default {
           value: 'srcSiteName'
         },
         {
-          label: '库存(美元)',
+          label: '库存',
           value: 'localStockQty'
         },
         {

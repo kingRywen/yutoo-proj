@@ -7,7 +7,7 @@
       <el-col :span="6">ShippingID：{{info.shippingId}}</el-col>
     </el-row>
     <el-row class="track">
-      <el-col :span="24">运单号：{{info.trackingNumbers.join('，')}}</el-col>
+      <el-col :span="24">运单号：{{info.trackingNumbers && info.trackingNumbers.join('，')}}</el-col>
     </el-row>
     <yt-table class="mt10" :selection="false" :columns="columns" :data="info.rows"></yt-table>
   </div>

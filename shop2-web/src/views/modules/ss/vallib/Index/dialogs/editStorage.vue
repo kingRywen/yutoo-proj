@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 17:10:40 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-09 10:17:03
+ * @Last Modified time: 2020-03-18 17:14:04
  */
 <template>
   <div>
@@ -53,12 +53,16 @@ export default {
           value: 'srcSiteName'
         },
         {
-          label: '库存(美元)',
+          label: '库存',
           value: 'localStockQty'
         },
         {
-          label: '成本价(美元)',
-          value: 'cost'
+          label: '采购价(美元)',
+          value: 'purchasePrice'
+        },
+        {
+          label: '运费(美元)',
+          value: 'fare'
         }
       ],
       edits:
@@ -85,7 +89,7 @@ export default {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           if (this.selected.find(e => !e.__isedit.localStockQty.editVal)) {
-            this.$message.warning('请填写数据')
+            this.$message.warning('请填写完整的数据')
             let input = this.$refs.layout.$el.querySelectorAll(
               'input.el-input__inner'
             )
@@ -104,7 +108,7 @@ export default {
         let params = {
           ...this.storeInfo,
           stockSource: this.selected.map(e => ({
-            localStockQty: e.__isedit.localStockQty.editVal,
+            stockQty: e.__isedit.localStockQty.editVal,
             asin: e.asin
           }))
         }

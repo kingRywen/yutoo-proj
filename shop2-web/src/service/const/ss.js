@@ -6,8 +6,8 @@ export default [
       { label: "跟卖库存策略", value: 0 },
       { label: "跟卖价格策略", value: 1 },
       { label: "跟卖数量策略", value: 2 },
-      { label: "跟卖时间策略", value: 3 },
-      { label: "监控频率策略", value: 4 }
+      { label: "跟卖时间策略", value: 3 }
+      // { label: "监控频率策略", value: 4 }
     ]
   },
   {

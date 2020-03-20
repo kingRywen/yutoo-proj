@@ -50,42 +50,42 @@ export default {
           minWidth: 300
         },
         {
-          label: '每个装运箱的商品数量',
-          value: 'boxNumber',
+          label: '计划发货数量',
+          value: 'quantityPlanSend',
           sortable: true,
-          width: 155,
-          render: (h, scope) => {
-            return (
-              <el-input-number
-                style="width:100%"
-                value={scope.row.boxNumber}
-                min={1}
-                max={99999999999}
-                controls={false}
-                size="mini"
-                onChange={e => {
-                  this.$set(scope.row, 'boxNumber', e)
-                }}
-              ></el-input-number>
-            )
-          }
+          width: 155
+          // render: (h, scope) => {
+          //   return (
+          //     <el-input-number
+          //       style="width:100%"
+          //       value={scope.row.quantityPlanSend}
+          //       min={1}
+          //       max={99999999999}
+          //       controls={false}
+          //       size="mini"
+          //       onChange={e => {
+          //         this.$set(scope.row, 'quantityPlanSend', e)
+          //       }}
+          //     ></el-input-number>
+          //   )
+          // }
         },
         {
-          label: '装运箱数量',
+          label: '真实发货数量',
           sortable: true,
           width: 155,
-          value: 'count',
+          value: 'quantityReal',
           render: (h, scope) => {
             return (
               <el-input-number
                 style="width:100%"
-                value={scope.row.count}
+                value={scope.row.quantityReal}
                 min={1}
                 max={99999999999}
                 controls={false}
                 size="mini"
                 onChange={e => {
-                  this.$set(scope.row, 'count', e)
+                  this.$set(scope.row, 'quantityReal', e)
                 }}
               ></el-input-number>
             )

@@ -2,8 +2,6 @@
   <new-form class="w600" ref="form" label-width="120px" :form-schema="formSchema" :value="value"></new-form>
 </template>
 <script>
-// FIXME:补接口后再写
-
 export default {
   data() {
     return {
@@ -13,7 +11,7 @@ export default {
           type: 'table',
           width: 'auto',
           head: {
-            sellerSku: {
+            storeName: {
               widget: 'text',
               label: '店铺名称',
               noLabel: true
@@ -38,24 +36,7 @@ export default {
             label: '编辑'
           }
         ]
-      },
-      columns: [
-        {
-          label: '店铺名称',
-          value: ''
-        },
-        {
-          label: '滞销预警天数',
-          value: ''
-        }
-      ],
-      edits: [
-        {
-          name: '编辑',
-          perm: 'addTask',
-          fn: scope => {}
-        }
-      ]
+      }
     }
   },
   created() {

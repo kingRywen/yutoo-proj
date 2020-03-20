@@ -56,14 +56,15 @@ export default {
         searchPages: {
           label: '抓取页数',
           hidden: data => {
-            return data.dataType == null
+            return data.dataType == 3 || data.dataType == 2
           },
-          widget: 'select',
+          widget: 'number',
+          max: 400,
+          min: 1,
+          placeholder: '抓取页数最大值为400',
           required: true,
-          options: new Array(10)
-            .join('-')
-            .split('-')
-            .map((e, index) => ({ label: index + 1, value: index + 1 }))
+          // options: Array.from({length: 10})
+          //   .map((e, index) => ({ label: index + 1, value: index + 1 }))
         },
         dataSources: {
           hidden: data => {

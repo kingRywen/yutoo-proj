@@ -214,6 +214,7 @@ export function responseSuccessFunc(responseObj) {
         responseObj.config.showSuccess &&
           GLOBAL.vbus.$emit("business.response.success", msg);
       }
+
       return resData;
 
     // 如果业务失败，弹窗提示
@@ -237,6 +238,11 @@ export function responseSuccessFunc(responseObj) {
     //   return
     default:
       if (code == null && resData != null) {
+        if (resData instanceof Blob) {
+          let str = decodeURI(responseObj.headers["content-disposition"]);
+          resData.name = str.slice(str.indexOf("=") + 1);
+          // debugger;
+        }
         return resData;
       } else {
         // 业务中还会有一些特殊 code 逻辑，我们可以在这里做统一处理，也可以下放它们到业务层
@@ -264,7 +270,9 @@ export function responseFailFunc(responseError) {
     router.replace({
       path: "/networkError",
       replace: true,
-      query: { back: router.currentRoute.fullPath }
+      query: {
+        back: router.currentRoute.query.back || router.currentRoute.fullPath
+      }
     });
   } else if (responseError.message === undefined) {
     console.error("重复请求");

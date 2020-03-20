@@ -57,8 +57,14 @@
       >
         <div class="flex">
           <el-form-item :prop="`shortageMonitorParm.${index}.transportId`" :rules="notEmpty">
-            <el-select class="mr10" style="width:100px" v-model="item.transportId" placeholder="运输方式">
-              <el-option v-for="i in transportList" :label="i.lable" :value="i.value" :key="i.value"></el-option>
+            <el-select class="mr10" style="width:130px" v-model="item.transportId" placeholder="运输方式">
+              <el-option
+                v-for="i in transportList"
+                :label="i.label"
+                :disabled="item.transportId != i.value && i.disabled"
+                :value="i.value"
+                :key="i.value"
+              ></el-option>
             </el-select>
           </el-form-item>
           <el-form-item
@@ -135,7 +141,11 @@ export default {
   },
   computed: {
     transportList() {
-      return this.$store.state.fba.transportList
+      const hasSel = this.formData.shortageMonitorParm.map(e => e.transportId)
+      return this.$store.state.fba.transportList.map(e => ({
+        ...e,
+        disabled: hasSel.indexOf(e.value) > -1
+      }))
     }
   },
   methods: {

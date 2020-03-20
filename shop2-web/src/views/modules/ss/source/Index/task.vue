@@ -43,6 +43,9 @@ export default {
         options: [
           {
             label: '重新抓取'
+          },
+          {
+            label: '删除'
           }
         ]
       },
@@ -52,6 +55,13 @@ export default {
           perm: 'add',
           fn: scope => {
             this.recrwal([scope.row.taskId])
+          }
+        },
+        {
+          name: '删除',
+          perm: 'add',
+          fn: scope => {
+            this.del([scope.row.taskId])
           }
         }
       ],
@@ -161,14 +171,34 @@ export default {
     }
   },
   methods: {
+    del(taskIds) {
+      const params = {
+        ...this.storeInfo,
+        taskIds
+      }
+      this.showTips({ msg: '此操作将删除任务, 是否继续?' }, () => {
+        return this.$api[`ss/sellingSrcRemoveTask`](params)
+      })
+    },
     btnFn(row) {
       if (row.status == 1) {
         return []
       }
-      return [1]
+      return [1,2]
     },
     handleLeftBatchChange(val, sel) {
-      this.recrwal(sel.map(e => e.taskId))
+      const taskIds = sel.map(e => e.taskId)
+      switch (val[0]) {
+        case '重新抓取':
+          this.recrwal(taskIds)
+          break
+        case '删除':
+          this.del(taskIds)
+          break
+
+        default:
+          break
+      }
     },
     recrwal(taskIds) {
       this.showTips({ msg: '此操作将重新抓取任务, 是否继续?' }, () => {

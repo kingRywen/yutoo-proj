@@ -327,7 +327,34 @@ export default [
           {
             name: "发货计划",
             path: "/plan",
-            perms: ["add", "addTask", "del"]
+            perms: ["add", "addTask", "del"],
+            leaf: true,
+            children: [
+              {
+                name: "同步记录",
+                path: "/sycrecord",
+                perms: ["add", "addTask", "del"]
+              }
+            ]
+          },
+          {
+            name: "货件管理",
+            path: "/warehouse",
+            leaf: true,
+            perms: ["add", "addTask", "del"],
+            children: [
+              {
+                name: "创建",
+                path: "/create",
+                perms: ["add", "addTask", "del"]
+              },
+              {
+                name: "",
+                path: "/print",
+                layout: "full",
+                perms: ["add", "addTask", "del"]
+              }
+            ]
           }
         ]
       },

@@ -81,6 +81,10 @@ export default {
     animation-delay: 0.3s;
     animation-fill-mode: forwards;
     text-decoration: none;
+    &:hover {
+      color: #fff !important;
+      background: #42a0ff;
+    }
   }
   @keyframes slideUp {
     0% {

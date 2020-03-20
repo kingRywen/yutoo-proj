@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
+    "@chenfengyuan/vue-barcode": "^1.0.1",
     "@luban-h5/lbc-button": "^0.0.3",
     "@luban-h5/lbp-slide": "^0.0.6",
     "@luban-h5/lbs-text-align": "^0.0.4",
@@ -22,6 +23,7 @@
     "animate.css": "^3.7.2",
     "ant-design-vue": "^1.4.11",
     "axios": "0.18.0",
+    "core-js": "^3.6.4",
     "echarts": "^4.5.0",
     "element-ui": "2.12.0",
     "font-awesome": "^4.7.0",
@@ -61,7 +63,8 @@
     "sass-loader": "^7.1.0",
     "sinon": "^8.0.1",
     "vue-jest": "^3.0.5",
-    "vue-template-compiler": "2.5.18"
+    "vue-template-compiler": "2.5.18",
+    "webpack-bundle-analyzer": "^3.6.1"
   },
   "eslintConfig": {
     "root": true,

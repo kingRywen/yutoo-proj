@@ -133,7 +133,6 @@
       <el-table-column
         align="center"
         v-if="schema.batch !== false"
-        fixed="left"
         reserve-selection
         :selectable="selectable"
         type="selection"
@@ -443,9 +442,11 @@ export default {
   &.el-table /deep/ th {
     background: #f2f2f2;
   }
-  &.el-table /deep/ th,
-  &.el-table /deep/ td {
+  &.el-table /deep/ th {
     padding: 2px 0;
+  }
+  &.el-table /deep/ td {
+    padding: 8px 0;
   }
   /deep/ .first {
     background: #e8e8e8;

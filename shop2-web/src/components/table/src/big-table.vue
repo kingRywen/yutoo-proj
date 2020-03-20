@@ -4,12 +4,14 @@
     <plx-table-grid
       :spanMethod="spanMethod"
       auto-resize
-      @selection-change="$event => $emit('plselectChange', $event)"
+      @selection-change="handleSelectionChange"
+      @select="handleSelect"
       class="custom-eltable"
       :show-header="showHeader"
       @table-body-scroll="handleTableScroll"
       v-if="isRoot"
       stripe
+      :row-style="showRow"
       size="mini"
       :paginationShow="false"
       :datas="tableData"
@@ -18,11 +20,11 @@
       <slot name="topleft"></slot>
       <plx-table-column :show-overflow="false" type="selection" width="46" fixed="left" />
       <!-- <plx-table-column type="index" width="100" fixed="left" /> -->
-      <template v-for="(item, index) in columns">
+      <template v-for="(item) in columns">
         <plx-table-column
           v-if="!item.merge"
           :show-overflow="item.noTooltip !== false"
-          :key="index"
+          :key="item.value"
           :resizable="true"
           :prop="item.value"
           :label="item.label"
@@ -32,6 +34,7 @@
           <template slot-scope="scope">
             <table-colvalue
               :item="item"
+              :fixedMinusOne="fixedMinusOne"
               :scope="{...scope, $index: scope.$rowIndex}"
               :style="item.style ||''"
               :pageSize="$attrs.pageSize"
@@ -55,6 +58,7 @@
             <template slot-scope="scope">
               <table-colvalue
                 :item="k"
+                :fixedMinusOne="fixedMinusOne"
                 :scope="{...scope, $index: scope.$rowIndex}"
                 :style="k.style ||''"
                 :pageSize="$attrs.pageSize"
@@ -72,6 +76,7 @@
 </template>
 <script>
 import { PlxTableGrid, PlxTableColumn } from 'pl-table'
+import { showRow } from './common-utils'
 export default {
   name: 'big-table',
   components: {
@@ -79,6 +84,7 @@ export default {
     PlxTableColumn
   },
   props: {
+    fixedMinusOne: Boolean,
     spanMethod: Function,
     showHeader: {
       default: false
@@ -123,12 +129,26 @@ export default {
     }
   },
   methods: {
+    showRow,
     setHeight() {
       let grid = this.$refs.table.$el.querySelectorAll('.plx-grid')[0]
       this.height = grid.offsetHeight
     },
     handleTableScroll() {
       this.$emit('table-body-scroll')
+    },
+    handleSelectionChange($event) {
+      if (this.select) {
+        return
+      }
+      this.$emit('plselectChange', $event)
+    },
+    handleSelect(selection, row) {
+      this.select = true
+      this.$emit('select', selection, row)
+      this.$nextTick(() => {
+        this.select = false
+      })
     }
   }
 }

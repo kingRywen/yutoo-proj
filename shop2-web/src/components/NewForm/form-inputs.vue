@@ -501,7 +501,6 @@ export default {
       }
     },
     handleChangeItem(arr) {
-      
       if (this.item.changeItem) {
         this.item.changeItem(arr)
       }
@@ -519,6 +518,10 @@ export default {
 
       // console.log(type, props)
       switch (type) {
+        /* options: '$store.storeInfo.curStoreList',
+          handler: {
+            action: 'storeInfo/getStoreList'
+          } */
         case '$store':
           // 监听vuex的值
           if (!this.$store) {

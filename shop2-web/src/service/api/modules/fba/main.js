@@ -368,28 +368,32 @@ export default [
     path: "/fbaReplenish/setAvgSale",
     name: "FbaReplenishSetAvgSale",
     method: "POST",
+    singleLoading: true,
     desc: "补货功能页面 - 算法-设置平均销量",
-    showSuccess: true,
+    showSuccess: false,
+    // noShowDefaultError: true,
     mock: false
   },
   {
     path: "/fbaReplenish/export",
     name: "FbaReplenishExport",
     method: "POST",
-    config: {
-      responseType: "blob"
-    },
+    // config: {
+    //   responseType: "blob"
+    // },
     singleLoading: true,
     desc: "补货功能页面 - 导出当前列表",
-    showSuccess: true,
+    // showSuccess: true,
     mock: false
   },
   {
     path: "/fbaReplenish/setParentQty",
     name: "FbaReplenishSetParentQty",
     method: "POST",
+    singleLoading: true,
     desc: "补货功能页面 - 设置父产品补货数量",
-    showSuccess: true,
+    showSuccess: false,
+    // noShowDefaultError: true,
     mock: false
   },
   {
@@ -542,5 +546,31 @@ export default [
     method: "POST",
     desc: "补货列表页面 - 手动同步",
     mock: false
+  },
+  {
+    path: "fbaReplenishProduct/and/have/import/variation",
+    name: "fbaReplenishProductAndHaveImportVariation",
+    method: "POST",
+    desc: "补货列表页面 - 查询已导入补货工具的产品列表(查询变体)",
+    mock: false
+  },
+  {
+    path: "fbaReplenishProduct/and/have/import",
+    name: "fbaReplenishProductAndHaveImport",
+    method: "POST",
+    desc: "补货列表页面 - 查询已导入补货工具的产品列表(分页)",
+    mock: false
+  },
+  {
+    path: "fbaShipmentCreate/carton/list",
+    name: "fbaShipmentCreateCartonList",
+    method: "POST",
+    desc: "FBA补货预处理 - 查询商品装箱信息"
+  },
+  {
+    path: "fbaShipmentCreate/shipment/list",
+    name: "fbaShipmentCreateShipmentList",
+    method: "POST",
+    desc: "FBA补货计划 - 计划中的货件列表"
   }
 ];

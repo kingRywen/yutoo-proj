@@ -52,14 +52,14 @@ export default {
               fn: () => {
                 this.add(3)
               }
-            },
-            {
-              name: '监控频率策略',
-              perm: 'add',
-              fn: () => {
-                this.add(4)
-              }
             }
+            // {
+            //   name: '监控频率策略',
+            //   perm: 'add',
+            //   fn: () => {
+            //     this.add(4)
+            //   }
+            // }
           ]
         }
       ],

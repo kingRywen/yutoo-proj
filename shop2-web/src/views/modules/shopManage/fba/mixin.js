@@ -6,8 +6,16 @@ export default {
   data() {
     return {
       // 选中的运输方式
-      selectTran: {}
+      selectTran: {
+        value: this.$route.query.transportId || null,
+        label: this.$route.query.transportLabel || null
+      }
     };
+  },
+  watch: {
+    "selectTran.value"(val) {
+      this.$refs.layout.getList({ transportId: val });
+    }
   },
   computed: {
     // 运输方式列表
@@ -21,6 +29,10 @@ export default {
   methods: {
     // 平均销量列渲染
     renderAva(h, scope) {
+      let { salesAvg, avgSales } = scope.row;
+      if (avgSales == null) {
+        return <span>-</span>;
+      }
       return (
         <el-popover
           trigger="hover"
@@ -45,7 +57,7 @@ export default {
         >
           <dailyBox tableData={scope.row.__avaList} />
           <el-button slot="reference" type="text">
-            {32}
+            {salesAvg || avgSales}
           </el-button>
         </el-popover>
       );
@@ -57,7 +69,7 @@ export default {
           <el-dropdown
             style="padding-left: 0"
             onCommand={command => {
-              console.log(command);
+              // console.log(command);
               this.selectTran = command;
             }}
           >
@@ -71,7 +83,7 @@ export default {
               ))}
             </el-dropdown-menu>
           </el-dropdown>
-          {this.selectTran.label && (
+          {this.$route.path !== "/shopManage/fba/rep" && this.selectTran.label && (
             <el-tag
               size="mini"
               type="warning"

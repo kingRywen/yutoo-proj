@@ -87,14 +87,7 @@
                 label-width="80px"
               >
                 <div ref="searchWrapper" v-if="!simple">
-                  <ElButton
-                    class="ml10 mb10"
-                    v-if="showSaveBtn"
-                    type="primary"
-                    plain
-                    size="small"
-                    @click="saveNormal"
-                  >保存</ElButton>
+                  <ElButton class="ml10 mb10" type="primary" plain size="small" @click="saveNormal">保存</ElButton>
                   <el-dropdown v-if="Object.keys(selSearchFields).length" trigger="click" @command="handleSearchCmd">
                     <ElButton plain type="primary" class="ml10" size="small">
                       更多
@@ -204,8 +197,8 @@
                   @command="handleCommand"
                 >
                   <!-- <i :class="item.icon"></i> -->
-                  <ElButton v-if="!item.btn" type="text" :icon="item.icon"></ElButton>
-                  <ElButton v-else :type="item.btn">
+                  <ElButton v-if="!item.btn" type="text" :loading="item.showLoading" :icon="item.icon"></ElButton>
+                  <ElButton :loading="item.showLoading" v-else :type="item.btn">
                     {{item.name}}
                     <i class="el-icon-arrow-down"></i>
                   </ElButton>
@@ -259,7 +252,9 @@
         <!-- 下方标签页 end -->
         <slot name="table">
           <yt-table
+            :fixedMinusOne="fixedMinusOne"
             :bigData="bigData"
+            :cellStyle="cellStyle"
             :selection="showSelection === false ? false : radioMode !== false ? 'radio' : 'checkbox'"
             :checkStrictly="checkStrictly"
             @select="handleSelect"
@@ -476,12 +471,10 @@ function addBtn(data) {
         }
       }
       // TODO: 获取按钮的时候需要处理
-      el.buttonList = vm.btnFn ? vm.btnFn(el) : []
+      el.buttonList = vm.btnFn ? vm.btnFn(el) : undefined
     })
   }
   handleData(data)
-  // console.log(data)
-
   return data
 }
 
@@ -550,12 +543,16 @@ export default {
   components: {
     Dialog
   },
-  provide() {
+  provide: function() {
     return {
-      addBtn
+      addTotal: this.addTotal,
+      addBtn: this.addBtn
     }
   },
   props: {
+    // 修正-1显示为 -
+    fixedMinusOne: false,
+    cellStyle: Function,
     // 是否显示左右滚动箭头
     scroll: {
       default: false
@@ -893,7 +890,10 @@ export default {
       arrowShowRight: true,
       showSaveBtn: false,
       dialogLensteners: {
-        'dialog.close': () => {
+        'dialog.close': refresh => {
+          if (refresh) {
+            this.getList()
+          }
           this.closeDialog()
         }
       },
@@ -1024,7 +1024,7 @@ export default {
     },
     // 所有展示的列
     allRow() {
-      let data = this.columns || []
+      let data = this.columns.filter(e => !e.noDisplay) || []
       return data.reduce((total, cur) => {
         return total.concat(
           cur.type === 'array'
@@ -1054,7 +1054,16 @@ export default {
             setShow(el)
           }
         })
+        this.$storage.set(
+          'local',
+          this.savedColName,
+          this.allRow.filter(el => el.show !== false).map(el => el.label)
+        )
       }
+    },
+
+    savedColName() {
+      return _camelCase(this.$route.path) + '.' + _camelCase(this.url)
     },
 
     restRowNum() {
@@ -1157,6 +1166,10 @@ export default {
     }
   },
   created() {
+    let cachedColumns = this.$storage.get('local', this.savedColName)
+    if (cachedColumns) {
+      this.currentRow = cachedColumns
+    }
     // 在有左侧树的情况下， 获取dataPromise中的Promise值并设置到data中
     if (this.leftTree) {
       if (this.leftTree.loadNode) {
@@ -1310,6 +1323,9 @@ export default {
     }
   },
   methods: {
+    addTotal(num) {
+      this.total += num
+    },
     getMore(type) {
       let table = this.$el.querySelectorAll('.el-table__body-wrapper')[0]
       let body = table.querySelectorAll('table.el-table__body')[0]
@@ -1775,7 +1791,12 @@ export default {
     //重置搜素
     resetMethod() {
       this.pageNo = 1
-      this.$refs.search.reset()
+      // this.$refs.search.reset()
+      this.searchData = Object.assign(
+        {},
+        this.searchDefaultData
+        // JSON.parse(this.$options.searchData)
+      )
       this.getList(null, null, true)
     },
     // 分页 pageNumber变化
@@ -1785,6 +1806,7 @@ export default {
     },
     // 分页 pageSize变化
     handleSizeChange(val) {
+      this.pageNo = 1
       this.pageSize = val
       this.getList()
     },
@@ -1891,31 +1913,33 @@ export default {
               })
             }
             if (vm.fixedPageFunc) {
-              let page = vm.fixedPageFunc(res)
-              let { buttonList } = res
-              let { pageNo = 0, pageSize = 0, rows, total = 0 } = page
-              if (buttonList) {
-                rows.forEach((element, index) => {
-                  element.buttonList = buttonList[index]
-                })
-              }
+              res = vm.fixedPageFunc(res)
+              // let { buttonList } = res
+              // let { pageNo = 0, pageSize = 0, rows, total = 0 } = page
+              // if (buttonList) {
+              //   rows.forEach((element, index) => {
+              //     element.buttonList = buttonList[index]
+              //   })
+              // }
 
-              vm.pageNo = pageNo || vm.pageNo
-              vm.pageSize = pageSize || vm.pageSize
-              vm.total = total
-              vm.tableList = rows
-              vm.tableLoading = false
-              vm.$emit('loading', false)
-            } else {
-              if (res.page) {
+              // vm.pageNo = pageNo || vm.pageNo
+              // vm.pageSize = pageSize || vm.pageSize
+              // vm.total = total
+              // vm.tableList = rows
+              // vm.tableLoading = false
+              // vm.$emit('loading', false)
+            }
+            if (res.page) {
                 res = res.page
               }
-              let { pageNo, pageSize, rows, total, data, list } = res || {}
+              let { pageNo, pageSize, rows, total, data, list, items } =
+                res || {}
 
               vm.pageNo = pageNo || vm.pageNo
               vm.pageSize = pageSize || vm.pageSize
               vm.total = total
-              let _rows = (!this.isShowPag ? data || list || rows : rows) || []
+              let _rows =
+                (!this.isShowPag ? data || list || rows || items : rows) || []
               _rows = this.dataMethod(_rows)
               if (this.btnFn && this.addBtn) {
                 vm.tableList = this.addBtn(_rows)
@@ -1929,7 +1953,6 @@ export default {
               // })
               vm.tableLoading = false
               vm.$emit('loading', false)
-            }
             //像父组件发送请求成功
             vm.$emit('requestSuccess', true, vm.tableList, res)
           })
@@ -1964,6 +1987,10 @@ export default {
     },
     // 清除数据
     clearSelection() {
+      if (this.bigData) {
+        let table = this.$refs.table.$refs.bigTab.$refs.table
+        table.clearSelection()
+      }
       return this.$refs.table && this.$refs.table.clearSelection()
     },
 
@@ -2050,7 +2077,7 @@ $leftBgColor: #f6f6f9;
     }
   }
   .right {
-    min-height: 400px;
+    // min-height: 400px;
     &.no-table {
       min-height: 0;
     }

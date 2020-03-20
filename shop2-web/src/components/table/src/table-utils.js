@@ -55,7 +55,20 @@ export function getMoney(item, scope) {
   let moneyField = item.value;
   if (scope.row[moneyField] || scope.row[moneyField] == 0) {
     if (scope.row[moneyField]) {
-      return `${item["money"] === "us" ? "$" : "¥"} ` + scope.row[moneyField];
+      return (
+        `${
+          item.currency
+            ? item.currency(scope.row)
+            : item.symbol
+            ? this.$store.state.storeInfo.allData[0] &&
+              this.$store.state.storeInfo.allData[0].sites.find(
+                e => e.siteId == item.symbol(scope.row)
+              ).symbol
+            : item["money"] === "us"
+            ? "$"
+            : "¥"
+        } ` + scope.row[moneyField]
+      );
     } else {
       return scope.row[moneyField];
     }
@@ -64,7 +77,8 @@ export function getMoney(item, scope) {
   }
 }
 
-export function handleExpand(scope, item, treeTableOtions, stop, e) {
+export function handleExpand(scope, item, treeTableOtions, stop, e, vm) {
+  // debugger;
   if (stop) {
     e.stopPropagation();
   }
@@ -80,11 +94,18 @@ export function handleExpand(scope, item, treeTableOtions, stop, e) {
       if (!_child) {
         // 需要请求后台
         Vue.set(row, "loading", true);
-        asyncFunc(row).then(data => {
-          row.loading = false;
-          Vue.set(row, childs, data);
-          Vue.set(row, "_expanded", true);
-        });
+        asyncFunc(row)
+          .then(data => {
+            row.loading = false;
+            vm.addBtn(data);
+            Vue.set(row, childs, data);
+            // vm.addTotal(data.length);
+            Vue.set(row, "_expanded", true);
+          })
+          .catch(e => {
+            console.error(e);
+            row.loading = false;
+          });
       } else {
         Vue.set(row, "_expanded", true);
       }
@@ -97,7 +118,7 @@ export function handleExpand(scope, item, treeTableOtions, stop, e) {
   }
 }
 
-export const getLink = (h, item, scope, treeTableOtions, numJsx) => {
+export const getLink = (h, item, scope, treeTableOtions, numJsx, vm) => {
   let _jsx = [],
     val = scope.row[item.value],
     {
@@ -115,7 +136,7 @@ export const getLink = (h, item, scope, treeTableOtions, numJsx) => {
             ? "caret-bottom"
             : "caret-right"
         }`}
-        onClick={e => handleExpand(scope, item, treeTableOtions, true, e)}
+        onClick={e => handleExpand(scope, item, treeTableOtions, true, e, vm)}
         style={{
           visibility: !treeTableOtions.expandFunc(scope.row) ? `hidden` : null
         }}

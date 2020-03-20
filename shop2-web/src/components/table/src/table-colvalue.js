@@ -1,9 +1,27 @@
-import { getEnum, getImg, getMoney, getPercent, getLink } from "./table-utils";
+import {
+  getEnum,
+  getImg,
+  getMoney,
+  getPercent,
+  getLink,
+  handleExpand
+} from "./table-utils";
 export default {
   name: "table-colvalue",
-  props: ["item", "scope", "arr", "treeTableOtions", "pageSize", "pageNo"],
+  props: [
+    "item",
+    "scope",
+    "arr",
+    "treeTableOtions",
+    "pageSize",
+    "pageNo",
+    "fixedMinusOne"
+  ],
   // TODO: 单独使用时没有注入函数
-  inject: ["addBtn"],
+  inject: {
+    addBtn: { default: () => {} },
+    addTotal: { default: () => {} }
+  },
   render(h) {
     const { scope, item } = this;
     const { row } = scope;
@@ -14,11 +32,9 @@ export default {
       render,
       formatter,
       expand,
-      async,
       _enum,
       money,
       numField,
-      asyncFunc,
       isPercent,
       showTooltip,
       urlItem,
@@ -88,7 +104,8 @@ export default {
                 <el-input vModel={row.__isedit[item.value].editVal}></el-input>
               ) : (
                 <el-input-number
-                  min={0}
+                  min={0 || item.min}
+                  max={item.max}
                   controls={false}
                   precision={row.__isNumber}
                   vModel={row.__isedit[item.value].editVal}
@@ -135,14 +152,16 @@ export default {
     if (_enum || money || isPercent || showTooltip || url) {
       if (url) {
         return (
-          <div>{getLink(h, item, scope, this.treeTableOtions, numJsx)}</div>
+          <div>
+            {getLink(h, item, scope, this.treeTableOtions, numJsx, this)}
+          </div>
         );
       }
       if (_enum) {
         return <span>{getEnum(item, scope)}</span>;
       }
       if (money) {
-        return <span>{getMoney(item, scope)}</span>;
+        return <span>{getMoney.call(this, item, scope)}</span>;
       }
       if (isPercent) {
         return <span>{getPercent(item, scope)}</span>;
@@ -174,62 +193,34 @@ export default {
       }
     }
 
-    let childs, expandFunc, jsx, expandJsx, _child;
+    let expandFunc, jsx, expandJsx;
     // const { expandFunc } = expandOptions;
     if (expand) {
-      childs = this.treeTableOtions.childs;
       expandFunc = this.treeTableOtions.expandFunc;
-      _child = row[childs];
     }
 
     const { loading, _expanded, _level } = row;
-    // const _child = row[childs]
-    // 点击下拉
-    const handleExpand = () => {
-      if (!_expanded) {
-        if (async) {
-          if (!_child) {
-            // 需要请求后台
-            this.$set(row, "loading", true);
-            asyncFunc(row).then(data => {
-              row.loading = false;
-              this.$set(
-                row,
-                childs,
-                vm.addBtn ? vm.addBtn.call(this, data) : data
-              );
-              this.$set(row, "_expanded", true);
-            });
-          } else {
-            this.$set(row, "_expanded", true);
-          }
-        } else {
-          // 不需要请求后台
-          this.$set(row, "_expanded", true);
-        }
-      } else {
-        row._expanded = false;
-      }
-    };
     function getVal(val) {
       return overPlus ? (val > overPlus ? overPlus + "+" : val) : val;
+    }
+    function formatVal(val) {
+      if (vm.fixedMinusOne) {
+        if (val == -1 || val === 0) {
+          return "-";
+        }
+      }
+      return val === null || val === "" || val === undefined ? "-" : val;
     }
     if (formatter && typeof formatter === "function") {
       jsx = <span>{formatter(this.scope, this.item)}</span>;
     } else if (render && typeof render === "function") {
       // 如果是切换效果的列，需要处理一下值
       let val = getVal(row[value]);
-      val = val === null || val === "" || val === undefined ? "-" : val;
+      val = formatVal(val);
       jsx = render(h, this.scope, this.arr, val);
     } else {
       const _value = getVal(row[value]);
-      jsx = (
-        <span>
-          {_value === null || _value === "" || _value === undefined
-            ? "-"
-            : _value}
-        </span>
-      );
+      jsx = <span>{formatVal(_value)}</span>;
     }
     // debugger
     if (expand) {
@@ -241,7 +232,9 @@ export default {
             loading ? "loading" : _expanded ? "caret-bottom" : "caret-right"
           }`}
           disabled={loading}
-          onClick={e => handleExpand.call(this, e)}
+          onClick={e =>
+            handleExpand(scope, item, this.treeTableOtions, true, e, this)
+          }
         />
       );
     }

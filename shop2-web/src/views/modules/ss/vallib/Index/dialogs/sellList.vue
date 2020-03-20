@@ -1,5 +1,6 @@
 <template>
   <main-layout
+    class="w800"
     :outerParams="outerParams"
     :columns="columns"
     :url="`ss/${type == 'lib' ? 'sellingLibSellingLibList' : 'sellingMaybeSellingList'}`"
