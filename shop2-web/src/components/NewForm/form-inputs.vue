@@ -2,7 +2,7 @@
   <!-- number -->
   <el-input-number
     @clear="$emit('clear')"
-    :style="{width:widgetWidth|| '100%',minWidth: '120px'}"
+    :style="{width:widgetWidth|| '100%',minWidth: '100px'}"
     v-if="type === 'number'"
     :value="currentVal"
     @change="handleNumberChange($event)"
@@ -19,7 +19,7 @@
     <span class="el-input-group__prepend" v-if="item.signal">{{item.signal}}</span>
     <el-input-number
       @clear="$emit('clear')"
-      :style="{width:widgetWidth|| '100%',minWidth: '120px'}"
+      :style="{width:widgetWidth|| '100%',minWidth: '100px'}"
       :value="currentVal"
       :precision="2"
       @change="handleNumberChange($event)"

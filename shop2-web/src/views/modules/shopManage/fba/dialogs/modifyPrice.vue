@@ -1,20 +1,22 @@
 <template>
-  <new-form v-if="!showPercent" ref="form" class="w600" label-width="120px" :form-schema="formSchema" :value="value"></new-form>
+  <new-form v-if="!showPercent" ref="form" class="w800" label-width="120px" :form-schema="formSchema" :value="value"></new-form>
   <div v-else>
-    <el-progress :text-inside="true" :stroke-width="10" status="warning" :percentage="percentage"></el-progress>
+    <el-progress :text-inside="true" :stroke-width="18" status="warning" :percentage="percentage"></el-progress>
     <div class="mt20 txc">正在修改价格中...</div>
   </div>
 </template>
 <script>
 export default {
-  props: ['data', 'type'],
+  props: ['data', 'type', 'fn'],
   data() {
     let table = {
       rowKey: 'sellerSku',
       type: 'table',
-      width: 'auto',
+      
       head: {
         sellerSku: {
+          width: "424px",
+          minWidth: '500px',
           widget: 'text',
           label: 'SKU',
           noLabel: true
@@ -78,12 +80,12 @@ export default {
               : 'FbaReplenishProductWarningDaysSet'
           }`
         ](params)
-          .then(data => {
+          .then(() => {
             clearInterval(this._interval)
             this.hasSetted = true
             this.percentage = 100
-
-            return Promise.resolve(data)
+            this.fn(this.value.table)
+            return Promise.resolve('close')
           })
           .catch(data => {
             if (data.code == -1 && this.type == 1) {

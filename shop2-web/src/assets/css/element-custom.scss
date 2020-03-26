@@ -1,3 +1,5 @@
+$table-border-color: #bbb;
+
 .el-menu {
   box-sizing: border-box;
 }
@@ -75,7 +77,7 @@
 }
 .el-table--group,
 .el-table--border {
-  border-color: #e4e4e4;
+  border-color: $table-border-color;
 }
 
 // .el-button--primary.is-plain {
@@ -742,7 +744,7 @@ textarea {
   text-align: left;
 }
 .el-switch__label.is-active {
-  color: rgb(19, 206, 102);
+  color: #00a7e2;
 }
 .el-switch__label {
   font-size: 12px;
@@ -781,7 +783,8 @@ textarea {
     display: none;
   }
 }
-.el-button.fixed {
+.fixed.table-arrow-left,
+.fixed.table-arrow-right {
   position: fixed;
   top: 50%;
 }
@@ -880,4 +883,25 @@ li.el-cascader-node {
       border: none;
     }
   }
+}
+.el-checkbox__inner {
+  border-color: #a9a9a9;
+}
+.el-dialog__headerbtn {
+  top: 6px;
+  font-size: 32px;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #e4e4e4;
+}
+
+.custom-eltable.el-table td,
+.custom-eltable.el-table th.is-leaf {
+  border-color: $table-border-color;
+}
+
+.el-table__fixed::before,
+.el-table__fixed-right::before {
+  background-color: $table-border-color;
 }

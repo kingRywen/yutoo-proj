@@ -117,8 +117,7 @@ export default {
               params: {
                 replenishInfoId: scope.row.replenishInfoId
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
               component: () => import('./view.vue')
             })
           }

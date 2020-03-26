@@ -13,8 +13,8 @@
               inactive-text="自动"
               :inactive-value="true"
               :active-value="false"
-              active-color="#13ce66"
-              inactive-color="#13ce66"
+              active-color="#00a7e2"
+              inactive-color="#00a7e2"
             ></el-switch>
           </el-form-item>
           <!-- <el-form-item> -->

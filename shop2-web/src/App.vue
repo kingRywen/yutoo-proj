@@ -14,6 +14,7 @@ export default {
       return this.$store.state.app.cachePage
     }
   },
+
   methods: {
     ...mapActions('perms', ['initMenu']),
     bindEvent() {
@@ -94,7 +95,12 @@ export default {
   created() {
     // this.init()
     this.bindEvent()
-  }
+
+    
+  },
+  beforeDestroy() {
+    GLOBAL.vbus.$emit('setTableEnter')
+  },
 }
 </script>
 <style lang="scss">

@@ -1,6 +1,8 @@
 <template>
   <main-layout
+    cusSaveName="planinfo"
     :columns="columns"
+    :searchFields="searchFields"
     :edit-btns="edits"
     editWidth="200px"
     url="fba/fbaShipmentCreatePlanList"
@@ -11,10 +13,27 @@
 export default {
   data() {
     return {
+      searchFields: {
+        planName: {
+          placeholder: '计划名'
+        },
+        storeId: {
+          widget: 'select',
+          placeholder: '选择店铺',
+          options: '$store.storeInfo.curStoreList',
+          handler: {
+            action: 'storeInfo/getStoreList'
+          }
+        }
+      },
       columns: [
         {
           label: '计划名',
           value: 'planName'
+        },
+        {
+          label: '店铺',
+          value: 'storeName'
         },
         {
           label: '编号',
@@ -67,8 +86,9 @@ export default {
                 targetCountryCode: scope.row.targetCountryCode,
                 packageType: scope.row.packageType,
                 labelPrepPreference: scope.row.labelPrepPreference,
+                unedit: scope.row.planProcess == 6,
 
-                planProcess: Math.max(+scope.row.planProcess + 1, 1),
+                planProcess: Math.min(Math.max(+scope.row.planProcess + 1, 1), 5),
                 replenishInfoId: scope.row.replenishInfoId
               }
             })
@@ -82,7 +102,7 @@ export default {
   methods: {
     fixedPageFunc(data) {
       return {
-        rows: data.plans
+        page: data.plans
       }
     }
   }

@@ -23,6 +23,7 @@
           :xl="schema.span || (search !== false ? 4 :24)"
         >
           <form-item
+            :validateForm="validateForm"
             @blur="handleObjChange"
             @clear="handleClear"
             @el-change="handleElChange(schema, key,1)"
@@ -57,6 +58,7 @@
           :key="key"
         >
           <form-item
+            :validateForm="validateForm"
             @blur="handleObjChange"
             @el-change="handleElChange(schema, key,2)"
             @clear="handleClear"
@@ -284,6 +286,9 @@ export default {
       }
       return this.$refs.ruleform.validate()
     },
+    validateForm(fields, cb) {
+      return this.$refs.ruleform.validateField(fields, cb)
+    },
     handleClose(schema, key) {
       this.innerChange = true
       schema.hidden = true
@@ -364,17 +369,27 @@ export default {
     }
     &.is-close {
       // margin-right:0
-      margin-right: 30px;
+      margin-right: 10px;
     }
 
     .close {
+      z-index: 1;
       position: absolute;
-      top: 0;
-      right: -24px;
-      padding: 0;
+      border-radius: 0 10px 0 50px;
+      background: #c7f0ff;
+      color: #fff;
+      border-width: 1px 1px 0 0;
+      padding: 1px;
+      top: 1px;
+      right: 1px;
       .el-icon-close {
-        color: #999;
-        font-size: 16px;
+        color: #00a7e2;
+        font-size: 12px;
+        width: 10px;
+        height: 10px;
+        transform: scale(0.85);
+        top: -2px;
+        position: relative;
         &:hover {
           color: #333;
         }

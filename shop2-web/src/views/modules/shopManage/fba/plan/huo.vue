@@ -1,6 +1,7 @@
 <template>
   <div>
     <main-layout
+      cusSaveName="huo"
       :outerParams="storeInfo"
       @requestSuccess="_ => isMount = true"
       :searchFields="searchFields"
@@ -15,29 +16,13 @@
       url="fba/FbaReplenishShippingList"
       ref="layout"
     ></main-layout>
-    <el-dropdown v-if="isMount" class="anay" @command="handleCommand">
-      <span class="el-dropdown-link">
-        <!-- <i class="iconfont">&#xe60e;</i> -->
-        <el-button type="text" style="padding: 0" icon="iconfont icongongju"></el-button>
-      </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="f">FBA管理</el-dropdown-item>
-        <el-dropdown-item command="c">补货记录</el-dropdown-item>
-        <el-dropdown-item command="d">发货计划</el-dropdown-item>
-        <el-dropdown-item command="a">生命周期管理</el-dropdown-item>
-        <el-dropdown-item command="b">运输方式</el-dropdown-item>
-        <el-dropdown-item command="e">设置滞销预警天数</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
   </div>
 </template>
 <script>
 import { timeField } from 'Utils/table-render'
 import { downloadCsv, formatDate } from 'Utils'
-import dropdownMixin from '../dropdown-mixin'
 import { mapActions } from 'vuex'
 export default {
-  mixins: [dropdownMixin],
   data() {
     return {
       editBtns: [
@@ -79,7 +64,7 @@ export default {
         {
           name: '导入',
           perm: 'add',
-          icon: 'el-icon-upload2',
+          icon: 'iconfont icondaoru',
           type: 'dropdown',
           btns: [
             {
@@ -317,6 +302,9 @@ export default {
             label: '设置运输方式'
           },
           {
+            label: '设置为未发货'
+          },
+          {
             label: '关联批次号'
           },
           {
@@ -348,6 +336,9 @@ export default {
         case '设置运输方式':
           this.setTran(val[0], data)
           break
+        case '设置为未发货':
+          this.setUnTran(data)
+          break
         case '关联批次号':
           this.relative(val[0], data)
           break
@@ -358,6 +349,13 @@ export default {
         default:
           break
       }
+    },
+    setUnTran(data) {
+      this.showTips({ msg: '此操作将设置为未发货, 是否继续?' }, () => {
+        return this.$api[`fba/fbaReplenishShippingConfirmUnSend`]({
+          data
+        })
+      })
     },
     setTran(title, data) {
       this.$_dialog({
@@ -542,13 +540,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.anay {
-  position: absolute;
-  right: 23px;
-  top: -20px;
-  /deep/ i {
-    font-size: 24px;
-  }
-}
-</style>

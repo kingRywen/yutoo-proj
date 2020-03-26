@@ -1,5 +1,5 @@
 <template>
-  <div class="main-layout">
+  <div :class="['main-layout', {'has-scroll': scroll, 'show-right-btns': showRightBtns}]">
     <ElRow :gutter="20">
       <ElCol class="left" v-if="leftTree" :span="!toggleLeft ? 0 : leftSpan">
         <slot name="left">
@@ -223,6 +223,7 @@
               </template>
               <el-popover v-if="showFilter !== false" placement="bottom" trigger="click">
                 <div class="rowCheckbox">
+                  <el-checkbox :indeterminate="isIndeterminate" :value="checkAll" @change="handleCheckAllSelect">全选</el-checkbox>
                   <ElCheckboxGroup v-model="currentRow">
                     <ElCheckbox v-for="item in allRow" :key="item.label" :label="item.label"></ElCheckbox>
                   </ElCheckboxGroup>
@@ -251,166 +252,188 @@
         </div>
         <!-- 下方标签页 end -->
         <slot name="table">
-          <yt-table
-            :fixedMinusOne="fixedMinusOne"
-            :bigData="bigData"
-            :cellStyle="cellStyle"
-            :selection="showSelection === false ? false : radioMode !== false ? 'radio' : 'checkbox'"
-            :checkStrictly="checkStrictly"
-            @select="handleSelect"
-            :treeTable="treeTable"
-            :treeColor="treeTable"
-            :stripe="!treeTable"
-            :treeStripe="treeTable"
-            :pageSize="pageSize"
-            :pageNo="pageNo"
-            :selectableFunc="selectableFunc"
-            :treeTableOtions="treeTableOtions"
-            v-loading="tableLoading"
-            @sortChange="sortChange"
-            @selectChange="selectChange"
-            :span-method="spanMethod"
-            :tableRowClassName="tableRowClassName"
-            :data="dataList"
-            :columns="columns"
-            :reserve-selection="reserveSelection"
-            :isExpandAll="isExpandAll"
-            ref="table"
-            v-if="showTable"
-          >
-            <template v-if="arrowShowLeft && scroll" slot="topleft">
+          <div style="position:relative">
+            <div
+              v-if="arrowShowLeft && scroll && showArrowLeft"
+              :class="[{fixed: showFixed}]"
+              class="table-arrow-left"
+              @click="getMore(-1)"
+            >
+              <!-- <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button> -->
+            </div>
+            <div
+              v-if="arrowShowRight && scroll && showArrowRight"
+              :class="[{fixed: showFixed}]"
+              class="table-arrow-right"
+              :style="{right: parseInt(editWidth) + 10 + 'px'}"
+              @click="getMore()"
+            >
+              <!-- <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button> -->
+            </div>
+            <yt-table
+              @big-expand="handleBigExpand"
+              :fixedMinusOne="fixedMinusOne"
+              :bigData="bigData"
+              :cellStyle="cellStyle"
+              :selection="showSelection === false ? false : radioMode !== false ? 'radio' : 'checkbox'"
+              :checkStrictly="checkStrictly"
+              @select="handleSelect"
+              :treeTable="treeTable"
+              :treeColor="treeTable"
+              :stripe="!treeTable"
+              :treeStripe="treeTable"
+              :pageSize="pageSize"
+              :pageNo="pageNo"
+              :selectableFunc="selectableFunc"
+              :treeTableOtions="treeTableOtions"
+              v-loading="tableLoading"
+              @sortChange="sortChange"
+              @selectChange="selectChange"
+              :span-method="spanMethod"
+              :tableRowClassName="tableRowClassName"
+              :data="dataList"
+              :columns="columns"
+              :reserve-selection="reserveSelection"
+              :isExpandAll="isExpandAll"
+              ref="table"
+              v-if="showTable"
+            >
+              <!-- <template v-if="arrowShowLeft && scroll && showArrowLeft" slot="topleft">
               <el-table-column fixed="left" key="arrowLeft" :index="9999" width="40">
                 <template slot-scope="scope">
-                  <el-button
-                    type="text"
-                    icon="el-icon-d-arrow-left"
-                    :class="[{fixed: dataList.length >10}]"
-                    @click="getMore(-1)"
-                  ></el-button>
+                  <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button>
                 </template>
               </el-table-column>
-            </template>
-            <template v-if="arrowShowLeft && scroll" slot="topleft1">
+              </template>-->
+              <!-- <template v-if="arrowShowLeft && scroll && showArrowLeft" slot="topleft1">
               <plx-table-column fixed="left" key="arrowLeft" label="left" :index="9999" width="40">
                 <template slot-scope="scope">
                   <el-button
                     type="text"
                     icon="el-icon-d-arrow-left"
-                    :class="[{fixed: dataList.length >10}]"
+                    :class="[{fixed: showFixed}]"
                     @click="getMoreBig(-1)"
                   ></el-button>
                 </template>
               </plx-table-column>
-            </template>
-            <template slot="right">
-              <slot name="right">
-                <el-table-column
-                  class-name="rightHandles"
-                  :fixed="tbRightFixed"
-                  label="操作"
-                  align="left"
-                  :width="editWidth"
-                  v-if="edits.length"
+              </template>-->
+              <template slot="right">
+                <slot name="right">
+                  <el-table-column
+                    class-name="rightHandles"
+                    :fixed="tbRightFixed"
+                    label="操作"
+                    align="left"
+                    :width="editWidth"
+                    v-if="edits.length"
+                  >
+                    <template slot-scope="scope">
+                      <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
+                        <el-dropdown
+                          v-setplain.small
+                          split-button
+                          class="w100 item-btn"
+                          type="primary"
+                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                          @command="handleEditCommand"
+                        >
+                          {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                              v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
+                              :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
+                              :key="index"
+                            >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
+                      </template>
+                      <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
+                        <el-button
+                          class="item-btn w100"
+                          v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
+                          size="small"
+                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                          type="primary"
+                          plain
+                        >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
+                      </template>
+                    </template>
+                  </el-table-column>
+                </slot>
+                <!-- <el-table-column
+                  v-if="scroll && arrowShowRight && showArrowRight"
+                  key="arrowRight"
+                  fixed="right"
+                  :index="9999"
+                  width="40"
                 >
                   <template slot-scope="scope">
-                    <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
-                      <el-dropdown
-                        v-setplain.small
-                        split-button
-                        class="w100 item-btn"
-                        type="primary"
-                        @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                        @command="handleEditCommand"
-                      >
-                        {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item
-                            v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
-                            :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
-                            :key="index"
-                          >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </template>
-                    <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
-                      <el-button
-                        class="item-btn w100"
-                        v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
-                        size="small"
-                        @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                        type="primary"
-                        plain
-                      >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
-                    </template>
+                    <el-button type="text" icon="el-icon-d-arrow-right" :class="[{fixed: showFixed}]" @click="getMore"></el-button>
                   </template>
-                </el-table-column>
-              </slot>
-              <el-table-column v-if="scroll && arrowShowRight" fixed="right" :index="9999" width="40">
-                <template slot-scope="scope">
-                  <el-button
-                    type="text"
-                    icon="el-icon-d-arrow-right"
-                    :class="[{fixed: dataList.length >10}]"
-                    @click="getMore"
-                  ></el-button>
-                </template>
-              </el-table-column>
-            </template>
-            <template slot="right1">
-              <slot name="right1">
-                <plx-table-column
-                  class-name="rightHandles"
-                  :fixed="tbRightFixed"
-                  label="操作"
-                  align="left"
-                  :width="editWidth"
-                  v-if="edits.length"
+                </el-table-column>-->
+              </template>
+              <template slot="right1">
+                <slot name="right1">
+                  <plx-table-column
+                    class-name="rightHandles"
+                    :fixed="tbRightFixed"
+                    label="操作"
+                    align="left"
+                    :width="editWidth"
+                    v-if="edits.length"
+                  >
+                    <template slot-scope="scope">
+                      <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
+                        <el-dropdown
+                          v-setplain.small
+                          split-button
+                          class="w100 item-btn"
+                          type="primary"
+                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                          @command="handleEditCommand"
+                        >
+                          {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                              v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
+                              :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
+                              :key="index"
+                            >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
+                      </template>
+                      <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
+                        <el-button
+                          class="item-btn w100"
+                          v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
+                          size="small"
+                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                          type="primary"
+                          plain
+                        >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
+                      </template>
+                    </template>
+                  </plx-table-column>
+                </slot>
+                <!-- <plx-table-column
+                  v-if="scroll && arrowShowRight && showArrowRight"
+                  key="arrowRight"
+                  fixed="right"
+                  :index="9999"
+                  width="40"
                 >
                   <template slot-scope="scope">
-                    <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
-                      <el-dropdown
-                        v-setplain.small
-                        split-button
-                        class="w100 item-btn"
-                        type="primary"
-                        @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                        @command="handleEditCommand"
-                      >
-                        {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item
-                            v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
-                            :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
-                            :key="index"
-                          >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </template>
-                    <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
-                      <el-button
-                        class="item-btn w100"
-                        v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
-                        size="small"
-                        @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                        type="primary"
-                        plain
-                      >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
-                    </template>
+                    <el-button
+                      type="text"
+                      icon="el-icon-d-arrow-right"
+                      :class="[{fixed: showFixed}]"
+                      @click="getMoreBig"
+                    ></el-button>
                   </template>
-                </plx-table-column>
-              </slot>
-              <plx-table-column v-if="scroll && arrowShowRight" fixed="right" :index="9999" width="40">
-                <template slot-scope="scope">
-                  <el-button
-                    type="text"
-                    icon="el-icon-d-arrow-right"
-                    :class="[{fixed: dataList.length >10}]"
-                    @click="getMoreBig"
-                  ></el-button>
-                </template>
-              </plx-table-column>
-            </template>
-          </yt-table>
+                </plx-table-column>-->
+              </template>
+            </yt-table>
+          </div>
         </slot>
         <el-pagination
           background
@@ -745,6 +768,8 @@ export default {
     backBtn: {
       default: false
     },
+    // 自定义排序
+    customSortFunc: Function,
     // 排序参数处理函数
     sortableFunc: {
       type: Function,
@@ -885,6 +910,12 @@ export default {
   data() {
     let vm = this
     return {
+      showRightBtns: false,
+      showFixedBtn: false,
+      showArrowLeft: false,
+      showArrowRight: false,
+      // isIndeterminate: false,
+      // checkAll:false,
       // 显示箭头
       arrowShowLeft: false,
       arrowShowRight: true,
@@ -992,6 +1023,9 @@ export default {
     }
   },
   computed: {
+    showFixed() {
+      return this.showFixedBtn || this.dataList.length > 6
+    },
     dataList() {
       return this.url ? this.tableList : this.outerTableList
     },
@@ -1021,6 +1055,15 @@ export default {
     },
     edits() {
       return this.editBtns
+    },
+    isIndeterminate() {
+      return (
+        this.currentRow.length != 0 &&
+        this.allRow.length != this.currentRow.length
+      )
+    },
+    checkAll() {
+      return this.allRow.length == this.currentRow.length
     },
     // 所有展示的列
     allRow() {
@@ -1295,6 +1338,9 @@ export default {
     this.bindEvent()
   },
   mounted() {
+    this.$nextTick(() => {
+      this.bindEnter()
+    })
     if (!this.simple) {
       this.debounceResizeHandler = debounce(300, this.resizeHandler)
       this.$nextTick(() => {
@@ -1304,8 +1350,15 @@ export default {
         }
       })
     }
+    if (this.scroll) {
+      this.bindMouseEnter()
+    }
   },
   beforeDestroy() {
+    if (this.scroll) {
+      this.bindMouseEnter(false)
+    }
+    this.bindEnter(false)
     window.removeEventListener('resize', this.debounceResizeHandler)
     this.debounceResizeHandler = null
 
@@ -1323,10 +1376,89 @@ export default {
     }
   },
   methods: {
+    bindMouseEnter(bind = true) {
+      const vm = this
+      const handle =
+        this.__mouseenterHandle ||
+        (this.__mouseenterHandle = e => {
+          const right = this.$el.querySelectorAll('.plx-table--body-wrapper')[0].offsetWidth - parseInt(this.editWidth)
+          // console.log(e)
+          if (
+            e.clientX + 100 > right && e.clientX < right
+          ) {
+            this.showArrowRight = true
+            // this.showRightBtns = false
+          } else if(e.clientX >= right) {
+            this.showRightBtns = true
+            this.showArrowRight = false
+            } else {
+            this.showArrowRight = false
+            this.showRightBtns = false
+            if (!vm.$refs.table.$el.querySelectorAll('.plx-table--fixed-right-wrapper.scrolling--middle').length) {
+              this.showRightBtns = true
+            }
+
+          }
+          if (e.clientX < 160) {
+            this.showArrowLeft = true
+          } else {
+            this.showArrowLeft = false
+          }
+        })
+      let tableEl = this.$refs.table.$el
+      if (bind) {
+        tableEl.addEventListener('mousemove', handle)
+        // tableEl.addEventListener('mouseleave', handle1)
+      } else {
+        tableEl.removeEventListener('mousemove', handle)
+        // tableEl.removeEventListener('mouseleave', handle1)
+      }
+    },
+
+    handleBigExpand() {
+      setTimeout(() => {
+        if (this.$refs.table.$el.offsetHeight > 400) {
+          this.showFixedBtn = true
+        } else {
+          this.showFixedBtn = false
+        }
+      }, 20)
+    },
+
+    handleCheckAllSelect(val) {
+      if (val) {
+        this.currentRow = this.allRow.map(el => el.label)
+      } else {
+        this.currentRow = this.allRow.slice(0, 10).map(el => el.label)
+      }
+    },
+    bindEnter(bind = true) {
+      const handle =
+        this.__handle ||
+        (this.__handle = e => {
+          if (e.keyCode == 13) {
+            e.preventDefault()
+          }
+          if (e.keyCode == 13 && !this.innerDialogOpts.visible) {
+            this.getList()
+          }
+        })
+      if (bind) {
+        // console.log('bind');
+        document.addEventListener('keydown', handle)
+      } else {
+        // console.log('bind');
+        document.removeEventListener('keydown', handle)
+      }
+      // console.log('绑定');
+    },
     addTotal(num) {
       this.total += num
     },
     getMore(type) {
+      if (this.bigData) {
+        return this.getMoreBig(type)
+      }
       let table = this.$el.querySelectorAll('.el-table__body-wrapper')[0]
       let body = table.querySelectorAll('table.el-table__body')[0]
       if (type == -1) {
@@ -1340,13 +1472,23 @@ export default {
     },
     getMoreBig(type) {
       let table = this.$el.querySelectorAll('.plx-table--body-wrapper')[0]
-      let body = table.querySelectorAll('.plx-body--x-space')[0]
+      let innerTb = table.querySelectorAll('table.plx-table--body')[0]
+      let space = table.querySelectorAll('.plx-body--x-space')[0]
       let move = type == -1 ? -430 : 430
+
       let table1 = this.$refs.table.$refs.bigTab.$refs.table
       table1.pagingScrollTopLeft(0, this.$refs.table.tableScrlLeft + move)
-      this.arrowShowLeft = table.scrollLeft > 0
-      this.arrowShowRight =
-        table.scrollLeft < body.offsetWidth - table.offsetWidth
+      // console.log(table.scrollLeft > 0, table.scrollLeft < body.offsetWidth - table.offsetWidth);
+      this.$nextTick(() => {
+        if (!this.$refs.table.$el.querySelectorAll('.plx-table--fixed-right-wrapper.scrolling--middle').length) {
+          this.showRightBtns = true
+        }
+        // debugger
+        this.arrowShowLeft = table.scrollLeft > 0
+        this.arrowShowRight =
+          table.scrollLeft <
+          Math.max(innerTb.clientWidth, space.clientWidth) - table.offsetWidth
+      })
     },
     // 展示隐藏的列
     showRestRows(num = 1) {
@@ -1751,6 +1893,7 @@ export default {
       if (column.sortable === true) {
         return
       }
+
       let params =
         this.sortType == 0
           ? this.sortableFunc({ column, prop, order })
@@ -1761,6 +1904,9 @@ export default {
               }
             }
       this.sortData = params
+      if (this.customSortFunc) {
+        return this.customSortFunc(params)
+      }
       this.getList(params)
     },
     selectChange(val) {
@@ -1891,7 +2037,7 @@ export default {
         if (this.isShowTableLoading) vm.tableLoading = true
         vm.$emit('loading', true)
         this.__flag = true
-        this.$api[this.url](params, {}, { singleLoading: true })
+        return this.$api[this.url](params, {}, { singleLoading: true })
           .then(res => {
             this.__flag = false
             vm.$emit('loading', false)
@@ -1930,29 +2076,28 @@ export default {
               // vm.$emit('loading', false)
             }
             if (res.page) {
-                res = res.page
-              }
-              let { pageNo, pageSize, rows, total, data, list, items } =
-                res || {}
+              res = res.page
+            }
+            let { pageNo, pageSize, rows, total, data, list, items } = res || {}
 
-              vm.pageNo = pageNo || vm.pageNo
-              vm.pageSize = pageSize || vm.pageSize
-              vm.total = total
-              let _rows =
-                (!this.isShowPag ? data || list || rows || items : rows) || []
-              _rows = this.dataMethod(_rows)
-              if (this.btnFn && this.addBtn) {
-                vm.tableList = this.addBtn(_rows)
-              } else {
-                vm.tableList = _rows
-              }
-              // vm.tableList = !this.isShowPag ? data : rows
-              // vm.tableList = rows.map(el => {
-              //   el.buttonList = null
-              //   return el
-              // })
-              vm.tableLoading = false
-              vm.$emit('loading', false)
+            vm.pageNo = pageNo || vm.pageNo
+            vm.pageSize = pageSize || vm.pageSize
+            vm.total = total
+            let _rows =
+              (!this.isShowPag ? data || list || rows || items : rows) || []
+            _rows = this.dataMethod(_rows)
+            if (this.btnFn && this.addBtn) {
+              vm.tableList = this.addBtn(_rows)
+            } else {
+              vm.tableList = _rows
+            }
+            // vm.tableList = !this.isShowPag ? data : rows
+            // vm.tableList = rows.map(el => {
+            //   el.buttonList = null
+            //   return el
+            // })
+            vm.tableLoading = false
+            vm.$emit('loading', false)
             //像父组件发送请求成功
             vm.$emit('requestSuccess', true, vm.tableList, res)
           })
@@ -2017,7 +2162,29 @@ export default {
 $leftBgColor: #f6f6f9;
 .main-layout {
   background: $leftBgColor;
-
+  .table-arrow-left,
+  .table-arrow-right {
+    transition: 0.4s;
+    width: 45px;
+    height: 45px;
+    top: 50%;
+    position: absolute;
+    z-index: 3;
+  }
+  .table-arrow-left {
+    left: 73px;
+    background-image: url('./浅左.png');
+    &:hover {
+      background-image: url('./深左.png');
+    }
+  }
+  .table-arrow-right {
+    right: 180px;
+    background-image: url('./浅右.png');
+    &:hover {
+      background-image: url('./深右.png');
+    }
+  }
   .tip {
     cursor: pointer;
     font-size: 12px;

@@ -129,6 +129,7 @@
       :columns="currentCol"
       @plselectChange="plselectChange"
       ref="bigTab"
+      @expand="$emit('big-expand')"
       :span-method="spanMethod"
       :data="data"
       :treeTableOtions="treeTableOtions"
@@ -380,8 +381,7 @@ export default {
       this.radioVal = row
     },
     handleSelect(select, row) {
-      // this.$emit('select', select, row)
-      // debugger
+
       const table = this.bigData
         ? this.$refs.bigTab.$refs.table
         : this.$refs.table
@@ -389,7 +389,7 @@ export default {
         let first = this.listToArray.indexOf(row)
         let newChild = []
         let child =
-          this.spanMethod && row._level == 1
+          this.spanMethod && row._level == 1 && row.sameCount != null
             ? this.listToArray[first + row.sameCount - 1][
                 this.treeTableOtions.childs
               ] // sameCount
@@ -399,9 +399,9 @@ export default {
           let childNum = child.length
 
           for (let index = first; index <= first + childNum; index++) {
-            if (!this.listToArray[index]._root && this.spanMethod) {
-              continue
-            }
+            // if (!this.listToArray[index]._root && this.spanMethod) {
+            //   continue
+            // }
             newChild.push(this.listToArray[index])
             if (!this.bigData) {
               table.toggleRowSelection(
@@ -538,7 +538,9 @@ export default {
       //
     },
 
-    showRow,
+    showRow() {
+      showRow.apply(this, arguments)
+    },
     rowClassName(row) {
       let cls = []
       if (this.treeStripe) {
@@ -576,17 +578,18 @@ export default {
     },
     // 展开函数
     evalFunc(data, expandAll, parent = null, level = null) {
+      // console.log(data);
+      
       let tmp = [],
         vm = this,
-        children = this.treeTableOtions.childs,
-        root
+        children = this.treeTableOtions.childs
       Array.from(data).forEach(function(record) {
         // if (index === data.length - 1) {
         //   vm.rowCount = 0
         // }
-        if (record['_root']) {
-          root = record
-        }
+        // if (record['_root']) {
+        //   root = record
+        // }
         if (record._expanded === undefined) {
           Vue.set(record, '_expanded', expandAll)
           if (expandAll) {
@@ -613,7 +616,7 @@ export default {
           const _children = vm.evalFunc(
             record[children],
             expandAll,
-            vm.spanMethod && _level == 1 ? root : record,
+            record,
             _level
           )
           tmp = tmp.concat(_children)
@@ -770,7 +773,12 @@ export default {
         let span = checkBoxCol.querySelectorAll('span.is-disabled')[0]
         span.classList.remove('is-checked')
         this.allChecked = false
-        this.$emit('selectChange', [])
+        try {
+          
+          this.$emit('selectChange', this.$refs.bigTab.$refs.table.$refs.xTable.selection)
+        } catch (e) {
+          // 
+        }
       }
     },
     radioVal(val, oldVal) {
@@ -803,6 +811,23 @@ export default {
 }
 </style>
 <style lang="scss">
+$table-border-color: #bbb;
+@keyframes treeTableShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes treeTableShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .toggle-wrapper {
   .custom-btn {
     i {
@@ -850,12 +875,12 @@ export default {
 
   &.el-table td,
   &.el-table th.is-leaf {
-    border-color: #e4e4e4;
+    border-color: $table-border-color;
   }
   &.el-table--border::after,
   &.el-table--group::after,
   &.el-table::before {
-    background-color: #e4e4e4;
+    background-color: $table-border-color;
   }
   .double-title {
     i {

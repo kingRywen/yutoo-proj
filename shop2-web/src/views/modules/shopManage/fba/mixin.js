@@ -9,12 +9,17 @@ export default {
       selectTran: {
         value: this.$route.query.transportId || null,
         label: this.$route.query.transportLabel || null
-      }
+      },
+      tranSelected: false
     };
   },
   watch: {
     "selectTran.value"(val) {
-      this.$refs.layout.getList({ transportId: val });
+      let tranSelected = this.$refs.layout.tableList.filter(el => el._expanded);
+      this.$refs.layout.clearSelection()
+      this.$refs.layout.getList({ transportId: val }).then(() => {
+        this.getVariant(tranSelected)
+      })
     }
   },
   computed: {
@@ -27,10 +32,34 @@ export default {
     this.$store.dispatch("fba/getTransportList");
   },
   methods: {
+    handleRequestSuccess() {
+      this.isMount = true
+      if (this.tranSelected) {
+        this.tranSelected = false
+        this.getVariant(this.tranSelected);
+      }
+    },
+    getVariant(expands) {
+      if (expands.length) {
+        Promise.all(expands.map(e => {
+          return this.asyncFunc(e);
+        })).then(res => {
+          let tableList = this.$refs.layout.tableList;
+          
+          res.forEach((childs) => {
+            let p = tableList.find(e => e.asin == childs[0].parentAsin);
+            p._expanded = true;
+            this.$set(p, "childs", childs);
+            // expands[index].childs = e;
+          });
+        });
+      }
+    },
     // 平均销量列渲染
     renderAva(h, scope) {
       let { salesAvg, avgSales } = scope.row;
-      if (avgSales == null) {
+      let num = salesAvg || avgSales;
+      if (num == null) {
         return <span>-</span>;
       }
       return (
@@ -57,7 +86,7 @@ export default {
         >
           <dailyBox tableData={scope.row.__avaList} />
           <el-button slot="reference" type="text">
-            {salesAvg || avgSales}
+            {num}
           </el-button>
         </el-popover>
       );

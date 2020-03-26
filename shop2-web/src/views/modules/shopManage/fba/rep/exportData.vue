@@ -36,20 +36,20 @@ export default {
       this.sel.forEach(el => {
         if (el._level == 2) {
           if (
-            obj[el.parent.asin] &&
-            obj[el.parent.asin].childs.indexOf(el) == -1
+            obj[el.parent.sellerSku] &&
+            obj[el.parent.sellerSku].childs.indexOf(el) == -1
           ) {
-            obj[el.parent.asin].childs.push(el)
+            obj[el.parent.sellerSku].childs.push(el)
           } else {
-            obj[el.parent.asin] = {
+            obj[el.parent.sellerSku] = {
               ...el.parent,
               childs: [el]
             }
           }
         } else {
-          obj[el.asin] = { ...el }
+          obj[el.sellerSku] = { ...el }
           if (el.childs) {
-            obj[el.asin].childs = el.childs.filter(
+            obj[el.sellerSku].childs = el.childs.filter(
               e => this.sel.indexOf(e) > -1
             )
           }

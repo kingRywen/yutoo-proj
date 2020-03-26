@@ -86,7 +86,7 @@ export default {
           name: '导出',
           perm: 'add',
           type: 'plain',
-          icon: 'el-icon-download',
+          icon: 'iconfont icondaochu',
           fn: () => {
             this._export()
           }

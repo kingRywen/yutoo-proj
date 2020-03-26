@@ -9,7 +9,7 @@
             <button v-if="scope.row.shipmentStatus != 1" class="amazon-btn" @click="handler(scope.row)">
               <span>处理货件</span>
             </button>
-            <button v-else class="amazon-btn amazon-btn-sec" @click="handler(scope.row)">
+            <button v-else class="amazon-btn amazon-btn-sec" @click="handler(scope.row, true)">
               <span>追踪货件</span>
             </button>
           </template>
@@ -38,7 +38,7 @@ export default {
           label: 'MSKU',
           value: 'msku',
           render(h, scope) {
-            return <span>{scope.row.items.length}</span>
+            return <span>{scope.row.items && scope.row.items.length}</span>
           }
         },
         // {
@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     async next() {},
-    handler(row) {
+    handler(row, hasCreate) {
       this.$router.replace({
         path: this.$route.path,
         query: {
@@ -101,7 +101,7 @@ export default {
           shipmentId: row.shipmentId
         }
       })
-      this.$store.dispatch('fba/createShipments')
+      !hasCreate && this.$store.dispatch('fba/createShipments')
       this.$store.commit('fba/saveCreateInfo', 5)
     }
   }

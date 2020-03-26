@@ -270,7 +270,7 @@ export default {
           `ss/${
             this.strategyId
               ? 'sellingStrategyUpdateByTime'
-              : 'sellingStrategySaveBytime'
+              : 'sellingStrategySaveByTime'
           }`
         ](params)
       })

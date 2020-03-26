@@ -131,7 +131,7 @@
       :row-class-name="rowClassName"
     >
       <el-table-column
-        align="center"
+        align="left"
         v-if="schema.batch !== false"
         reserve-selection
         :selectable="selectable"
@@ -140,7 +140,7 @@
       ></el-table-column>
       <ElTableColumn
         v-if="schema.rows"
-        align="center"
+        align="left"
         :label="schema.rows.label"
         :prop="schema.rows.value"
         :width="schema.width == 'auto' ? undefined : (schema.width || 150)"
@@ -149,7 +149,7 @@
         <ElTableColumn
           v-for="item in schema.rows.children"
           :key="item.value"
-          align="center"
+          align="left"
           :label="item.label"
           :prop="item.value"
           :width="schema.width == 'auto' ? undefined : (schema.width || 150)"
@@ -157,11 +157,12 @@
       </template>
 
       <ElTableColumn
-        align="center"
+        align="left"
         v-for="(val, key) in schema.head"
         :key="key"
         :label="val.label"
-        :width="schema.width == 'auto' ? undefined : (schema.width || 200)"
+        :min-width="val.minWidth"
+        :width="schema.width == 'auto' ? undefined : (val.width || 200)"
         :prop="key"
       >
         <template slot-scope="scope">
@@ -216,16 +217,17 @@
         :key="key"
         :disabled="item.disabled"
         :model="value"
+        :class="`${key}-wrapper`"
         v-model="valItem[key]"
         :label-width="currentLabelWidth"
         :field-name="fieldName + '.' + (index) + '.' + key"
-        :schema="{...item, type: 'normal', label: item.label, value:valItem, i: index, item }"
+        :schema="{...item, type: 'normal', label: item.label, value:valItem, i: index, item, required: schema.lastNotReq.indexOf(key) > -1 && index == value.length -1 ? false: item.required  }"
       ></form-item>
       <el-form-item label-width="0" class="multi-array-item first">
-        <el-button type="default" icon="el-icon-plus" @click="value.splice(index+1, 0,{})"></el-button>
+        <el-button type="default" icon="el-icon-plus" @click="handlePlusMult(index, fieldName + '.' + (index) + '.')"></el-button>
       </el-form-item>
       <el-form-item label-width="0" class="multi-array-item" v-if="value && value.length > 1">
-        <el-button type="default" icon="el-icon-minus" @click="value.splice(index, 1)"></el-button>
+        <el-button type="default" icon="el-icon-minus" @click="hanldeMinusMult(index, fieldName + '.' + (index) + '.')"></el-button>
       </el-form-item>
     </div>
   </div>
@@ -239,6 +241,7 @@ export default {
   //   FormInputs
   // },
   props: {
+    validateForm: Function,
     search: {
       default: false
     },
@@ -341,6 +344,41 @@ export default {
     }
   },
   methods: {
+    hanldeMinusMult(index) {
+      this.value.splice(index, 1)
+    },
+    handlePlusMult(index, fieldPrefix) {
+      let fields = ['minCnt', 'maxCnt'],
+        added = false,
+        errorMsg
+      this.validateForm(
+        fields.map(e => fieldPrefix + e),
+        msg => {
+          if (msg !== '') {
+            errorMsg = msg
+          }
+        }
+      )
+
+      if (!errorMsg && !added) {
+        added = true
+        let ret = {}
+        if (this.schema.leftUnEdit) {
+          if (!this.value[index][this.schema.leftUnEdit[1]]) {
+            let el = [].find.call(document.querySelectorAll(`.${this.schema.leftUnEdit[1]}-wrapper input.el-input__inner`), e =>{
+              return  e.value === ''
+            })
+            el.focus()
+            return this.$message.warning('请填写数据')
+          }
+          ret = {
+            [this.schema.leftUnEdit[0]]:
+              this.value[index][this.schema.leftUnEdit[1]] + 1
+          }
+        }
+        this.value.splice(index + 1, 0, ret)
+      }
+    },
     handleMultiChange(schema) {
       if (schema.change) {
         schema.change(schema)

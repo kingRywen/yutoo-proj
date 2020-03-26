@@ -395,7 +395,7 @@ export default {
         {
           name: '导入',
           perm: 'add',
-          icon: 'el-icon-upload2',
+          icon: 'iconfont icondaoru',
           type: 'dropdown',
           btns: [
             {
@@ -417,7 +417,7 @@ export default {
         {
           name: '导出',
           perm: 'add',
-          icon: 'el-icon-download',
+          icon: 'iconfont icondaochu',
           type: 'dropdown',
           showLoading: false,
           btns: [
@@ -441,7 +441,7 @@ export default {
         //   name: '下载',
         //   perm: 'add',
         //   type: 'plain',
-        //   icon: 'el-icon-download',
+        //   icon: 'iconfont icondaochu',
         //   showLoading: true,
         //   fn: () => {
         //     return this._export(this.searchData)

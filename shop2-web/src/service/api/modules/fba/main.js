@@ -220,6 +220,12 @@ export default [
     mock: false
   },
   {
+    path: "fbaReplenishShipping/confirmUnSend",
+    name: "fbaReplenishShippingConfirmUnSend",
+    method: "POST",
+    desc: "发货计划 - 批量设置为未发货",
+  },
+  {
     path: "/fbaReplenishShipping/list",
     name: "FbaReplenishShippingList",
     method: "POST",

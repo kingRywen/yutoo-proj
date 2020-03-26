@@ -141,6 +141,15 @@ export const actions = {
     }
     return plan;
   },
+  // 查询计划商品
+  async getProList({ commit }, params) {
+    return GLOBAL.ajax[`fba/fbaShipmentCreateItemList`](params).then(data => {
+      commit(
+        "setSelectedPro",
+        data.items.map(e => ({ ...e, img: e.imagePath }))
+      );
+    });
+  },
   // 提交计划商品
   // eslint-disable-next-line no-unused-vars
   async submitPro({ commit }, params) {

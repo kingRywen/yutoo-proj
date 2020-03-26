@@ -234,7 +234,7 @@ export default {
         },
         {
           label: '库存',
-          value: 'storage'
+          value: 'localStockQty'
         },
         {
           label: '跟卖店铺',
@@ -243,11 +243,10 @@ export default {
           value: 'sellerCnt',
           url: true,
           btnClick: scope => {
-            // FIXME:
             this.$_dialog({
               size: 'medium',
               title: '跟卖店铺列表',
-              params: {},
+              params: { asin: scope.row.asin },
               cancelBtnText: '取消',
               okBtnText: '确认',
               component: () => import('./storeList.vue')
@@ -263,7 +262,7 @@ export default {
           url: true,
           isClick: scope => {
             return (
-              scope.row._level !== 1 &&
+              (!!scope.row.parentAsin || scope.row._level !== 1) &&
               scope.row.sellingCnt !== 0 &&
               scope.row.sellingCnt != null
             )
@@ -297,13 +296,13 @@ export default {
 
           value: 'firstRequestTime'
         },
-        {
-          label: '源更新时间',
-          headerTooltip: '仅更新跟卖数据',
-          width: 150,
+        // {
+        //   label: '源更新时间',
+        //   headerTooltip: '仅更新跟卖数据',
+        //   width: 150,
 
-          value: 'srcUpdateTime'
-        },
+        //   value: 'srcUpdateTime'
+        // },
 
         {
           label: '跟卖更新时间',
@@ -372,7 +371,10 @@ export default {
         return this.$api[`ss/sellingSyncFbpFlag`]({
           ...this.storeInfo,
           asins: sel.map(e => e.asin || e.parentAsin),
-          type: sel[0]._level == 1 ? 1 : 0
+          type:
+            sel[0]._level == 1 && this.$refs.layout.searchData.displayType
+              ? 1
+              : 0
         })
       })
     },
@@ -412,7 +414,10 @@ export default {
         return this.$api[`ss/sellingRemoveLib`]({
           ...this.storeInfo,
           asins: sel.map(e => e.asin || e.parentAsin),
-          type: sel[0]._level == 1 ? 1 : 0
+          type:
+            sel[0]._level == 1 && this.$refs.layout.searchData.displayType
+              ? 1
+              : 0
         })
       })
     }

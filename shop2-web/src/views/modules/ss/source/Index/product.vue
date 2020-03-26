@@ -42,6 +42,7 @@ export default {
         label: 'ASIN',
         value: 'asin',
         url: true,
+        noDisplay: false,
         expand: true,
         async: true,
         asyncFunc: row => {
@@ -58,6 +59,12 @@ export default {
           window.open(this.storeUrls.asinUrl + scope.row['asin'])
         },
         width: 140
+      },
+      {
+        label: '父ASIN',
+        noDisplay: true,
+        value: 'parentAsin',
+        width: 120
       },
 
       {
@@ -97,12 +104,12 @@ export default {
         value: 'bsr'
       },
       {
-        label: '评价数',
+        label: '评价数',noDisplay: false,
         sortable: 'custom',
         value: 'reviewCnt'
       },
       {
-        label: '评分',
+        label: '评分',noDisplay: false,
         sortable: 'custom',
         value: 'starCnt'
       },
@@ -135,12 +142,14 @@ export default {
         },
         url: true,
         btnClick: scope => {
+          // const { srcSiteId } = scope.row
           this.$_dialog({
             size: 'medium',
             title: '跟卖源跟卖列表',
             params: {
+              // 站点ID 和配送ID都是源站点
               siteId: this.curSiteId,
-              srcSiteId: this.curSiteId,
+              deliverySiteId: this.curSiteId,
               asin: scope.row.asin
             },
             cancelBtnText: '取消',
@@ -285,14 +294,16 @@ export default {
               ? 'ss/sellingSrcAllProductList'
               : 'ss/sellingSrcChildProductList'
             if (data.displayType) {
-              vm.columns[2].label == '父ASIN' && vm.columns.splice(2, 1)
+              // vm.columns[2].label == '父ASIN' && vm.columns.splice(2, 1)
+              vm.columns[2].noDisplay = true
+              vm.columns[1].noDisplay = false
+              vm.columns[9].noDisplay = false
+              vm.columns[8].noDisplay = false
             } else {
-              vm.columns[2].label !== '父ASIN' &&
-                vm.columns.splice(2, 0, {
-                  label: '父ASIN',
-                  value: 'parentAsin',
-                  width: 120
-                })
+              vm.columns[2].noDisplay = false
+              vm.columns[1].noDisplay = true
+              vm.columns[9].noDisplay = true
+              vm.columns[8].noDisplay = true
             }
             vm.columns[1].expand = data.displayType
           },

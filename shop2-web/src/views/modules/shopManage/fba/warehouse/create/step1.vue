@@ -4,14 +4,14 @@
       <header>要创建新入库计划还是添加至现有入库计划？</header>
       <section>
         <p>
-          <input type="radio" id="new" v-model="isNew" @change="isError = false" :value="true" />
+          <input :disabled="$attrs.unedit" type="radio" id="new" v-model="isNew" @change="isError = false" :value="true" />
           <label for="new">创建新的</label>
         </p>
         <p>
-          <input type="radio" id="1" v-model="isNew" :value="false" />
+          <input :disabled="$attrs.unedit" type="radio" id="1" v-model="isNew" :value="false" />
           <label for="1">
             添加至现有的入库计划
-            <el-select size="mini" @change="isError = false" v-model="proj">
+            <el-select :disabled="$attrs.unedit" size="mini" @change="isError = false" v-model="proj">
               <el-option v-for="item in projects" :key="item.planId" :value="item.planId" :label="item.planName"></el-option>
             </el-select>
             <div class="error mt10" v-if="isError">
@@ -33,11 +33,11 @@
             <p>{{addressInfo.addressLine2}}</p>
             <p>{{addressInfo.addressCity}} {{addressInfo.addressState}}, {{addressInfo.addressCountryCode}} {{addressInfo.addressPostalCode}}</p>
             <p>{{addressInfo.addressCountry}}</p>
-            <el-button class="edit" @click="edit" type="text">修改</el-button>
+            <el-button :disabled="$attrs.unedit" class="edit" @click="edit" type="text">修改</el-button>
           </template>
           <div class="flex just-sb" v-else>
             <div style="opacity: 0.5">没有设置默认地址。</div>
-            <ElButton type="text" @click="edit">选择发货地址</ElButton>
+            <ElButton :disabled="$attrs.unedit" type="text" @click="edit">选择发货地址</ElButton>
           </div>
         </section>
       </article>
@@ -59,8 +59,8 @@
       </article>
     </template>
     <article class="mt20">
-      <el-button type="default" @click="$emit('cancel')">取消创建</el-button>
-      <el-button type="primary" @click="next">继续下一步</el-button>
+      <el-button :disabled="$attrs.unedit" type="default" @click="$emit('cancel')">取消创建</el-button>
+      <el-button :disabled="$attrs.unedit" type="primary" @click="next">继续下一步</el-button>
     </article>
   </div>
 </template>
@@ -107,9 +107,9 @@ export default {
     ]),
     ...mapMutations('fba', ['setAddressInfo', 'saveCreateInfo', 'setPlanInfo']),
     getProjects() {
-      const params = { storeId: this.storeId }
+      const params = { storeId: this.storeId, pageSize: 1000, pageNumber:1 }
       this.$api[`fba/fbaShipmentCreatePlanList`](params).then(data => {
-        this.projects = data.plans.filter(
+        this.projects = data.plans.rows.filter(
           el => el.storeId === this.storeId && el.planProcess !== 6
         )
       })

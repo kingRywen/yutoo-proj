@@ -49,7 +49,7 @@
             <el-button type="text" class="wrapper--setting__btn" plain icon="el-icon-plus" @click="addMore"></el-button>
           </el-tooltip>
           <el-tooltip content="导入关键词" placement="top">
-            <el-button type="text" class="wrapper--setting__btn" plain icon="el-icon-upload2" @click="imptKeyword"></el-button>
+            <el-button type="text" class="wrapper--setting__btn" plain icon="iconfont icondaoru" @click="imptKeyword"></el-button>
           </el-tooltip>
         </div>
       </el-row>

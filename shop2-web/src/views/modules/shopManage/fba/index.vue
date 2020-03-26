@@ -5,9 +5,11 @@
       :searchFields="searchFields"
       :columns="columns"
       @searchTrueData="val => searchData = val"
-      @requestSuccess="_ => isMount = true"
+      @requestSuccess="handleRequestSuccess"
       edit-width="160px"
       showFilter
+      :scroll="true"
+      :spanMethod="spanMethod"
       :sortType="1"
       :fixedMinusOne="true"
       :big-data="true"
@@ -19,6 +21,7 @@
       :treeTable="true"
       :checkStrictly="false"
       :treeTableOtions="treeTableOtions"
+      :customSortFunc="customSortFunc"
       @left-batch-change="handleLeftBatchChange"
       url="fba/FbaReplenishProductList"
       ref="layout"
@@ -50,7 +53,20 @@ import { mapActions, mapMutations } from 'vuex'
 export default {
   mixins: [mixin, dropdownMixin],
   data() {
+    let asyncFunc = (row, p) => {
+      let params = {
+        ...this.searchData,
+        ...this.$refs.layout.sortData,
+        ...p,
+        parentSellerSku: row.sellerSku,
+        parentAsin: row.asin
+      }
+      return this.$api[`fba/fbaReplenishProductListVariation`](params).then(
+        data => data.rows
+      )
+    }
     return {
+      asyncFunc,
       searchData: {},
       treeTableOtions: {
         childs: 'childs',
@@ -164,20 +180,11 @@ export default {
           numField: 'childsCount',
           fixed: 'left',
           noTooltip: true,
-          minWidth: 260,
-          width: 260,
+          minWidth: 340,
+          width: 340,
           expand: true,
           async: true,
-          asyncFunc: row => {
-            let params = {
-              ...this.searchData,
-              parentSellerSku: row.sellerSku,
-              parentAsin: row.asin
-            }
-            return this.$api[`fba/fbaReplenishProductListVariation`](
-              params
-            ).then(data => data.rows)
-          }
+          asyncFunc
         },
         {
           label: 'ASIN',
@@ -317,7 +324,7 @@ export default {
           value: 'qtyReserved'
         },
         {
-          label: '不可售库存量',
+          label: '不可售库存',
           minWidth: 110,
           sortable: 'custom',
           width: 120,
@@ -375,8 +382,13 @@ export default {
         {
           label: '退款率',
           width: 110,
+
           sortable: 'custom',
-          value: 'returnRate'
+          value: 'returnRate',
+          render(h, scope) {
+            const { returnRate } = scope.row
+            return <span>{returnRate != null ? returnRate + '%' : '-'}</span>
+          }
         },
         {
           label: '滞销预警天数',
@@ -452,7 +464,7 @@ export default {
         {
           name: '导入',
           perm: 'add',
-          icon: 'el-icon-upload2',
+          icon: 'iconfont icondaoru',
           type: 'dropdown',
           btns: [
             {
@@ -469,7 +481,7 @@ export default {
           showLoading: true,
           perm: 'add',
           type: 'plain',
-          icon: 'el-icon-download',
+          icon: 'iconfont icondaochu',
           fn: () => {
             return this._export()
           }
@@ -520,6 +532,9 @@ export default {
             width: 120
           }
         ]
+        if (!scope.row[str]) {
+          return <span>-</span>
+        }
         // tableData = [{}]
         return (
           <el-popover
@@ -559,6 +574,23 @@ export default {
         )
       }
     },
+    customSortFunc(params) {
+      let tableList = this.$refs.layout.tableList
+      let expands = tableList.filter(
+        e => !!e._expanded && e.childs && e.childs.length
+      )
+      if (expands.length) {
+        // 子元素排序
+        Promise.all(expands.map(e => this.asyncFunc(e, params))).then(res => {
+          res.forEach((e, index) => {
+            expands[index].childs = e
+          })
+        })
+      } else {
+        // 主排序
+        this.$refs.layout.getList(params)
+      }
+    },
     handleLeftBatchChange(val, sel) {
       let datas = sel.map(el => ({
         storeId: el.storeId,
@@ -591,7 +623,8 @@ export default {
               storeId: el.storeId,
               price: el.price
             })),
-            1
+            1,
+            sel
           )
           break
         case '设置滞销预警天数':
@@ -602,7 +635,8 @@ export default {
               storeId: el.storeId,
               warningDays: undefined
             })),
-            2
+            2,
+            sel
           )
           break
         case '创建FBA发货计划':
@@ -610,8 +644,19 @@ export default {
           break
         case '删除':
           this.showTips({ msg: '此操作将删除产品, 是否继续?' }, () => {
-            return this.$api[`fba/FbaReplenishProductDelete`]({
+            this.$api[`fba/FbaReplenishProductDelete`]({
               data: datas
+            }).then(() => {
+              this.$refs.layout.tableList = this.$refs.layout.tableList.filter(
+                el => {
+                  return !sel.find(e => e.sellerSku == el.sellerSku)
+                }
+              )
+              this.$refs.layout.tableList.forEach(e => {
+                if (e.childs) {
+                  e.childs = e.childs.filter(c => sel.indexOf(c) == -1)
+                }
+              })
             })
           })
           break
@@ -621,6 +666,20 @@ export default {
 
         default:
           break
+      }
+    },
+    spanMethod(params) {
+      // console.log(params)
+
+      if (
+        (params.fixed == 'right' && !params.column.label) ||
+        params.column.label == 'left'
+      ) {
+        if (params.$rowIndex == 0) {
+          return { rowspan: 100, colspan: 1 }
+        } else {
+          return { rowspan: 0, colspan: 0 }
+        }
       }
     },
     async createProj(sel) {
@@ -685,12 +744,22 @@ export default {
         component: () => import('./dialogs/impLocalIvt')
       })
     },
-    modify(title, data, type) {
+    modify(title, data, type, sel) {
       this.$_dialog({
         size: 'medium',
         title,
         // noShowLoading: type == 1,
-        params: { data, type },
+        params: {
+          data,
+          type,
+          fn: table => {
+            sel.map(el => {
+              let cur = table.find(e => e.sellerSku == el.sellerSku)
+              el[type == 1 ? 'price' : 'unsalableWarningDays'] =
+                cur[type == 1 ? 'price' : 'warningDays']
+            })
+          }
+        },
         cancelBtnText: '取消',
         okBtnText: '保存',
         component: () => import('./dialogs/modifyPrice.vue')
@@ -717,8 +786,6 @@ export default {
           lifeCircle,
           fn: ({ lifeCycle, lifeCycleString }) => {
             sel.map(e => {
-              console.log(lifeCycle, lifeCycleString)
-
               e.lifeCycle = lifeCycle
               e.lifeCycleString = lifeCycleString
             })

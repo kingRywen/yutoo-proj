@@ -98,10 +98,11 @@ export function handleExpand(scope, item, treeTableOtions, stop, e, vm) {
           .then(data => {
             row.loading = false;
             vm.addBtn(data);
-            Vue.set(row, childs, data);
-            // vm.addTotal(data.length);
             Vue.set(row, "_expanded", true);
+            Vue.set(row, childs, data);
+            
           })
+          .then(() => vm.$emit("expand"))
           .catch(e => {
             console.error(e);
             row.loading = false;

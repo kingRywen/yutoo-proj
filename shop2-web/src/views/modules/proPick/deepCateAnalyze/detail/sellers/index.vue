@@ -168,7 +168,7 @@ export default {
         {
           name: '导出',
           type: 'plain',
-          icon: 'el-icon-download',
+          icon: 'iconfont icondaochu',
           perm: 'add',
           fn: () => {
             this._export(this.searchData)

@@ -13,14 +13,14 @@
       >
         <el-table-column slot="right" :width="45" label align="left">
           <template slot-scope="scope">
-            <el-button v-if="scope.$index !== 0" type="text" icon="el-icon-close" @click="del(scope.row, scope.$index)"></el-button>
+            <el-button :disabled="$attrs.unedit" v-if="scope.$index !== 0" type="text" icon="el-icon-close" @click="del(scope.row, scope.$index)"></el-button>
           </template>
         </el-table-column>
       </main-layout>
     </section>
     <article class="mt20">
-      <el-button type="default" @click="$emit('cancel')">取消创建</el-button>
-      <el-button type="primary" @click="next">继续下一步</el-button>
+      <el-button type="default" :disabled="$attrs.unedit" @click="$emit('cancel')">取消创建</el-button>
+      <el-button type="primary" :disabled="$attrs.unedit" @click="next">继续下一步</el-button>
     </article>
   </div>
 </template>
@@ -48,11 +48,11 @@ export default {
           value: 'sellerSku',
           noTooltip: true
         },
-        {
-          label: 'ASIN',
-          value: 'asin',
-          width: 110
-        },
+        // {
+        //   label: 'ASIN',
+        //   value: 'asin',
+        //   width: 110
+        // },
         {
           label: '主图',
           img: true,
@@ -89,6 +89,7 @@ export default {
             if (i == 0) {
               return (
                 <el-select
+                  disabled={this.$attrs.unedit}
                   value={scope.row.prepInstruction}
                   on-change={val => {
                     // if (!exist) {
@@ -109,17 +110,17 @@ export default {
               )
             } else {
               return !exist ? (
-                <el-select vModel={scope.row.prepInstruction} size="small">
+                <el-select disabled={this.$attrs.unedit} vModel={scope.row.prepInstruction} size="small">
                   {options.map(e => (
                     <el-option label={e.label} value={e.value}></el-option>
                   ))}
                 </el-select>
               ) : (
                 <span>
-                  {s
+                  {s.length == 1 && s[0] == 'Labeling' ? '需要标签' : s
                     .filter(e => e !== 'Labeling')
                     .map(e => options.find(el => el.value === e).label)
-                    .join('')}
+                    .join('、')}
                 </span>
               )
             }
@@ -138,6 +139,7 @@ export default {
             }
             return (
               <el-select
+                disabled={this.$attrs.unedit}
                 size="small"
                 onChange={val => {
                   if (scope.$index == 0) {
@@ -223,7 +225,8 @@ export default {
             ? el.prepOwner
             : el.s.map(() => el.prepOwner).join(','),
           prepCost: null,
-          fnsku: el.fnsku
+          fnsku: el.fnsku,
+          labelNum: el.quantity
         }))
       }
       // return this.$api[`fba/fbaShipmentCreateItemSave`](params)
@@ -231,7 +234,7 @@ export default {
     },
     async next() {
       await this.save()
-      this.setSelectedPro(this.tableList.slice(1))
+      this.setSelectedPro(this.tableList.slice(1).map(e => ({...e, labelNum: e.quantity})))
       this.saveCreateInfo(3)
     },
     getPre() {

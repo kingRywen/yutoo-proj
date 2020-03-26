@@ -33,6 +33,7 @@
         >
           <template slot-scope="scope">
             <table-colvalue
+              @expand="$emit('expand')"
               :item="item"
               :fixedMinusOne="fixedMinusOne"
               :scope="{...scope, $index: scope.$rowIndex}"
@@ -57,6 +58,7 @@
           >
             <template slot-scope="scope">
               <table-colvalue
+                @expand="$emit('expand')"
                 :item="k"
                 :fixedMinusOne="fixedMinusOne"
                 :scope="{...scope, $index: scope.$rowIndex}"
@@ -116,7 +118,8 @@ export default {
   },
   data() {
     return {
-      height: 0
+      height: 0,
+      selection: []
     }
   },
   watch: {
@@ -145,6 +148,7 @@ export default {
     },
     handleSelect(selection, row) {
       this.select = true
+      this.selection = selection
       this.$emit('select', selection, row)
       this.$nextTick(() => {
         this.select = false
@@ -154,6 +158,55 @@ export default {
 }
 </script>
 <style lang="scss">
+$table-border-color: #bbb;
+.has-scroll .plx-table--fixed-right-wrapper,.has-scroll .el-table__fixed-right {
+  transition: 0.1s;
+  opacity: 1;
+}
+
+.has-scroll:not(.show-right-btns) .plx-table--fixed-right-wrapper,.has-scroll:not(.show-right-btns) .el-table__fixed-right {
+  transform: translateX(78px) scaleX(0);
+  opacity: 0;
+  // transition: 0.1s;
+}
+.fixed--right .el-table__fixed-right, .fixed--right .plx-table--fixed-right-wrapper {
+  opacity: 1;
+  transform: translateX(0) scaleX(1);
+}
+.plx-table:before {
+  border-top: 1px solid $table-border-color;
+}
+.plx-table:after {
+  border-bottom: 1px solid $table-border-color;
+}
+.plx-table .plx-table--border-line:after {
+  border-right: 1px solid $table-border-color;
+}
+.plx-table .plx-table--border-line:before {
+  border-left: 1px solid $table-border-color;
+}
+
+.plx-table.t--border .plx-table--fixed-left-wrapper {
+  border-right: 1px solid $table-border-color;
+}
+.plx-table .plx-body--row.row--stripe,
+.plx-table .plx-body--row.row--stripe .plx-tree--btn-wrapper {
+  background: #e4e4e4;
+}
+.plx-table.t--border:not(.b--style-none) .plx-body--column,
+.plx-table.t--border:not(.b--style-none) .plx-footer--column,
+.plx-table.t--border:not(.b--style-none) .plx-header--column {
+  background-image: linear-gradient(
+      -90deg,
+      $table-border-color,
+      $table-border-color
+    ),
+    linear-gradient(-180deg, $table-border-color, $table-border-color);
+}
+.plx-table .plx-cell--checkbox:before,
+.plx-table .plx-cell--radio:before {
+  border: 1px solid #a9a9a9;
+}
 .plx-table.size--mini {
   font-size: 13px;
   font-family: PingFangSC, 'Open Sans', sans-serif, microsoft yahei ui,

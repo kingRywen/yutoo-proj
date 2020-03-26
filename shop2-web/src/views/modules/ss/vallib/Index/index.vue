@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 15:42:31 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-18 17:28:25
+ * @Last Modified time: 2020-03-26 15:34:43
  */
 <template>
   <main-layout
@@ -400,8 +400,8 @@ export default {
               title: '跟卖列表',
               params: {
                 asin,
-                siteId: this.curSiteId,
-                // FIXME: 需要修改
+                // 站点ID 和配送ID都是源站点
+                siteId:srcSiteId,
                 deliverySiteId: srcSiteId
               },
               cancelBtnText: '取消',
@@ -529,6 +529,7 @@ export default {
               title: '跨站跟卖列表',
               params: {
                 asin,
+                // 站点ID为源站点，配送站点为目标站点
                 siteId: srcSiteId,
                 deliverySiteId: this.curSiteId
               },
@@ -577,6 +578,7 @@ export default {
               title: '跟卖列表',
               params: {
                 asin,
+                // 站点ID为目标站点，配送站点为目标站点
                 siteId: this.curSiteId,
                 deliverySiteId: this.curSiteId
               },
@@ -700,7 +702,7 @@ export default {
         params: {
           srcSiteId: this.$store.state.selling.curSiteId,
           asins: parentAsins,
-          type: sel[0]._level == 1 ? 1 : 0
+          type: sel[0]._level == 1 && this.$refs.layout.searchData.displayType ? 1 : 0
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
@@ -770,7 +772,7 @@ export default {
           ...this.storeInfo,
           siteId: this.curSiteId,
           asins: sel.map(e => e.asin || e.parentAsin),
-          type: sel[0]._level == 1 ? 1 : 0
+          type: sel[0]._level == 1 && this.$refs.layout.searchData.displayType ? 1 : 0
         }
         return this.$api[`ss/${api}`](params)
       })

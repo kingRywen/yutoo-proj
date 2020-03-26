@@ -342,7 +342,7 @@ export default {
         {
           name: '导出',
           perm: 'add',
-          icon: 'el-icon-download',
+          icon: 'iconfont icondaochu',
           type: 'plain',
           showLoading: true,
           fn: () => {

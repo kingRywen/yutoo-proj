@@ -31,17 +31,22 @@ export default {
       formSchema1: {
         multiArray: {
           type: 'multiArray',
+          lastNotReq: ['maxCnt'],
+          leftUnEdit: ['minCnt', 'maxCnt'],
 
           children: {
             minCnt: {
               label: '目标总跟卖数量',
               labelWidth: '120px',
+              disabled: true,
               width: '120px',
               widget: 'number',
               change: schema => {
                 this.formSchema1.multiArray.children.maxCnt.min =
                   schema.value.minCnt
-                this.$set(schema.value, 'maxCnt', undefined)
+                if (schema.value.minCnt > schema.value.maxCnt) {
+                  this.$set(schema.value, 'maxCnt', undefined)
+                }
               },
               required: true,
               placeholder: '从'
@@ -69,7 +74,7 @@ export default {
         }
       },
       value1: {
-        multiArray: [{}]
+        multiArray: [{minCnt: 0}]
       }
     }
   },
@@ -109,7 +114,7 @@ export default {
           strategyId: this.strategyId,
           strategyName: this.value.strategyName,
           defaultFlag: !!this.value.defaultFlag[0],
-          detail: this.value1.multiArray
+          detail: this.value1.multiArray.map((el, index) => ({...el, sort:index}))
         }
         return this.$api[
           `ss/${

@@ -12,8 +12,8 @@
       </main-layout>
     </section>
     <article class="mt20">
-      <el-button type="default" @click="$emit('cancel')">取消创建</el-button>
-      <el-button type="primary" @click="next">继续下一步</el-button>
+      <el-button :disabled="$attrs.unedit" type="default" @click="$emit('cancel')">取消创建</el-button>
+      <el-button :disabled="$attrs.unedit" type="primary" @click="next">继续下一步</el-button>
     </article>
   </div>
 </template>
@@ -36,11 +36,11 @@ export default {
           noTooltip: true,
           minWidth: 200
         },
-        {
-          label: 'ASIN',
-          value: 'asin',
-          width: 110
-        },
+        // {
+        //   label: 'ASIN',
+        //   value: 'asin',
+        //   width: 110
+        // },
         {
           label: '主图',
           img: true,
@@ -156,19 +156,24 @@ export default {
     },
 
     renderEdit(str) {
-      return (h, scope) => (
-        <el-input-number
-          size="mini"
-          style="width: 100%"
-          min={1}
-          onChange={val => {
-            this.$set(scope.row, str, val)
-          }}
-          value={scope.row[str]}
-          // max={99999999999}
-          controls={false}
-        ></el-input-number>
-      )
+      return (h, scope) => {
+        if (this.$attrs.unedit) {
+          return <span>{scope.row[str]}</span>
+        }
+        return (
+          <el-input-number
+            size="mini"
+            style="width: 100%"
+            min={1}
+            onChange={val => {
+              this.$set(scope.row, str, val)
+            }}
+            value={scope.row[str]}
+            // max={99999999999}
+            controls={false}
+          ></el-input-number>
+        )
+      }
     },
     del(row) {
       let e = this.tableList.filter(el => el.sellerSku !== row.sellerSku)

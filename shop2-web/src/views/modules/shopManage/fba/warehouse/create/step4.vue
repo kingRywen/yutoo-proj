@@ -19,14 +19,20 @@
       >
         <el-table-column slot="right" :width="45" label align="left">
           <template slot-scope="scope">
-            <el-button v-if="scope.$index !== 0" type="text" icon="el-icon-close" @click="del(scope.row, scope.$index)"></el-button>
+            <el-button
+              :disabled="$attrs.unedit"
+              v-if="scope.$index !== 0"
+              type="text"
+              icon="el-icon-close"
+              @click="del(scope.row, scope.$index)"
+            ></el-button>
           </template>
         </el-table-column>
       </main-layout>
     </section>
     <article class="mt20">
-      <el-button type="default" @click="$emit('cancel')">取消创建</el-button>
-      <el-button type="primary" @click="next">继续下一步</el-button>
+      <el-button :disabled="$attrs.unedit" type="default" @click="$emit('cancel')">取消创建</el-button>
+      <el-button :disabled="$attrs.unedit" type="primary" @click="next">继续下一步</el-button>
     </article>
   </div>
 </template>
@@ -40,7 +46,7 @@ export default {
   data() {
     return {
       loading: false,
-      labelType: '63.5,38.1',
+      labelType: '63.5,38.1,3*7',
       labelTypes: [
         // {
         //   label: '每张US信纸最多30个标签(1英寸X2-5/8英寸)',
@@ -48,35 +54,35 @@ export default {
         // },
         {
           label: '每页纸最多21个标签(A4纸,63.5毫米X38.1毫米)',
-          value: '63.5,38.1'
+          value: '63.5,38.1,3*7'
         },
         {
           label: '每页纸最多24个标签(A4纸,63.5毫米X33.9豪米)',
-          value: '63.5,33.9'
+          value: '63.5,33.9,3*8'
         },
         {
           label: '每页纸最多24个标签(A4纸,66毫米X35室米)',
-          value: '66,35'
+          value: '66,35,3*8'
         },
         {
           label: '每页纸最多24个标签(A4纸,70毫米x36豪米)',
-          value: '70,36'
+          value: '70,36,3*8'
         },
         {
           label: '每页纸最多24个标签(A4纸,70毫米X37豪米)',
-          value: '70,37'
+          value: '70,37,3*8'
         },
         {
           label: '每页纸最多27个标签(A4纸,63.5毫米X29.6豪米)',
-          value: '63.5,29.6'
+          value: '63.5,29.6,3*9'
         },
         {
           label: '每页纸最多40个标签(A4纸,52.5毫米X29.7豪米)',
-          value: '52.5,29.7'
+          value: '52.5,29.7,4*10'
         },
         {
           label: '每页纸最多44个标签(A4纸,48.5毫米X25.4毫米)',
-          value: '48.5,25.4'
+          value: '48.5,25.4,4*11'
         }
       ],
       tableList: [
@@ -94,11 +100,11 @@ export default {
           value: 'sellerSku',
           noTooltip: true
         },
-        {
-          label: 'ASIN',
-          value: 'asin',
-          width: 110
-        },
+        // {
+        //   label: 'ASIN',
+        //   value: 'asin',
+        //   width: 110
+        // },
         {
           label: '主图',
           img: true,
@@ -188,23 +194,24 @@ export default {
     ...mapMutations('fba', ['setSelectedPro', 'saveCreateInfo']),
     ...mapActions('fba', ['submitPro']),
     _print() {
-      let el = this.cfuns.hasEmptyValue('.printNum .el-input__inner')
-      if (el) {
-        el.focus()
-        return this.$message.warning('请填写打印标签数量')
-      }
+      // let el = this.cfuns.hasEmptyValue('.printNum .el-input__inner')
+      // if (el) {
+      //   el.focus()
+      //   return this.$message.warning('请填写打印标签数量')
+      // }
       this.printPage()
     },
     printPage() {
       let vm = this
 
       let d = document.querySelectorAll('#print-page')[0]
-      const [width, height] = this.labelType.split(',').map(e => +e)
+      const [width, height, num] = this.labelType.split(',').map(e => e)
       const href = this.$router.resolve({
         path: '/shopManage/fba/warehouse/print',
         query: {
-          width,
-          height,
+          width: +width,
+          height: +height,
+          num,
           codes: this.tableList
             .slice(1)
             .map(e => [e.fnsku, e.labelNum, e.title].join('$'))

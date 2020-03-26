@@ -17,7 +17,6 @@ export default {
     "pageNo",
     "fixedMinusOne"
   ],
-  // TODO: 单独使用时没有注入函数
   inject: {
     addBtn: { default: () => {} },
     addTotal: { default: () => {} }
@@ -205,7 +204,7 @@ export default {
     }
     function formatVal(val) {
       if (vm.fixedMinusOne) {
-        if (val == -1 || val === 0) {
+        if (val == -1) {
           return "-";
         }
       }

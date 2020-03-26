@@ -22,9 +22,10 @@
       </el-step>
     </el-steps>
     <component
+      :unedit="unedit"
       @done="handleDone"
       :planProcess="planProcess"
-      @cancel="cancel"
+      @cancel="doCancel"
       :addressInfo="addressInfo"
       :planInfo="planInfo"
       :is="componentId"
@@ -60,6 +61,7 @@ export default {
     return {
       loading: false,
       shipmentId,
+      unedit: Boolean(this.$route.query.unedit),
       isShip: !!shipmentId,
       shipAddressId: this.$route.query.shipAddressId,
       planProcess: this.$route.query.planProcess
@@ -80,6 +82,7 @@ export default {
       // debugger
 
       if (this.planProcess) {
+        await this.getProList({planId: this.$route.query.planId})
         // this.saveCreateInfo(+this.planProcess)
         this.setAddressInfo(
           list.find(el => el.addressId == this.shipAddressId) || {}
@@ -151,7 +154,12 @@ export default {
   // },
   methods: {
     ...mapMutations('fba', ['saveCreateInfo', 'setAddressInfo', 'setPlanInfo']),
-    ...mapActions('fba', ['clearCacheProj', 'getAddress', 'queryShipItems']),
+    ...mapActions('fba', [
+      'clearCacheProj',
+      'getAddress',
+      'queryShipItems',
+      'getProList'
+    ]),
     handleDone() {
       // this.saveCreateInfo(this.activeIndex + 1)
     },
@@ -162,8 +170,19 @@ export default {
       this.saveCreateInfo(index)
     },
     async cancel() {
-      await this.clearCacheProj()
-      this.$router.go(-1)
+      // console.log(22);
+      try {
+        await this.clearCacheProj()
+      } catch (error) {
+        console.error(error);
+      }
+      this.$router.push('/shopManage/fba/warehouse')
+    },
+
+    doCancel() {
+      this.showTips({ msg: '此操作将删除创建的计划数据, 是否继续?' }, () => {
+        return this.cancel()
+      })
     }
   }
 }

@@ -1,10 +1,10 @@
 <template>
   <el-tabs type="card" v-model="activeName">
     <el-tab-pane label="产品列表" name="product">
-      <Product />
+      <Product :key="activeName" />
     </el-tab-pane>
     <el-tab-pane lazy label="任务列表" name="task">
-      <Task />
+      <Task :key="activeName"/>
     </el-tab-pane>
   </el-tabs>
 </template>

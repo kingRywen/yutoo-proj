@@ -196,6 +196,7 @@ export default {
           orders: table.map(e => ({
             ...e,
             shippingPriceAdj: e.shippingPriceAdj && e.shippingPriceAdj + '',
+            amount: e.amount && e.amount + '',
             itemPriceAdj: e.itemPriceAdj && e.itemPriceAdj + '',
             itemTaxAdj: e.itemTaxAdj && e.itemTaxAdj + '',
             shippingTaxAdj: e.shippingTaxAdj && e.shippingTaxAdj + '',

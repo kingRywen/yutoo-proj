@@ -189,7 +189,7 @@ export default {
       ],
       editBtns: [
         {
-          icon: 'el-icon-upload2',
+          icon: 'iconfont icondaoru',
           perm: 'add',
           // showLoading: true,
           type: 'plain',

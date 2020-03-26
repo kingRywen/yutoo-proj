@@ -71,9 +71,15 @@ export function downloadCsv(data) {
   if (data && data.path) {
     data = data.path;
   }
+  const a = document.createElement("a");
+  a.href = data
+  data = data.replace(a.origin, location.origin)
+
   if (data.split(".").pop() !== "csv") {
     return downloadFile(data, null);
   }
+  
+
 
   return axios({
     // url: data.replace("http://127.0.0.1", "http://192.168.0.112"),
