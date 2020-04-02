@@ -6,6 +6,7 @@ import {
   getLink,
   handleExpand
 } from "./table-utils";
+
 export default {
   name: "table-colvalue",
   props: [
@@ -14,6 +15,7 @@ export default {
     "arr",
     "treeTableOtions",
     "pageSize",
+    "tableList",
     "pageNo",
     "fixedMinusOne"
   ],
@@ -52,10 +54,21 @@ export default {
       numJsx = el ? <span> ( {el} )</span> : null;
     }
 
-    if (type === "index" && this.pageSize && this.pageNo) {
+    if (type === "index" && this.pageSize && this.pageNo && row._level == null) {
       // 序号列
       let { $index } = scope;
       return <span>{$index + 1 + (this.pageNo - 1) * this.pageSize}</span>;
+    }
+
+    if (type === "index" && this.pageSize && this.pageNo) {
+      // 序号列
+      let { $index } = scope;
+      if (row._level !== 1) {
+        return ;
+      }
+      return (
+        <span>{this.tableList.slice(0, $index).filter(el => el._level == 1).length + 1 + (this.pageNo - 1) * this.pageSize}</span>
+      );
     }
 
     if (type === "array") {

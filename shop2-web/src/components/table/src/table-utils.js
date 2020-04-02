@@ -109,6 +109,7 @@ export function handleExpand(scope, item, treeTableOtions, stop, e, vm) {
           });
       } else {
         Vue.set(row, "_expanded", true);
+        vm.$emit("expand");
       }
     } else {
       // 不需要请求后台

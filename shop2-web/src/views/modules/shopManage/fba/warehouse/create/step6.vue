@@ -351,8 +351,8 @@
         </table>
       </section>
       <section
-        element-loading-customClass="myloading"
-        v-loading="disabedLabel"
+        class="myloading"
+        v-loading="disabedLabel && !shipmentId"
         element-loading-background="rgba(255, 255, 255, 0.6)"
         element-loading-spinner="el-"
         element-loading-text=" "

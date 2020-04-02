@@ -9,7 +9,7 @@
     :right-edit-btns="editBtns"
     :topBatchBtn="topBatchBtn"
     @left-batch-change="handleLeftBatchChange"
-    tip="没有运费模板的店铺将不能用于跟卖"
+    tip="没有默认运费模板的店铺不能添加跟卖"
   ></main-layout>
 </template>
 <script>
@@ -97,7 +97,7 @@ export default {
           labelWidth: 96,
           widget: 'select',
           multi: true,
-          options: () => this.getStoreList(true)
+          options: () => this.getStoreList()
         },
         defaultFlag: {
           hidden: true,

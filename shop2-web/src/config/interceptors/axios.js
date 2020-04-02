@@ -133,7 +133,11 @@ export function requestSuccessFunc(requestObj) {
   let token = Vue.prototype.$storage.get("local", "token");
   requestObj.headers.token = token;
   // 去除空提交字符
-  if (typeof requestObj.data === "object" && !Array.isArray(requestObj.data)) {
+  if (
+    typeof requestObj.data === "object" &&
+    !Array.isArray(requestObj.data) &&
+    !(requestObj.data instanceof FormData)
+  ) {
     requestObj.data = Vue.prototype.$.dealObjectValue(requestObj.data);
   }
   return requestObj;

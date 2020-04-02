@@ -8,9 +8,10 @@
       @select="handleSelect"
       class="custom-eltable"
       :show-header="showHeader"
-      @table-body-scroll="handleTableScroll"
+      @table-body-scroll="handleTableScroll($event)"
       v-if="isRoot"
       stripe
+      :row-class-name="rowClassName"
       :row-style="showRow"
       size="mini"
       :paginationShow="false"
@@ -33,8 +34,9 @@
         >
           <template slot-scope="scope">
             <table-colvalue
-              @expand="$emit('expand')"
+              @expand="handleExpand"
               :item="item"
+              :tableList="tableData"
               :fixedMinusOne="fixedMinusOne"
               :scope="{...scope, $index: scope.$rowIndex}"
               :style="item.style ||''"
@@ -58,8 +60,9 @@
           >
             <template slot-scope="scope">
               <table-colvalue
-                @expand="$emit('expand')"
+                @expand="handleExpand"
                 :item="k"
+                :tableList="tableData"
                 :fixedMinusOne="fixedMinusOne"
                 :scope="{...scope, $index: scope.$rowIndex}"
                 :style="k.style ||''"
@@ -78,7 +81,7 @@
 </template>
 <script>
 import { PlxTableGrid, PlxTableColumn } from 'pl-table'
-import { showRow } from './common-utils'
+import { showRow, rowClassName } from './common-utils'
 export default {
   name: 'big-table',
   components: {
@@ -118,6 +121,7 @@ export default {
   },
   data() {
     return {
+      treeStripe: true,
       height: 0,
       selection: []
     }
@@ -133,12 +137,46 @@ export default {
   },
   methods: {
     showRow,
+    rowClassName,
+    handleExpand() {
+      this.$emit('expand')
+      // setTimeout(() => {
+      //   this.$refs.table.doLayout()
+      //   this.$refs.table.setHeight()
+      // }, 100);
+    },
+    innerTableRowClassName(data) {
+      const { row, rowIndex } = data
+      if (this.innerTableRowClassName.count == null) {
+        this.innerTableRowClassName.count = 0
+      }
+
+      const show = row.parent ? row.parent._expanded && row.parent.__show : true
+      if (show) {
+        this.innerTableRowClassName.count++
+      }
+      if (rowIndex === this.tableData.length - 1) {
+        // console.log(this.innerTableRowClassName.count);
+        let count = this.innerTableRowClassName.count
+        this.innerTableRowClassName.count = 0
+        if (count % 2 !== 0) {
+          return ''
+        } else {
+          return 'tree-table__row--striped'
+        }
+      }
+      if (this.innerTableRowClassName.count % 2 !== 0) {
+        return ''
+      } else {
+        return 'tree-table__row--striped'
+      }
+    },
     setHeight() {
       let grid = this.$refs.table.$el.querySelectorAll('.plx-grid')[0]
       this.height = grid.offsetHeight
     },
-    handleTableScroll() {
-      this.$emit('table-body-scroll')
+    handleTableScroll($event) {
+      this.$emit('table-body-scroll', $event)
     },
     handleSelectionChange($event) {
       if (this.select) {
@@ -158,23 +196,30 @@ export default {
 }
 </script>
 <style lang="scss">
-$table-border-color: #bbb;
-.has-scroll .plx-table--fixed-right-wrapper,.has-scroll .el-table__fixed-right {
+$table-border-color: #dfdfdf;
+$table-bg-color: #f2f2f2;
+.has-scroll .plx-table--fixed-right-wrapper,
+.has-scroll .el-table__fixed-right {
   transition: 0.1s;
   opacity: 1;
+  right: -40px;
+  z-index: 3;
 }
 
-.has-scroll:not(.show-right-btns) .plx-table--fixed-right-wrapper,.has-scroll:not(.show-right-btns) .el-table__fixed-right {
+.has-scroll:not(.show-right-btns) .plx-table--fixed-right-wrapper:not(._modal),
+.has-scroll:not(.show-right-btns) .el-table__fixed-right:not(._modal) {
   transform: translateX(78px) scaleX(0);
   opacity: 0;
   // transition: 0.1s;
 }
-.fixed--right .el-table__fixed-right, .fixed--right .plx-table--fixed-right-wrapper {
+.fixed--right .el-table__fixed-right,
+.fixed--right .plx-table--fixed-right-wrapper {
   opacity: 1;
   transform: translateX(0) scaleX(1);
 }
 .plx-table:before {
-  border-top: 1px solid $table-border-color;
+  // border-top: 1px solid $table-border-color;
+  border-top: none;
 }
 .plx-table:after {
   border-bottom: 1px solid $table-border-color;
@@ -189,10 +234,26 @@ $table-border-color: #bbb;
 .plx-table.t--border .plx-table--fixed-left-wrapper {
   border-right: 1px solid $table-border-color;
 }
-.plx-table .plx-body--row.row--stripe,
-.plx-table .plx-body--row.row--stripe .plx-tree--btn-wrapper {
-  background: #e4e4e4;
+.plx-table .plx-body--row.tree-table__row--striped td,
+.plx-table .plx-body--row.tree-table__row--striped .plx-tree--btn-wrapper td {
+  background: #fff;
 }
+.plx-table .plx-body--row:not(.tree-table__row--striped),
+.plx-table
+  .plx-body--row:not(.tree-table__row--striped)
+  .plx-tree--btn-wrapper {
+  background: $table-bg-color;
+}
+// .plx-table .plx-body--row[style^="animation"] {
+//   color: red;
+// }
+// .plx-table .plx-body--row[style^="animation"]:nth-of-type(odd) {
+//   background: $table-bg-color;
+// }
+// .plx-table .plx-body--row[style^="animation"]:nth-of-type(even) {
+//   background: #fff;
+// }
+
 .plx-table.t--border:not(.b--style-none) .plx-body--column,
 .plx-table.t--border:not(.b--style-none) .plx-footer--column,
 .plx-table.t--border:not(.b--style-none) .plx-header--column {
@@ -239,5 +300,16 @@ $table-border-color: #bbb;
     display: flex;
     align-items: center;
   }
+}
+.plx-table .plx-body--row.row--hover,
+.plx-table .plx-body--row.row--hover .plx-tree--btn-wrapper,
+.plx-table .plx-body--row.row--hover.row--stripe,
+.plx-table .plx-body--row.row--hover.row--stripe .plx-tree--btn-wrapper,
+.plx-table .plx-body--row.tree-table__row--striped.row--hover td,
+.plx-table
+  .plx-body--row.tree-table__row--striped.row--hover
+  .plx-tree--btn-wrapper
+  td {
+  background-color: #f5f7fa;
 }
 </style>

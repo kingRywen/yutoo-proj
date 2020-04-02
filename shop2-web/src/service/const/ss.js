@@ -33,7 +33,7 @@ export default [
     name: "firstStatus",
     desc: "跟卖库-抓取状态",
     value: [
-      { label: "无需抓取", value: 0 },
+      // { label: "无需抓取", value: 0 },
       { label: "抓取中", value: 1 },
       { label: "抓取成功", value: 2 },
       { label: "抓取失败", value: 3 }

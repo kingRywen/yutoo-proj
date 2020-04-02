@@ -27,6 +27,23 @@ export default {
     return {
       title: emptyContentTitle
     }
+  },
+  created() {
+    // 检测服务器连接情况
+    Promise.all([
+      this.$api[`fba/FbaReplenishTransportList`]({ a: 1 }),
+      this.$api[`common/platformSiteList`]({})
+    ]).then(() => {
+      this.$router.replace({
+        path: this.$route.query.back
+      })
+    }).catch(({code}) => {
+      if (code == 401 || code == 407 || code == 403) {
+        this.$router.replace({
+          path: ''
+        })
+      }
+    })
   }
 }
 </script>

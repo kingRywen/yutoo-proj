@@ -5,25 +5,27 @@
 @import "./common.scss";
 @import "./lazyloading.scss";
 
-// 滚动条
+// 滚动条变量
+$rectWidth: 12px; // 滚动条宽度
+$scrollBgColor: #f5f5f5; // 通用滚动条背景
 ::-webkit-scrollbar-track {
   // -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  background-color: #f5f5f5;
+  background-color: $scrollBgColor;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: $rectWidth;
+  height: $rectWidth;
   border-radius: 10px;
-  background-color: #f5f5f5;
+  background-color: $scrollBgColor;
   z-index: 222;
 }
 
 .el-table {
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: $rectWidth;
+    height: $rectWidth;
     border-radius: 0;
   }
 
@@ -32,8 +34,8 @@
   }
 }
 
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
+::-webkit-scrollbar-thumb, .ant-table-scroll ::-webkit-scrollbar-thumb {
+  border-radius: 0px;
   -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
   background-color: rgba(144, 147, 153, 0.3);
   &:hover {

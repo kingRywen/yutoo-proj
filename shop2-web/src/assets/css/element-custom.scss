@@ -1,4 +1,4 @@
-$table-border-color: #bbb;
+$table-border-color: #dfdfdf;
 
 .el-menu {
   box-sizing: border-box;
@@ -693,13 +693,13 @@ textarea {
 .el-table {
   color: #333;
   th.is-sortable {
-    color: rgb(35, 47, 62);
+    color: #34485d;
     .caret-wrapper {
       display: none;
     }
   }
   thead {
-    color: #777;
+    color: #6a6b6e;
     * {
       font-weight: bold;
       i {
@@ -787,6 +787,12 @@ textarea {
 .fixed.table-arrow-right {
   position: fixed;
   top: 50%;
+}
+.fixed.table-arrow-left {
+  left: 17px;
+}
+.fixed.table-arrow-right {
+  right: 17px !important;
 }
 ._forminput-equal {
   padding: 0 10px;
@@ -891,11 +897,35 @@ li.el-cascader-node {
   top: 6px;
   font-size: 32px;
 }
-
-.el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: #e4e4e4;
+.el-table.custom-eltable tr {
+  background: #f2f2f2;
 }
 
+.el-table--striped .el-table__body tr.el-table__row--striped td,
+tr.tree-table__row--striped > td {
+  background: #fff;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #fff;
+}
+.el-table.custom-eltable tr._danger,
+.el-table--striped .el-table__body tr._danger.el-table__row--striped td {
+  background: #ffe6e6;
+}
+.el-table.custom-eltable tr._info,
+.el-table--striped .el-table__body tr._info.el-table__row--striped td {
+  color: #999;
+}
+.el-table__body tr.hover-row > td,
+.el-table__body tr.hover-row.current-row > td,
+.el-table__body tr.hover-row.el-table__row--striped td,
+.el-table__body tr.hover-row.el-table__row--striped.current-row td,
+.el-table--striped
+  .el-table__body
+  tr.hover-row._danger.el-table__row--striped
+  td {
+  background-color: #f5f7fa;
+}
 .custom-eltable.el-table td,
 .custom-eltable.el-table th.is-leaf {
   border-color: $table-border-color;

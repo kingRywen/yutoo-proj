@@ -46,7 +46,7 @@
 </template>
 <script>
 import { timeField, getSearchNumField } from 'Utils/table-render.js'
-import { downloadCsv } from 'Utils'
+import { downloadCsv,downloadFile } from 'Utils'
 import mixin from './mixin'
 import dropdownMixin from './dropdown-mixin'
 import { mapActions, mapMutations } from 'vuex'
@@ -177,10 +177,10 @@ export default {
         {
           label: 'SKU',
           value: 'sellerSku',
-          numField: 'childsCount',
+          numField: 'childCount',
           fixed: 'left',
           noTooltip: true,
-          minWidth: 340,
+          
           width: 340,
           expand: true,
           async: true,
@@ -233,14 +233,14 @@ export default {
         {
           label: '待补数量',
           width: 120,
-          minWidth: 100,
+          
           headerTooltip: '还需要补货的数量',
           sortable: 'custom',
           value: 'waitReplenishCount'
         },
         {
           label: '在补数量',
-          minWidth: 100,
+          
           width: 120,
           headerTooltip: '确认并导出补货的数量，点击查看具体批次号',
           sortable: 'custom',
@@ -249,7 +249,7 @@ export default {
         },
         {
           label: '剩余备货天数',
-          minWidth: 120,
+          
           width: 140,
           headerTooltip:
             '只展示1个备货剩余时间最少的，鼠标移入可以展示所有批次的剩余时间',
@@ -292,7 +292,7 @@ export default {
           width: 110,
           label: 'FBA总库存',
           value: 'qtyAllFbaInventory',
-          minWidth: 90
+          
         },
         {
           label: '可售库存',
@@ -317,7 +317,7 @@ export default {
         {
           label: '转运库存',
           width: 120,
-          minWidth: 100,
+          
           sortable: 'custom',
           headerTooltip:
             '转运库存包含【FBA仓库间调货库存】与【FBA正在处理中库存】，已剔除掉FBA订单等待发货的库存',
@@ -325,16 +325,17 @@ export default {
         },
         {
           label: '不可售库存',
-          minWidth: 110,
+          
           sortable: 'custom',
           width: 120,
           value: 'nonSalableInventory'
         },
         {
           sortable: 'custom',
-          label: '当日销量',
+          label: '昨日销量',
           width: 110,
-          value: 'salesDay'
+          value: 'salesDay',
+          render: this.renderSalesDay.bind(this)
         },
         {
           label: '日均销量',
@@ -346,14 +347,14 @@ export default {
         {
           label: '可售天数',
           sortable: 'custom',
-          minWidth: 100,
+          // minWidth: 100,
           width: 110,
           headerTooltip: '可售天数=（可售库存+待入库）/ 平均销量',
           value: 'availableSaleDays'
         },
         {
           sortable: 'custom',
-          minWidth: 110,
+          
           width: 140,
           label: '已配送订单数',
           value: 'orderQtyShipping'
@@ -368,14 +369,14 @@ export default {
         {
           label: '取消订单数',
           width: 110,
-          minWidth: 100,
+          // minWidth: 100,
           sortable: 'custom',
           value: 'orderQtyCancell'
         },
         {
           sortable: 'custom',
           label: '退款订单数',
-          minWidth: 100,
+          // minWidth: 100,
           width: 110,
           value: 'orderQtyReturn'
         },
@@ -392,7 +393,7 @@ export default {
         },
         {
           label: '滞销预警天数',
-          minWidth: 110,
+          
           width: 110,
           sortable: 'custom',
           value: 'unsalableWarningDays'
@@ -411,7 +412,7 @@ export default {
         },
         {
           label: '固定补货天数',
-          minWidth: 110,
+          
           width: 110,
           sortable: 'custom',
           value: 'daysFixed'

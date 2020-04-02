@@ -1,5 +1,5 @@
 import download from "./download";
-import axios from "axios";
+// import axios from "axios";
 import Vue from "vue";
 /**
  * 获取数据的数据类型
@@ -69,44 +69,57 @@ export function formatDate(time, cFormat) {
  */
 export function downloadCsv(data) {
   if (data && data.path) {
-    data = data.path;
+    return downloadFile(data.path)
   }
-  const a = document.createElement("a");
-  a.href = data
-  data = data.replace(a.origin, location.origin)
+  return downloadFile(data)
+}
+// export function downloadCsv(data) {
 
-  if (data.split(".").pop() !== "csv") {
-    return downloadFile(data, null);
-  }
+//   if (data && data.path) {
+//     data = data.path;
+//   }
+//   const a = document.createElement("a");
+//   a.href = data
+//   data = data.replace(a.origin, location.origin)
+
+//   if (data.split(".").pop() !== "csv") {
+//     return downloadFile(data, null);
+//   }
   
 
 
-  return axios({
-    // url: data.replace("http://127.0.0.1", "http://192.168.0.112"),
-    method: "get",
-    url: data,
-    responseType: "blob",
-    transformResponse: function(data1) {
-      let reader = new FileReader();
-      reader.readAsText(data1, "GBK");
-      reader.onload = function() {
-        downloadFile(
-          "data:text/csv;charset=utf-8,\ufeff" + reader.result,
-          null,
-          null,
-          data.split("/").pop()
-        );
-      };
-      reader.onerror = function() {
-        Vue.prototype.$message.error("下载失败，请重试");
-      };
-      return data1;
-    }
-  }).catch(() => {
-    Vue.prototype.$message.error("下载失败，请重试");
-    return Promise.reject();
-  });
-}
+//   return axios({
+//     url: data.replace("http://localhost:8080", "http://192.168.0.112:8003"),
+//     method: "get",
+//     // url: data,
+//     responseType: "blob",
+//     transformResponse: function (data1) {
+      
+//       console.log(data1);
+//       // if (data1.type == "text/html") {
+//       //   return Vue.prototype.$message.error("下载失败，请重试");
+//       // }
+
+//       let reader = new FileReader();
+//       reader.readAsText(data1, "GBK");
+//       reader.onload = function() {
+//         downloadFile(
+//           "data:text/csv;charset=windows-1252;" + reader.result,
+//           null,
+//           null,
+//           data.split("/").pop()
+//         );
+//       };
+//       reader.onerror = function() {
+//         Vue.prototype.$message.error("下载失败，请重试");
+//       };
+//       return data1;
+//     }
+//   }).catch(() => {
+//     Vue.prototype.$message.error("下载失败，请重试");
+//     return Promise.reject();
+//   });
+// }
 
 /**
  * 下载文件
@@ -126,7 +139,7 @@ export function downloadFile(url, txt, _blank, downloadName) {
       );
   }
   var link;
-  // debugger;
+  debugger;
   if (typeof url === "string") {
     // console.log(22);
 

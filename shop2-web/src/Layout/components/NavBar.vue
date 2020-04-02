@@ -588,9 +588,10 @@ $navColor: #cfcfcf;
       flex-direction: row;
       justify-content: center;
       .el-icon-search {
-        line-height: 23px;
+        line-height: 53px;
         margin-right: 8px;
         margin-left: 20px;
+        font-size: 21px;
       }
       input {
         flex: 1;
@@ -618,7 +619,7 @@ $navColor: #cfcfcf;
         padding: 16px;
         color: rgb(102, 102, 102);
         left: 0;
-        top: 34px;
+        top: 49px;
         z-index: 999999;
         background: #fff;
         line-height: 14px;

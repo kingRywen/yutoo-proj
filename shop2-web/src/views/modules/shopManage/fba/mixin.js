@@ -56,9 +56,9 @@ export default {
       }
     },
     // 平均销量列渲染
-    renderAva(h, scope) {
+    renderAva(h, scope, str) {
       let { salesAvg, avgSales } = scope.row;
-      let num = salesAvg || avgSales;
+      let num = str && typeof str === 'string' ? scope.row[str] : salesAvg || avgSales;
       if (num == null) {
         return <span>-</span>;
       }
@@ -84,12 +84,18 @@ export default {
             }
           }}
         >
-          <dailyBox tableData={scope.row.__avaList} />
+          <dailyBox
+            type={typeof str === "string" ? "salesDay" : "ava"}
+            tableData={scope.row.__avaList}
+          />
           <el-button slot="reference" type="text">
             {num}
           </el-button>
         </el-popover>
       );
+    },
+    renderSalesDay(h, scope) {
+      return this.renderAva.call(this, h, scope, 'salesDay')
     },
     // 运输方式列渲染
     renderTrans(h, { column, $index }) {
@@ -99,6 +105,15 @@ export default {
             style="padding-left: 0"
             onCommand={command => {
               // console.log(command);
+              if (this.$route.path == "/shopManage/fba/rep") {
+                this.$router.replace({
+                  path: this.$route.path,
+                  query: {
+                    ...this.$route.query,
+                    transportId: command.transportId
+                  }
+                });
+              }
               this.selectTran = command;
             }}
           >

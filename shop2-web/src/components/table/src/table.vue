@@ -89,6 +89,7 @@
               <template slot-scope="scope">
                 <table-colvalue
                   :item="k"
+                  :tableList="listToArray"
                   :scope="scope"
                   :style="k.style ||''"
                   :pageSize="$attrs.pageSize"
@@ -105,6 +106,7 @@
               <table-colvalue
                 :arr="data"
                 :item="item"
+                :tableList="listToArray"
                 :fixedMinusOne="fixedMinusOne"
                 :pageSize="$attrs.pageSize"
                 :pageNo="$attrs.pageNo"
@@ -331,7 +333,7 @@ export default {
         '.el-table-column--selection:not(.is-hidden)'
       )[0]
       checkBoxCol.classList.add('_enable')
-      checkBoxCol
+      // checkBoxCol
       // let label = checkBoxCol.querySelectorAll('label.is-disabled')[0]
       // let span = checkBoxCol.querySelectorAll('span.is-disabled')[0]
       // let input = checkBoxCol.querySelectorAll('input[type=checkbox]')[0]
@@ -381,7 +383,6 @@ export default {
       this.radioVal = row
     },
     handleSelect(select, row) {
-
       const table = this.bigData
         ? this.$refs.bigTab.$refs.table
         : this.$refs.table
@@ -559,9 +560,6 @@ export default {
       return cls.join(' ')
     },
     innerTableRowClassName({ row, rowIndex }) {
-      if (rowIndex === this.listToArray.length - 1) {
-        this.innerTableRowClassName.count = null
-      }
       if (this.innerTableRowClassName.count == null) {
         this.innerTableRowClassName.count = 0
       }
@@ -570,7 +568,16 @@ export default {
       if (show) {
         this.innerTableRowClassName.count++
       }
-      if (this.innerTableRowClassName.count % 2 == 0) {
+      if (rowIndex === this.listToArray.length - 1) {
+        let count = this.innerTableRowClassName.count
+        this.innerTableRowClassName.count = 0
+        if (count % 2 !== 0) {
+          return ''
+        } else {
+          return 'tree-table__row--striped'
+        }
+      }
+      if (this.innerTableRowClassName.count % 2 !== 0) {
         return ''
       } else {
         return 'tree-table__row--striped'
@@ -579,7 +586,7 @@ export default {
     // 展开函数
     evalFunc(data, expandAll, parent = null, level = null) {
       // console.log(data);
-      
+
       let tmp = [],
         vm = this,
         children = this.treeTableOtions.childs
@@ -749,7 +756,8 @@ export default {
     clearSelection() {
       this.$refs.table.clearSelection()
     },
-    handleTableScroll() {
+    handleTableScroll($event) {
+      this.$emit('big-table-body-scroll', $event)
       let table = this.$refs.bigTab.$el
       const plxTableBodyWrapper = table.querySelectorAll(
         '.plx-table--body-wrapper.body--wrapper'
@@ -774,10 +782,12 @@ export default {
         span.classList.remove('is-checked')
         this.allChecked = false
         try {
-          
-          this.$emit('selectChange', this.$refs.bigTab.$refs.table.$refs.xTable.selection)
+          this.$emit(
+            'selectChange',
+            this.$refs.bigTab.$refs.table.$refs.xTable.selection
+          )
         } catch (e) {
-          // 
+          //
         }
       }
     },
@@ -811,7 +821,7 @@ export default {
 }
 </style>
 <style lang="scss">
-$table-border-color: #bbb;
+$table-border-color: #dfdfdf;
 @keyframes treeTableShow {
   from {
     opacity: 0;
@@ -904,6 +914,7 @@ $table-border-color: #bbb;
   }
   .__none {
     display: none;
+    height: 0;
   }
 }
 // .tree-table__row--striped {
@@ -929,6 +940,11 @@ $table-border-color: #bbb;
   }
 }
 .empty-content-isempty {
+  &.custom-eltable {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
   .el-table__empty-block {
     display: none;
   }

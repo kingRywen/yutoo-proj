@@ -35,6 +35,10 @@ export default {
           }
         },
         {
+          label: '父ASIN',
+          value: 'parentAsin'
+        },
+        {
           label: '主图',
           value: 'imageUrl',
           img: true,

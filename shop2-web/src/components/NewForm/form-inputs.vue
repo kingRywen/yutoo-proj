@@ -36,6 +36,7 @@
     @blur="textAreaBlur(item)"
     @focus="textAreaFocus(item)"
     ref="textarea"
+    clearable
     v-else-if="type === 'textarea'"
     @input="$emit('input', $event)"
     :autosize="item.autosize"
@@ -155,6 +156,7 @@
   <!-- 日期范围 -->
   <el-date-picker
     :disabled="typeof disabled  === 'function' ? disabled() : disabled"
+    :format="item.displayFormat"
     :value-format="item.format || (type === 'datetimerange' || item.time) ? 'yyyy-MM-dd HH:mm:ss' : 'yyyy-MM-dd'"
     v-else-if="type === 'daterange' || type === 'date' || type === 'datetimerange' || type === 'datetime'"
     :type="type === 'daterange' ? 'daterange': type === 'datetimerange' ? 'datetimerange' : item.time ? 'datetime' : 'date'"
@@ -165,6 +167,7 @@
     :range-separator="item.rangeSeparator || '-'"
     :start-placeholder="item.startPlaceholder || '开始时间'"
     :end-placeholder="item.endPlaceholder || '结束时间'"
+    :placeholder="item.placeholder"
     :style="{width: item.width ? (typeof item.width === 'string' && item.width.indexOf('%') > -1) ? item.width : (parseInt(item.width) + 'px') : '230px'}"
     @clear="$emit('clear'), $emit('change', $event)"
     @change="$emit('input', $event), $emit('change', $event)"
@@ -278,7 +281,17 @@ export default {
     event: 'input'
   },
   data() {
+    let pickerOptions = undefined
+    if (
+      this.type === 'daterange' ||
+      this.type === 'date' ||
+      this.type === 'datetimerange' ||
+      this.type === 'datetime'
+    ) {
+      pickerOptions = {}
+    }
     return {
+      pickerOptions,
       options: [],
       loading: false,
       fileList: [],
@@ -685,7 +698,7 @@ export default {
       return this.item.widget
     },
     getPickerOptions() {
-      let ret = {}
+      let ret = this.pickerOptions || {}
       if (this.item.pickerOptions) {
         ret = this.item.pickerOptions
       }

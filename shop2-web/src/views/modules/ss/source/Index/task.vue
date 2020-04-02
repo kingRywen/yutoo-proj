@@ -174,6 +174,7 @@ export default {
     del(taskIds) {
       const params = {
         ...this.storeInfo,
+        siteId: this.$store.state.selling.curSiteId,
         taskIds
       }
       this.showTips({ msg: '此操作将删除任务, 是否继续?' }, () => {
@@ -184,7 +185,7 @@ export default {
       if (row.status == 1) {
         return []
       }
-      return [1,2]
+      return [1, 2]
     },
     handleLeftBatchChange(val, sel) {
       const taskIds = sel.map(e => e.taskId)

@@ -219,8 +219,9 @@ export default {
       return this.validate().then(() => {
         let { excludeSellerList } = this.value
         excludeSellerList &&
-          (excludeSellerList = excludeSellerList.split(/[\n|\r\n]/))
+          (excludeSellerList = excludeSellerList.split(/[\n|\r\n]/).map(e => e.trim()))
         let params = {
+          platformId: this.storeInfo.platformId,
           ...this.value,
           excludeSellerList
         }

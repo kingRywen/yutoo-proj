@@ -249,10 +249,11 @@ const formUtils = {
    */
   setDefaultVal(value, schema) {
     // console.log(value);
-
+    let retDef = {}
     function setNormalDef(item, value, key) {
       let defaultVal = formUtils.getInputDefault(item);
       formUtils.setNormalDefault(item, value, key, defaultVal);
+      retDef[key] = defaultVal;
     }
 
     // 设置表格值
@@ -283,6 +284,7 @@ const formUtils = {
       }
 
       Vue.set(value, key, ret);
+      retDef[key] = ret
     }
 
     function setDef(schema, value) {
@@ -291,6 +293,8 @@ const formUtils = {
         if (el.type == "normal") {
           if (value[key] == null || value[key] === "") {
             setNormalDef(el, value, key);
+          } else {
+            retDef[key] = value[key];
           }
         } else if (el.type === "object") {
           let val = Object.prototype.toString.call(value[key]),
@@ -310,6 +314,7 @@ const formUtils = {
             ret[key] = res[key];
           });
           el.__default = ret;
+          retDef[key] = el.__default;
         } else if (el.type === "table") {
           if (
             value[key] &&
@@ -346,11 +351,14 @@ const formUtils = {
           if (Object.prototype.toString.call(value[key]) !== "[object Array]") {
             // FIXME: 需要把默认值带进去
             Vue.set(value, key, [{}]);
+            retDef[key] = [{}]
           }
         }
       });
     }
     setDef(schema, value);
+    // return 默认值
+    return retDef
   }
 };
 

@@ -100,7 +100,7 @@ function strategyResult(arr) {
   return ret;
 }
 
-export function validLegal(string, ids) {
+export function validLegal(string, ids, allowRepeat) {
   let reg;
   if (ids.length) {
     reg = new RegExp("(" + ids.join("|") + ")\\1{1}");
@@ -115,7 +115,7 @@ export function validLegal(string, ids) {
   // console.log(reg);
 
   // 错误情况，变量重复
-  if (reg && reg.test(string)) {
+  if (!allowRepeat && reg && reg.test(string)) {
     return false;
   }
 

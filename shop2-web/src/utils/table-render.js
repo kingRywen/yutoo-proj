@@ -11,7 +11,7 @@ export function getSearchNumField(
   field,
   labelWidth = "130px",
   range = true,
-  precions = 0
+  precision = 0
 ) {
   let vm = this;
   return {
@@ -36,14 +36,14 @@ export function getSearchNumField(
       min: {
         widget: "number",
         min: 0,
-        precions,
+        precision,
         width: 120,
         span: 12
       },
       max: {
         widget: "number",
         labelWidth: "20px",
-        precions,
+        precision,
         min: 0,
         label: "~",
         width: 120,
@@ -113,6 +113,9 @@ export function getCategorySelect(params, depthType = "depth") {
 // 类目省略列
 export function renderCate(h, scope) {
   let { category, categoryUrl } = scope.row;
+  if (!category) {
+    return <span>-</span>;
+  }
   let cates = category.split(":");
   return (
     <el-tooltip placement="top-start" content={category}>

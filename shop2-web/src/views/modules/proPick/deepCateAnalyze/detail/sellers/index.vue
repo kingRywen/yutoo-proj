@@ -77,7 +77,7 @@ export default {
         {
           label: '序号',
           type: 'index',
-          width: 60
+          width: 50
         },
         {
           label: '店铺名称',

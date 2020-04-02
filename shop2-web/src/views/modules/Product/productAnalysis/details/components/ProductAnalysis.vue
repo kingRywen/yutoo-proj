@@ -3,7 +3,7 @@
     <!-- 产品分析 -->
     <!-- 基础信息 start -->
     <el-card v-loading="loading[0]" class="custom-box-card" shadow="hover">
-      <div slot="header" class="clearfix flex flex-t-b">
+      <div slot="header" class="clearfix flex just-sb">
         <span>基础信息</span>
         <el-dropdown
           v-if="exp"

@@ -7,8 +7,11 @@
     :columns="columns"
     :url="apiName"
     ref="layout"
+    :checkStrictly="false"
     :object-merge="true"
+    reserveSelection="asin"
     editWidth="200px"
+    @searchTrueData="val => searchData = val"
     :edit-btns="edits"
     :right-edit-btns="rightEditBtns"
     :btnTip="true"
@@ -19,13 +22,15 @@
     @left-batch-change="handleLeftBatchChange"
   >
     <div slot="btnTip">
-      1、从跟卖源加入可跟卖库的产品的基础数据会按“数据更新频率-基础数据”的频率定时更新；
-      <br />2、跟卖库的跟卖数据更新，并不会同时更新可跟卖库的跟卖数据，包含：源/目标站点的最低售价、最高售价、跟卖卖家数、跟卖数量、发货方式。
+      1、这里仅展示自己店铺的跟卖数据；
+      <br />2、“数据更新频率-跟卖数据”定时器只会更新“跟卖库”的跟卖数据（不含基础数），并更新“源更新时间”和“目标更新数据”。
     </div>
   </main-layout>
 </template>
 <script>
+import selectMixin from '../../selectMixin'
 export default {
+  mixins: [selectMixin],
   computed: {
     sites() {
       return this.$store.getters['storeInfo/currentPlat'].sites || []
@@ -40,11 +45,14 @@ export default {
   data() {
     let vm = this
     return {
+      searchData: {
+        displayType: true
+      },
       key: '1111',
-      apiName: 'ss/sellingLibAllProductList',
+      // apiName: 'ss/sellingLibAllProductList',
       treeTable: true,
       treeTableOtions: {
-        childs: 'childs',
+        childs: 'childrens',
         expandFunc: row => {
           return row._level == 1
         }
@@ -97,9 +105,9 @@ export default {
           // width: 100,
           clearable: false,
           change: data => {
-            vm.apiName = data.displayType
-              ? 'ss/sellingLibAllProductList'
-              : 'ss/sellingLibChildProductList'
+            // vm.apiName = data.displayType
+            //   ? 'ss/sellingLibAllProductList'
+            //   : 'ss/sellingLibChildProductList'
             vm.columns[1].expand = data.displayType
           },
           defaultVal: true,
@@ -116,7 +124,7 @@ export default {
         },
         sameFlag: {
           label: '是否跨站',
-          labelWidth: 70,
+          labelWidth: 80,
           hidden: true,
           // width: 100,
           widget: 'select',
@@ -132,17 +140,17 @@ export default {
             }
           ]
         },
-        sellingSellerIds: {
+        sellerId: {
           hidden: true,
           label: '店铺名称',
-          labelWidth: 96,
+          labelWidth: 80,
           widget: 'select',
           options: () => this.getStoreList()
         },
 
         firstStatus: {
           width: 140,
-          labelWidth: 100,
+          labelWidth: 82,
           label: '抓取状态',
           hidden: true,
           widget: 'select',
@@ -173,11 +181,12 @@ export default {
           label: '序号',
           fixed: 'left',
           expand: true,
-          width: 80,
+          width: 50,
           type: 'index'
         },
         {
           label: 'ASIN',
+          numField: 'skuCnt',
           fixed: 'left',
           value: 'asin',
           url: true,
@@ -187,6 +196,10 @@ export default {
             const params = {
               ...this.storeInfo,
               siteId: this.curSiteId,
+              ...this.searchData,
+              sort: undefined,
+              field: undefined,
+              searchText: undefined,
               parentAsin: row.asin
             }
             return this.$api[`ss/sellingLibGetChildProductList`](params).then(
@@ -194,9 +207,16 @@ export default {
             )
           },
           btnClick: scope => {
-            window.open(this.storeUrls.asinUrl + scope.row['asin'])
+            window.open(
+              this.$store.state.selling.curSite.asinUrl +
+                scope.row['asin'] +
+                (this.searchData.displayType &&
+                scope.row.parentAsin === scope.row.asin
+                  ? ''
+                  : '?psc=1')
+            )
           },
-          width: 140
+          width: 160
         },
         {
           label: '站点',
@@ -222,7 +242,7 @@ export default {
           value: 'imageUrl',
           img: true,
           link: row => {
-            return this.storeUrls.asinUrl + row['asin']
+            return this.$store.state.selling.curSite.asinUrl + row['asin']
           },
           title: 'title',
           width: 70
@@ -242,6 +262,14 @@ export default {
           headerTooltip: '仅自己店铺',
           value: 'sellerCnt',
           url: true,
+          isClick: scope => {
+            return (
+              (scope.row._level !== 1 &&
+                scope.row.sellerCnt !== 0 &&
+                scope.row.sellerCnt != null) ||
+              !this.searchData.displayType
+            )
+          },
           btnClick: scope => {
             this.$_dialog({
               size: 'medium',
@@ -262,9 +290,10 @@ export default {
           url: true,
           isClick: scope => {
             return (
-              (!!scope.row.parentAsin || scope.row._level !== 1) &&
-              scope.row.sellingCnt !== 0 &&
-              scope.row.sellingCnt != null
+              (scope.row._level !== 1 &&
+                scope.row.sellingCnt !== 0 &&
+                scope.row.sellingCnt != null) ||
+              !this.searchData.displayType
             )
           },
           btnClick: scope => {
@@ -275,6 +304,7 @@ export default {
                 siteId: this.curSiteId,
                 platformId: this.storeInfo.platformId,
                 type: 'lib',
+                parentAsin: scope.row.parentAsin,
                 asin: scope.row.asin
               },
               cancelBtnText: '取消',
@@ -323,6 +353,11 @@ export default {
     }
   },
   methods: {
+    apiName(searchData) {
+      return searchData.displayType
+        ? 'ss/sellingLibAllProductList'
+        : 'ss/sellingLibChildProductList'
+    },
     getStoreList(info) {
       const asin = this.$refs.layout.searchData.searchText
       let params = { ...this.storeInfo, asin, ...info }
@@ -347,30 +382,43 @@ export default {
     },
 
     handleLeftBatchChange(val, sel) {
+      let asins
       switch (val[0]) {
         case '修改跟卖策略':
+          sel = this.selectC(sel)
+          if (!sel) {
+            return
+          }
           this.editStrage(sel)
           break
         case '删除':
-          this.del(sel)
+          asins = this.selectB(sel)
+          if (!asins) {
+            return
+          }
+          this.del(sel, asins)
           break
         case '同步发货方式':
-          this.sync(sel)
+          asins = this.selectB(sel)
+          if (!asins) {
+            return
+          }
+          this.sync(sel, asins)
           break
 
         default:
           break
       }
     },
-    sync(sel) {
-      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
-        this.$message.warning('只能全部选择父产品或者全部选择子产品')
-        return
-      }
+    sync(sel, asins) {
+      // if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
+      //   this.$message.warning('只能全部选择父产品或者全部选择子产品')
+      //   return
+      // }
       this.showTips({ msg: '此操作将同步跟卖发货方式, 是否继续?' }, () => {
         return this.$api[`ss/sellingSyncFbpFlag`]({
           ...this.storeInfo,
-          asins: sel.map(e => e.asin || e.parentAsin),
+          asins: asins || sel.map(e => e.asin || e.parentAsin),
           type:
             sel[0]._level == 1 && this.$refs.layout.searchData.displayType
               ? 1
@@ -391,11 +439,12 @@ export default {
       })
     },
     editStrage(sel) {
+      this.cleanData(sel)
       this.$_dialog({
         size: 'medium',
         title: '修改跟卖策略',
         params: {
-          sel,
+          sel: JSON.parse(JSON.stringify(sel)),
           curSiteId: this.curSiteId,
           getStoreList: this.getStoreList.bind(this)
         },
@@ -405,21 +454,29 @@ export default {
           import('Views/modules/ss/vallib/Index/dialogs/sellWith.vue')
       })
     },
-    del(sel) {
-      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
-        this.$message.warning('只能全部选择父产品或者全部选择子产品')
-        return
-      }
+    del(sel, asins) {
+      // if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
+      //   this.$message.warning('只能全部选择父产品或者全部选择子产品')
+      //   return
+      // }
       this.showTips({ msg: '此操作将删除数据, 是否继续?' }, () => {
         return this.$api[`ss/sellingRemoveLib`]({
           ...this.storeInfo,
-          asins: sel.map(e => e.asin || e.parentAsin),
+          asins: asins || sel.map(e => e.asin || e.parentAsin),
           type:
             sel[0]._level == 1 && this.$refs.layout.searchData.displayType
               ? 1
               : 0
         })
       })
+    }
+  },
+  watch: {
+    'searchData.displayType': {
+      immediate: true,
+      handler(val) {
+        this.columns[1].expand = val
+      }
     }
   }
 }

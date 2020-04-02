@@ -1,23 +1,22 @@
 <template>
   <div class="w1100 no-asterisk">
     <new-form ref="form" label-width="80px" :form-schema="formSchema" :value="value"></new-form>
-    <el-divider class="mt10" content-position="left">库存策略</el-divider>
-
-    <!-- <new-form class="mt20" ref="form1" inline label-width="120px" :form-schema="formSchema1" :value="value1"></new-form> -->
-    <label class="lb">
-      <span class="mr10">取值方式</span>
-      <el-radio class="mt10" size="mini" v-model="calculation" :label="0">动态库存</el-radio>
-      <el-radio size="mini" v-model="calculation" :label="1">固定库存</el-radio>
-    </label>
-    <new-form
-      v-show="calculation == 1"
-      class="mt20"
-      ref="form2"
-      inline
-      label-width="120px"
-      :form-schema="formSchema2"
-      :value="value2"
-    ></new-form>
+    <widget-card-wrapper title="库存策略">
+      <label class="lb">
+        <span class="mr10">取值方式</span>
+        <el-radio class="mt10" size="mini" v-model="calculation" :label="0">动态库存</el-radio>
+        <el-radio size="mini" v-model="calculation" :label="1">固定库存</el-radio>
+      </label>
+      <new-form
+        v-show="calculation == 1"
+        class="mt20"
+        ref="form2"
+        inline
+        label-width="120px"
+        :form-schema="formSchema2"
+        :value="value2"
+      ></new-form>
+    </widget-card-wrapper>
   </div>
 </template>
 <script>
@@ -26,10 +25,19 @@ export default {
   data() {
     return {
       formSchema: {
+        ddd: {
+          widget: 'txt',
+          text: '策略名称',
+          style: {
+            fontSize: '16px',
+            textAlign: 'right'
+          },
+          span: 2
+        },
         strategyName: {
-          label: '策略名称',
+          // label: '策略名称',
           required: true,
-          span: 12
+          span: 10
         },
         defaultFlag: {
           widget: 'checkbox',

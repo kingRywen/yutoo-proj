@@ -57,5 +57,11 @@ export default [
     method: "POST",
     desc: "FBA补货计划 - 查询预处理信息",
     mock: false
+  },
+  {
+    path: "fbaReplenishTransport/getCarrierType",
+    name: "fbaReplenishTransportGetCarrierType",
+    method: "POST",
+    desc: "运输方式管理 - 列表-获取承运商",
   }
 ];

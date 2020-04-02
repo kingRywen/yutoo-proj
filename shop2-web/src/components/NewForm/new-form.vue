@@ -259,8 +259,8 @@ export default {
     handleSchema() {
       // 补全表格配置
       let dataFormSchema = formUtils.generateForm(this.formSchema, this.search)
-      // 生成默认值, 如果已经生成过，要把之前的值也合成
-      formUtils.setDefaultVal(this.value, dataFormSchema)
+      // 生成默认值, 如果已经生成过，要把之前的值也合成 defaultSchemaVal -> 是表单中defaultVal的默认值提炼
+      let defaultSchemaVal = formUtils.setDefaultVal(this.value, dataFormSchema)
       if (this.$options.defaultVal) {
         Object.assign(this.value, this.$options.defaultVal)
       } else {
@@ -269,6 +269,7 @@ export default {
       // console.log(this.value)
 
       this.$options.originVal = JSON.parse(JSON.stringify(this.value))
+      this.$emit('default-val-done', defaultSchemaVal)
       this.dataFormSchema = dataFormSchema
       // 同步数据，否则会出现父组件数据与此数据更新不同步的情况
       // 此问题在于上面的更新都是基于this.value这个props属性，vue本身的框架是不支持子组件直接修改props的值
@@ -364,8 +365,11 @@ export default {
     margin-bottom: 13px;
     position: relative;
     height: 32px;
-    &:not(.search).is-textarea {
-      height: 100%;
+    &:not(.search) {
+      &.is-textarea {
+        height: 100%;
+      }
+      height: 38px;
     }
     &.is-close {
       // margin-right:0
@@ -373,7 +377,7 @@ export default {
     }
 
     .close {
-      z-index: 1;
+      z-index: 9;
       position: absolute;
       border-radius: 0 10px 0 50px;
       background: #c7f0ff;

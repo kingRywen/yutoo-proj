@@ -124,6 +124,9 @@ export default [
     path: "/fbaReplenishInfo/download",
     name: "FbaReplenishInfoDownload",
     method: "POST",
+    // config: {
+    //   responseType: "blob"
+    // },
     desc: "补货记录 - 批量下载",
     showSuccess: true,
     mock: false
@@ -223,7 +226,7 @@ export default [
     path: "fbaReplenishShipping/confirmUnSend",
     name: "fbaReplenishShippingConfirmUnSend",
     method: "POST",
-    desc: "发货计划 - 批量设置为未发货",
+    desc: "发货计划 - 批量设置为未发货"
   },
   {
     path: "/fbaReplenishShipping/list",
@@ -236,6 +239,9 @@ export default [
     path: "/fbaReplenishShipping/export",
     name: "FbaReplenishShippingExport",
     method: "POST",
+    // config: {
+    //   responseType: "blob"
+    // },
     desc: "货件管理 - 批量导出发货计划",
     showSuccess: true,
     mock: false
@@ -275,6 +281,9 @@ export default [
     path: "/fbaReplenishShipping/download/sku",
     name: "FbaReplenishShippingDownloadSku",
     method: "POST",
+    config: {
+      responseType: "blob"
+    },
     desc: "货件管理 - 下载计划SKU列表",
     showSuccess: true,
     mock: false
@@ -283,6 +292,9 @@ export default [
     path: "/fbaReplenishShipping/download/receiving",
     name: "FbaReplenishShippingDownloadReceiving",
     method: "POST",
+    // config: {
+    //   responseType: "blob"
+    // },
     desc: "货件管理 - 签收情况下载",
     showSuccess: true,
     mock: false
@@ -329,6 +341,9 @@ export default [
     path: "/fbaReplenishShipping/import/transport/download",
     name: "FbaReplenishShippingImportTransportDownload",
     method: "POST",
+    config: {
+      responseType: "blob"
+    },
     desc: "货件管理 - 导入运输方式-下载",
     showSuccess: true,
     mock: false
@@ -359,6 +374,9 @@ export default [
     path: "/fbaReplenishShipping/import/sendQty/download",
     name: "FbaReplenishShippingImportSendQtyDownload",
     method: "POST",
+    config: {
+      responseType: "blob"
+    },
     desc: "货件管理 - 导入实际发货数量-下载",
     showSuccess: true,
     mock: false
@@ -459,6 +477,9 @@ export default [
     path: "/fbaReplenishProduct/export/list",
     name: "FbaReplenishProductExportList",
     method: "POST",
+    config: {
+      responseType: "blob"
+    },
     desc: "补货列表页面 - 导出当前列表",
     showSuccess: true,
     mock: false
@@ -528,6 +549,9 @@ export default [
     path: "fbaReplenishProduct/localInventory/downlocad",
     name: "fbaReplenishProductLocalInventoryDownlocad",
     method: "POST",
+    config: {
+      responseType: "blob"
+    },
     desc: "补货列表页面 - 导入本地库存-下载",
     showSuccess: true,
     mock: false

@@ -81,13 +81,14 @@
                 inline
                 :form-schema="currentSearchFields"
                 ref="search"
+                @default-val-done="searchDefVAL"
                 v-model="searchData"
                 @clear="handleSearch"
                 @close="handleScClose"
                 label-width="80px"
               >
                 <div ref="searchWrapper" v-if="!simple">
-                  <ElButton class="ml10 mb10" type="primary" plain size="small" @click="saveNormal">保存</ElButton>
+                  <!-- <ElButton class="ml10 mb10" type="primary" plain size="small" @click="saveNormal">保存</ElButton> -->
                   <el-dropdown v-if="Object.keys(selSearchFields).length" trigger="click" @command="handleSearchCmd">
                     <ElButton plain type="primary" class="ml10" size="small">
                       更多
@@ -119,7 +120,7 @@
                     :loading="tableLoading"
                     @click="resetMethod"
                   >重置</ElButton>
-                  <div style="display:inline-block" class="tip ml10" v-if="tip && !topBatchData.options.length">
+                  <div style="display:inline-block" class="tip ml10" v-if="tip && !topBtnOpts.length">
                     <el-tooltip :content="tip" placement="top">
                       <el-tag type="info">说明</el-tag>
                     </el-tooltip>
@@ -141,19 +142,19 @@
           <div
             v-if="(!simple && !hiddenTopBtn)"
             :class="['top-btn']"
-            :style="{marginBottom: (!hasPermRightEditBtns.length && !topBatchData.options.length) ? '0': null}"
+            :style="{marginBottom: (!hasPermRightEditBtns.length && !topBtnOpts.length) ? '0': null}"
           >
             <div class="flex" style="align-items: flex-end;">
               <!-- 左边批量 -->
               <div :class="['top-btn-left',{'is-loading': topBatchData.loading}]">
                 <el-cascader
-                  v-if="topBatchData.options.length"
+                  v-if="topBtnOpts.length"
                   ref="batchCas"
                   :disabled="!selection.length || topBatchData.loading"
                   :value="topBatchBtnVal"
                   :props="topBatchData.props"
                   :placeholder="topBatchBtnText"
-                  :options="topBatchData.options"
+                  :options="topBtnOpts"
                   @change="handleTopLeftBatchChange"
                   :popper-class="`top-btn-cascader-wrapper ${casHasChildren ? 'casHasChildren' : ''}`"
                 ></el-cascader>
@@ -161,7 +162,7 @@
               </div>
               <slot name="batchRight"></slot>
 
-              <div class="tip" v-if="tip && topBatchData.options.length">
+              <div class="tip" v-if="tip && topBtnOpts.length">
                 <el-tooltip :content="tip" placement="top">
                   <el-tag type="info">说明</el-tag>
                 </el-tooltip>
@@ -252,26 +253,28 @@
         </div>
         <!-- 下方标签页 end -->
         <slot name="table">
-          <div style="position:relative">
+          <div style="position:relative" class="table-wrapper-main">
             <div
-              v-if="arrowShowLeft && scroll && showArrowLeft"
+              ref="leftArrow"
+              v-show="showAllArrow && scroll && showArrowLeft"
               :class="[{fixed: showFixed}]"
               class="table-arrow-left"
               @click="getMore(-1)"
             >
-              <!-- <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button> -->
+              <span class="gw-icon iconfont">&#xe626;</span>
             </div>
             <div
-              v-if="arrowShowRight && scroll && showArrowRight"
+              ref="rightArrow"
+              v-show="showAllArrow && scroll && showArrowRight"
               :class="[{fixed: showFixed}]"
               class="table-arrow-right"
-              :style="{right: parseInt(editWidth) + 10 + 'px'}"
               @click="getMore()"
             >
-              <!-- <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button> -->
+              <span class="gw-icon iconfont">&#xe623;</span>
             </div>
             <yt-table
               @big-expand="handleBigExpand"
+              @big-table-body-scroll="bigTableBodyScroll"
               :fixedMinusOne="fixedMinusOne"
               :bigData="bigData"
               :cellStyle="cellStyle"
@@ -296,27 +299,8 @@
               :reserve-selection="reserveSelection"
               :isExpandAll="isExpandAll"
               ref="table"
-              v-if="showTable"
+              v-if="showTable || reShowTable"
             >
-              <!-- <template v-if="arrowShowLeft && scroll && showArrowLeft" slot="topleft">
-              <el-table-column fixed="left" key="arrowLeft" :index="9999" width="40">
-                <template slot-scope="scope">
-                  <el-button type="text" icon="el-icon-d-arrow-left" :class="[{fixed: showFixed}]" @click="getMore(-1)"></el-button>
-                </template>
-              </el-table-column>
-              </template>-->
-              <!-- <template v-if="arrowShowLeft && scroll && showArrowLeft" slot="topleft1">
-              <plx-table-column fixed="left" key="arrowLeft" label="left" :index="9999" width="40">
-                <template slot-scope="scope">
-                  <el-button
-                    type="text"
-                    icon="el-icon-d-arrow-left"
-                    :class="[{fixed: showFixed}]"
-                    @click="getMoreBig(-1)"
-                  ></el-button>
-                </template>
-              </plx-table-column>
-              </template>-->
               <template slot="right">
                 <slot name="right">
                   <el-table-column
@@ -493,7 +477,6 @@ function addBtn(data) {
           handleData(el[childStr])
         }
       }
-      // TODO: 获取按钮的时候需要处理
       el.buttonList = vm.btnFn ? vm.btnFn(el) : undefined
     })
   }
@@ -573,7 +556,7 @@ export default {
     }
   },
   props: {
-    // 修正-1显示为 -
+    // 修正-1的数据显示为 -
     fixedMinusOne: false,
     cellStyle: Function,
     // 是否显示左右滚动箭头
@@ -584,7 +567,7 @@ export default {
     objectMerge: {
       default: false
     },
-    // 是否大数据 展示
+    // 是否大数据表格，开启后会优化渲染性能，引入pl-table的动态表格渲染技术
     bigData: Boolean,
     // 排序处理方式
     sortType: {
@@ -612,8 +595,9 @@ export default {
     },
     // 表格操作按钮是否固定在右边
     tbRightFixed: {
-      default: false
+      default: 'right'
     },
+    // 是否将路由参数加到搜索条件中
     addQuery: {
       default: false
     },
@@ -738,9 +722,6 @@ export default {
     isShowTableLoading: {
       default: true
     },
-    showWdg: {
-      default: true
-    },
     //搜索条件是否展开
     expand: {
       default: false
@@ -832,7 +813,7 @@ export default {
     // 修正表格数据函数
     fixedPageFunc: Function,
     // 表格请求api名称
-    url: String,
+    url: [String, Function],
     // 右侧编辑按钮
     editBtns: {
       // required: true,
@@ -877,14 +858,6 @@ export default {
       type: Boolean,
       default: false
     },
-    //根据需求自定义的返回按钮
-    customHandleBack: {
-      type: Object,
-      default: () => ({
-        isShow: false,
-        fn: null
-      })
-    },
     //表格数据更新反选的配置
     reserveSelection: {
       type: String,
@@ -910,6 +883,8 @@ export default {
   data() {
     let vm = this
     return {
+      reShowTable: true,
+      showAllArrow: false,
       showRightBtns: false,
       showFixedBtn: false,
       showArrowLeft: false,
@@ -1023,8 +998,11 @@ export default {
     }
   },
   computed: {
+    topBtnOpts() {
+      return this.topBatchData.options.filter(el => !el.hidden)
+    },
     showFixed() {
-      return this.showFixedBtn || this.dataList.length > 6
+      return this.showFixedBtn
     },
     dataList() {
       return this.url ? this.tableList : this.outerTableList
@@ -1230,7 +1208,6 @@ export default {
       const saveData =
         this.$storage.get('local', 'NORMAL_SEARCH') &&
         this.$storage.get('local', 'NORMAL_SEARCH')[this.saveName]
-      // console.log(this.searchDefaultData)
 
       if (!Object.keys(this.searchDefaultData).length) {
         Object.assign(this.searchData, saveData || {})
@@ -1258,8 +1235,10 @@ export default {
       }
     }
 
-    // 保存初始搜索值 ，用于重置搜索
+    // 保存初始搜索值
     this.$options.searchData = JSON.stringify(this.searchData)
+    // 保存默认值
+    this.$options.defaultSearchVal = JSON.stringify(this.searchDefaultData)
 
     // 如果 有tabs页的话，会设置tabs中的参数到路由参数中，确保每次请求和刷新页面都会在当前标签页
     if (
@@ -1354,7 +1333,14 @@ export default {
       this.bindMouseEnter()
     }
   },
+  beforeRouteLeave(to, from, next) {
+    if (to.path !== from.path) {
+      this.saveNormal(JSON.parse(this.$options.defaultSearchVal))
+    }
+    next()
+  },
   beforeDestroy() {
+    this.saveNormal(JSON.parse(this.$options.defaultSearchVal))
     if (this.scroll) {
       this.bindMouseEnter(false)
     }
@@ -1373,45 +1359,93 @@ export default {
   watch: {
     leftTreeSearchVal(val) {
       this.$refs.tree.filter(val)
+    },
+    searchData: {
+      deep: true,
+      handler() {
+        this.saveNormal()
+      }
     }
   },
   methods: {
     bindMouseEnter(bind = true) {
+      if (!this.bigData) {
+        return
+      }
       const vm = this
       const handle =
-        this.__mouseenterHandle ||
-        (this.__mouseenterHandle = e => {
-          const right = this.$el.querySelectorAll('.plx-table--body-wrapper')[0].offsetWidth - parseInt(this.editWidth)
+        this.__mousemoveHandle ||
+        (this.__mousemoveHandle = e => {
+          vm.handleBigExpand()
+
+          const right =
+            this.$el.querySelectorAll('.plx-table--body-wrapper')[0]
+              .offsetWidth + 2
           // console.log(e)
-          if (
-            e.clientX + 100 > right && e.clientX < right
-          ) {
-            this.showArrowRight = true
-            // this.showRightBtns = false
-          } else if(e.clientX >= right) {
+          if (e.clientX + 15 > window.innerWidth) {
+            this.showArrowRight = false
             this.showRightBtns = true
+          } else if (e.clientX + 8 > right && e.clientX < right) {
+            this.showArrowRight = true
+            vm.setLRArrow(e)
+          } else if (e.clientX >= right) {
+            // this.showRightBtns = true
+            vm.setLRArrow(e)
+          } else {
+            vm.setLRArrow(e)
             this.showArrowRight = false
-            } else {
-            this.showArrowRight = false
-            this.showRightBtns = false
-            if (!vm.$refs.table.$el.querySelectorAll('.plx-table--fixed-right-wrapper.scrolling--middle').length) {
+            if (e.clientX < right - parseInt(this.editWidth)) {
+              this.showRightBtns = false
+            }
+            if (
+              !vm.$refs.table.$el.querySelectorAll(
+                '.plx-table--fixed-right-wrapper.scrolling--middle'
+              ).length
+            ) {
               this.showRightBtns = true
             }
+          }
+        })
 
-          }
-          if (e.clientX < 160) {
-            this.showArrowLeft = true
-          } else {
-            this.showArrowLeft = false
-          }
+      const mouseEnterHandle =
+        this.__mouseEnterHandle ||
+        (this.__mouseEnterHandle = () => {
+          // console.log(e);
+          clearTimeout(this.__timer33)
+          this.showAllArrow = true
+        })
+      const mouseLeaveHandle =
+        this.__mouseLeaveHandle ||
+        (this.__mouseLeaveHandle = () => {
+          // console.log(e);
+          clearTimeout(this.__timer33)
+          this.__timer33 = setTimeout(() => {
+            this.showAllArrow = false
+          }, 300)
         })
       let tableEl = this.$refs.table.$el
       if (bind) {
-        tableEl.addEventListener('mousemove', handle)
-        // tableEl.addEventListener('mouseleave', handle1)
+        document.addEventListener('mousemove', handle)
+        tableEl.addEventListener('mouseenter', mouseEnterHandle)
+        tableEl.addEventListener('mouseleave', mouseLeaveHandle)
+        this.$refs.leftArrow.addEventListener('mouseenter', mouseEnterHandle)
+        this.$refs.leftArrow.addEventListener('mouseleave', mouseLeaveHandle)
+        this.$refs.rightArrow.addEventListener('mouseenter', mouseEnterHandle)
+        this.$refs.rightArrow.addEventListener('mouseleave', mouseLeaveHandle)
       } else {
-        tableEl.removeEventListener('mousemove', handle)
-        // tableEl.removeEventListener('mouseleave', handle1)
+        document.removeEventListener('mousemove', handle)
+        tableEl.removeEventListener('mouseenter', mouseEnterHandle)
+        tableEl.removeEventListener('mouseleave', mouseLeaveHandle)
+        this.$refs.leftArrow.removeEventListener('mouseenter', mouseEnterHandle)
+        this.$refs.leftArrow.removeEventListener('mouseleave', mouseLeaveHandle)
+        this.$refs.rightArrow.removeEventListener(
+          'mouseenter',
+          mouseEnterHandle
+        )
+        this.$refs.rightArrow.removeEventListener(
+          'mouseleave',
+          mouseLeaveHandle
+        )
       }
     },
 
@@ -1423,6 +1457,33 @@ export default {
           this.showFixedBtn = false
         }
       }, 20)
+    },
+
+    bigTableBodyScroll(e) {
+      if (
+        !this.$refs.table.$el.querySelectorAll(
+          '.plx-table--fixed-right-wrapper.scrolling--middle'
+        ).length
+      ) {
+        if (e.scrollLeft !== 0) {
+          this.showArrowRight = false
+        }
+        this.__lastLeft = e.scrollLeft
+        this.showRightBtns = true
+      } else {
+        this.showArrowRight = true
+        if (e.scrollLeft <= this.__lastLeft - parseInt(this.editWidth)) {
+          this.showRightBtns = false
+        }
+      }
+
+      this.setLRArrow()
+
+      // if (e.scrollLeft == 0) {
+      //   this.showArrowLeft = false
+      // } else {
+      //   this.showArrowLeft = true
+      // }
     },
 
     handleCheckAllSelect(val) {
@@ -1437,10 +1498,17 @@ export default {
         this.__handle ||
         (this.__handle = e => {
           if (e.keyCode == 13) {
-            e.preventDefault()
+            if (document.activeElement.nodeName.toUpperCase() !== 'TEXTAREA') {
+              e.preventDefault()
+            }
+            
           }
           if (e.keyCode == 13 && !this.innerDialogOpts.visible) {
+            if (document.activeElement.nodeName.toUpperCase() == 'TEXTAREA') {
+              return
+            }
             this.getList()
+            this.saveNormal()
           }
         })
       if (bind) {
@@ -1471,24 +1539,51 @@ export default {
         table.scrollLeft < body.offsetWidth - table.offsetWidth
     },
     getMoreBig(type) {
+      let steps = this.__steps
+      if (!isNaN(steps) && steps !== -1) {
+        if (type == -1) {
+          steps = this.__steps--
+        } else {
+          steps = ++this.__steps
+        }
+      } else {
+        steps = this.__steps = this.columns.findIndex(
+          el => el.show && !el.fixed
+        )
+      }
+      let width = (steps == -1 ? 150 : this.columns[steps].width) || 150
+      // console.log(width)
+
+      let move = type == -1 ? -width : width
+      let table1 = this.$refs.table.$refs.bigTab.$refs.table
+      table1.pagingScrollTopLeft(0, this.$refs.table.tableScrlLeft + move)
+    },
+    setLRArrow(e) {
       let table = this.$el.querySelectorAll('.plx-table--body-wrapper')[0]
       let innerTb = table.querySelectorAll('table.plx-table--body')[0]
       let space = table.querySelectorAll('.plx-body--x-space')[0]
-      let move = type == -1 ? -430 : 430
+      if (
+        !this.$refs.table.$el.querySelectorAll(
+          '.plx-table--fixed-right-wrapper.scrolling--middle'
+        ).length
+      ) {
+        this.showRightBtns = true
+      }
+      // console.log(Math.max(innerTb.clientWidth, space.clientWidth), table.offsetWidth);
 
-      let table1 = this.$refs.table.$refs.bigTab.$refs.table
-      table1.pagingScrollTopLeft(0, this.$refs.table.tableScrlLeft + move)
-      // console.log(table.scrollLeft > 0, table.scrollLeft < body.offsetWidth - table.offsetWidth);
-      this.$nextTick(() => {
-        if (!this.$refs.table.$el.querySelectorAll('.plx-table--fixed-right-wrapper.scrolling--middle').length) {
-          this.showRightBtns = true
-        }
-        // debugger
-        this.arrowShowLeft = table.scrollLeft > 0
-        this.arrowShowRight =
-          table.scrollLeft <
-          Math.max(innerTb.clientWidth, space.clientWidth) - table.offsetWidth
-      })
+      if (
+        Math.max(innerTb.clientWidth, space.clientWidth) <= table.offsetWidth
+      ) {
+        this.showArrowLeft = false
+        this.showArrowRight = false
+        return
+      }
+      this.showArrowLeft = e
+        ? e.clientX < 60 && table.scrollLeft > 0
+        : table.scrollLeft > 0
+      this.showArrowRight =
+        table.scrollLeft <
+        Math.max(innerTb.clientWidth, space.clientWidth) - table.offsetWidth
     },
     // 展示隐藏的列
     showRestRows(num = 1) {
@@ -1604,23 +1699,25 @@ export default {
         (topBtnWrapper.style.width = this.$refs.batchCas.$el.offsetWidth + 'px')
     },
     // 保存为常用筛选条件
-    saveNormal() {
+    saveNormal(data) {
       // this.$storage.set('local', this.saveName, this.searchData)
+      data = data || this.searchData
       let res = {}
-      Object.keys(this.searchData).forEach(key => {
-        let val = this.searchData[key]
+      Object.keys(data).forEach(key => {
+        let val = data[key]
         if (Object.prototype.toString.call(val) === '[object Object]') {
           !_isEmpty(val) && (res[key] = val)
         } else {
           res[key] = val
         }
       })
+
       let saved = this.$storage.get('local', 'NORMAL_SEARCH') || {}
       this.$storage.set('local', 'NORMAL_SEARCH', {
         ...saved,
         [this.saveName]: res
       })
-      this.$message.success('保存成功')
+      // this.$message.success('保存成功')
     },
     filterNode(value, data) {
       value = value.trim()
@@ -1648,6 +1745,13 @@ export default {
     },
     resizeHandler() {
       this.calcIsHidden()
+    },
+    searchDefVAL(val) {
+      // console.log(val);
+
+      val = { ...JSON.parse(this.$options.defaultSearchVal), ...val }
+      this.$options.searchData = JSON.stringify(val)
+      this.$options.defaultSearchVal = JSON.stringify(val)
     },
     handleSearchCmd(item) {
       this.showSaveBtn = true
@@ -1713,6 +1817,13 @@ export default {
 
         return width
       }
+    },
+
+    refreshTable() {
+      this.reShowTable = false
+      this.$nextTick(() => {
+        this.reShowTable = true
+      })
     },
 
     getStyle(obj, name) {
@@ -1928,6 +2039,7 @@ export default {
     // 搜索按钮
     handleSearch() {
       this.pageNo = 1
+      this.clearSelection()
       // console.log(22)
       this.$nextTick(() => {
         this.getList(null, null, true)
@@ -1940,8 +2052,9 @@ export default {
       // this.$refs.search.reset()
       this.searchData = Object.assign(
         {},
-        this.searchDefaultData
+        this.searchDefaultData,
         // JSON.parse(this.$options.searchData)
+        JSON.parse(this.$options.defaultSearchVal)
       )
       this.getList(null, null, true)
     },
@@ -1965,7 +2078,7 @@ export default {
       return !!(this.$.dataType(params) == 'Array' && params.length)
     },
     //请求列表数据
-    getList(_params = {}, resetSearch = false) {
+    getList(_params = {}, resetSearch = false, showLoading = true) {
       // if (JSON.stringify(this.outerTableList) !== '[]') {
       //   this.tableLoading = false
       //   this.$emit('requestSuccess', true, this.outerTableList)
@@ -1992,7 +2105,8 @@ export default {
         this.searchData = Object.assign(
           {},
           this.searchDefaultData,
-          JSON.parse(this.$options.searchData)
+          // JSON.parse(this.$options.searchData)
+          JSON.parse(this.$options.defaultSearchVal)
         )
       }
       params = Object.assign(
@@ -2034,10 +2148,12 @@ export default {
       // }
 
       if (!this.__flag) {
-        if (this.isShowTableLoading) vm.tableLoading = true
+        if (this.isShowTableLoading && showLoading) vm.tableLoading = true
         vm.$emit('loading', true)
         this.__flag = true
-        return this.$api[this.url](params, {}, { singleLoading: true })
+        return this.$api[
+          typeof this.url == 'string' ? this.url : this.url(this.searchData)
+        ](params, {}, { singleLoading: true })
           .then(res => {
             this.__flag = false
             vm.$emit('loading', false)
@@ -2162,27 +2278,72 @@ export default {
 $leftBgColor: #f6f6f9;
 .main-layout {
   background: $leftBgColor;
+  &.has-scroll {
+    padding: 0 20px;
+    background: #fff;
+  }
   .table-arrow-left,
   .table-arrow-right {
     transition: 0.4s;
-    width: 45px;
-    height: 45px;
+    // width: 45px;
+    // height: 45px;
     top: 50%;
-    position: absolute;
+    // position: absolute;
     z-index: 3;
-  }
-  .table-arrow-left {
-    left: 73px;
-    background-image: url('./浅左.png');
-    &:hover {
-      background-image: url('./深左.png');
+    position: absolute;
+    // top: 55px;
+    background-color: #fff;
+    height: 60px;
+    line-height: 60px;
+    width: 13px;
+    text-align: center;
+    box-shadow: 0 1px 3px #888;
+    user-select: none;
+    margin-top: -30px;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    // display: none;
+    // right: 0;
+    cursor: pointer;
+    border-radius: 3px 0 0 3px;
+    clip: rect(-10px, 45px, 110px, -10px);
+    padding-left: 5px;
+    padding-right: 5px;
+    & > .gw-icon {
+      opacity: 0.5;
+      font-size: 14px;
+      // background-image: url('./sprite.png');
+      background-position: -14px 0;
+      display: inline-block;
+      line-height: normal;
+      vertical-align: top;
+      position: relative;
+      top: 50%;
+      height: 14px;
+      width: 13px;
+      margin-top: -7px;
+    }
+    &:hover > .gw-icon {
+      opacity: 0.8;
     }
   }
   .table-arrow-right {
-    right: 180px;
-    background-image: url('./浅右.png');
+    border-radius: 0 3px 3px 0;
+  }
+  .table-arrow-left {
+    left: -23px;
+    // background-image: url('./浅左.png');
     &:hover {
-      background-image: url('./深右.png');
+      color: #333;
+      // background-image: url('./深左.png');
+    }
+  }
+  .table-arrow-right {
+    right: -23px;
+    // background-image: url('./浅右.png');
+    &:hover {
+      color: #333;
+      // background-image: url('./深右.png');
     }
   }
   .tip {
@@ -2353,6 +2514,9 @@ $leftBgColor: #f6f6f9;
     }
     .btns {
       .bottom-btn:first-child {
+        margin-left: 0 !important;
+      }
+      .bottom-btn.el-button--text {
         margin-left: 0 !important;
       }
       &.show-filter .el-button--primary:last-of-type {
@@ -2531,11 +2695,16 @@ $leftBgColor: #f6f6f9;
     padding: 5px 0;
   }
   .el-table--mini th {
-    background: #f5f5f5;
+    background: #fff;
   }
 
   .pagination {
     margin-top: 8px;
+    position: sticky;
+    bottom: 0;
+    z-index: 222;
+    background: #fff;
+    padding: 12px 0;
   }
 }
 .rowCheckbox {

@@ -26,9 +26,10 @@
     <div :class="{'form-flex': schema.widget !== 'radio'}">
       <div style="white-space: nowrap;" class="mr10" v-if="schema.prevText">{{schema.prevText}}</div>
       <FormInputs
+        ref="formInput"
         :search="search"
         @blur="$emit('blur')"
-        @change="$emit('el-change', schema)"
+        @change="$emit('el-change', schema, $attrs.formItem)"
         @clear="$emit('clear')"
         :item="schema"
         :disabled="disabled"
@@ -168,10 +169,13 @@
         <template slot-scope="scope">
           <form-item
             v-if="!val.child"
+            :ref="`form-${scope.$index}`"
             :disabled="val.disabled"
             :model="scope.row[key]"
             v-model="scope.row[key]"
             label-width="0"
+            v-on="val.on"
+            :formItem="$refs[`form-${scope.$index}`]"
             :required="scope.$index !== 0"
             :field-name="fieldName + '.' + (schema.batch !== false ? (scope.$index - 1) : scope.$index) + '.' + key"
             :schema="{...val, required: (scope.$index === 0 && schema.batch !== false) ? false : val.required}"
@@ -221,7 +225,7 @@
         v-model="valItem[key]"
         :label-width="currentLabelWidth"
         :field-name="fieldName + '.' + (index) + '.' + key"
-        :schema="{...item, type: 'normal', label: item.label, value:valItem, i: index, item, required: schema.lastNotReq.indexOf(key) > -1 && index == value.length -1 ? false: item.required  }"
+        :schema="{...item, type:  'normal', label: item.label, value:valItem, i: index, item, required: schema.lastNotReq.indexOf(key) > -1 && index == value.length -1 ? false: item.required  }"
       ></form-item>
       <el-form-item label-width="0" class="multi-array-item first">
         <el-button type="default" icon="el-icon-plus" @click="handlePlusMult(index, fieldName + '.' + (index) + '.')"></el-button>
@@ -364,11 +368,19 @@ export default {
         added = true
         let ret = {}
         if (this.schema.leftUnEdit) {
-          if (!this.value[index][this.schema.leftUnEdit[1]]) {
-            let el = [].find.call(document.querySelectorAll(`.${this.schema.leftUnEdit[1]}-wrapper input.el-input__inner`), e =>{
-              return  e.value === ''
-            })
-            el.focus()
+          if (
+            this.value[index][this.schema.leftUnEdit[1]] == null ||
+            this.value[index][this.schema.leftUnEdit[1]] === ''
+          ) {
+            let el = [].find.call(
+              document.querySelectorAll(
+                `.${this.schema.leftUnEdit[1]}-wrapper input.el-input__inner`
+              ),
+              e => {
+                return e.value === ''
+              }
+            )
+            el && el.focus()
             return this.$message.warning('请填写数据')
           }
           ret = {

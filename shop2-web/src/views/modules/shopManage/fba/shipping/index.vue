@@ -90,6 +90,15 @@ export default {
           _enum: this.cfuns.arrayToObj(tranType)
         },
         {
+          label: '承运商名称',
+          value: 'carrierLable'
+        },
+        {
+          label: '是否合作承运商',
+          value: 'partneredType',
+          _enum: ['否', '是']
+        },
+        {
           label: '运输天数',
           value: 'shippingDays'
         }

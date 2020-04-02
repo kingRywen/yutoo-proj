@@ -2,7 +2,12 @@
   <div class="wrapper">
     <div class="header" v-if="title">
       <span>{{title}}</span>
-      <i v-if="isCollapse" @click="handleArrow" :class="`el-icon-arrow-${hideMore ? 'down': 'up'}`"></i>
+      <div>
+        <el-tooltip v-if="tips" :content="tips" placement="top">
+          <i class="el-icon-info"></i>
+        </el-tooltip>
+        <i v-if="isCollapse" @click="handleArrow" :class="`el-icon-arrow-${hideMore ? 'down': 'up'}`"></i>
+      </div>
     </div>
     <div class="content" v-show="!isCollapse ? true : !hideMore">
       <slot></slot>
@@ -24,7 +29,9 @@ export default {
       type: Boolean
     },
     // 标题
-    title: String
+    title: String,
+    // 提示
+    tips: String
   },
   data() {
     return {
@@ -41,7 +48,7 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   font-size: 13px;
-  margin: 20px 0;
+  // margin: 20px 0;
 
   .header {
     color: #333;
@@ -67,7 +74,7 @@ export default {
     border-radius: 0 0 5px 5px;
     border: 1px solid #d5dee4;
     padding: 14px;
-    padding-top: 30px;
+    // padding-top: 30px;
   }
 }
 </style>

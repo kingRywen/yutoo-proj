@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 15:42:31 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-26 15:34:43
+ * @Last Modified time: 2020-04-01 17:30:06
  */
 <template>
   <main-layout
@@ -13,11 +13,11 @@
     :url="apiName"
     ref="layout"
     :btnFn="btnFn"
-    :bigData="true"
+    :bigData="false"
     reserveSelection="asin"
     :checkStrictly="false"
     :object-merge="true"
-    editWidth="200px"
+    editWidth="230px"
     :edit-btns="edits"
     @searchTrueData="val => searchData = val"
     :btnTip="true"
@@ -29,12 +29,15 @@
   >
     <div slot="btnTip">
       1、从跟卖源加入可跟卖库的产品的基础数据会按“数据更新频率-基础数据”的频率定时更新；
-      <br />2、跟卖库的跟卖数据更新，并不会同时更新可跟卖库的跟卖数据，包含：源/目标站点的最低售价、最高售价、跟卖卖家数、跟卖数量、发货方式。
+      <br />2、跟卖库的跟卖数据更新，并不会同时更新可跟卖库的跟卖数据，包含：源/目标站点的最低售价、最高售价、跟卖卖家数、跟卖数量、发货方式；
+      <br />3、没有填写库存阀值的产品不能跟卖。
     </div>
   </main-layout>
 </template>
 <script>
+import selectMixin from '../../selectMixin';
 export default {
+  mixins: [selectMixin],
   computed: {
     sites() {
       return this.$store.getters['storeInfo/currentPlat'].sites || []
@@ -47,16 +50,15 @@ export default {
     }
   },
   data() {
-    let vm = this
     return {
       searchData: {
         displayType: true
       },
       key: '1111',
-      apiName: 'ss/sellingMaybeAllProductList',
+      // apiName: 'ss/sellingMaybeAllProductList',
       treeTable: true,
       treeTableOtions: {
-        childs: 'childs',
+        childs: 'childrens',
         expandFunc: row => {
           return row._level == 1
         }
@@ -65,19 +67,21 @@ export default {
         title: '项',
         options: [
           {
-            label: '加入分组'
+            label: '加入分组',
+            hidden: false
           },
           {
             label: '加入跨站点可跟卖库'
           },
           {
-            label: '重新抓取源数据'
+            label: '重新抓取源数据',
+            hidden: false
           },
           {
             label: '重新校验'
           },
           {
-            label: '修改成本价'
+            label: '修改成本'
           },
           {
             label: '修改库存'
@@ -123,7 +127,7 @@ export default {
           }
         },
         {
-          name: '修改成本价',
+          name: '修改成本',
           perm: 'add',
           fn: scope => {
             this.editCost([scope.row])
@@ -152,19 +156,6 @@ export default {
           // labelWidth: 70,
           // width: 100,
           clearable: false,
-          change: data => {
-            vm.apiName = data.displayType
-              ? 'ss/sellingMaybeAllProductList'
-              : 'ss/sellingMaybeChildProductList'
-            vm.columns[1].expand = data.displayType
-            if (data.displayType) {
-              this.columns[9].noDisplay = false
-              this.columns[10].noDisplay = false
-            } else {
-              this.columns[9].noDisplay = true
-              this.columns[10].noDisplay = true
-            }
-          },
           defaultVal: true,
           options: [
             {
@@ -207,7 +198,7 @@ export default {
             content: '目标站点'
           }
         },
-        srcSaleFlag: {
+        targetSaleFlag: {
           hidden: true,
           label: '销售状态',
           labelWidth: 100,
@@ -266,7 +257,7 @@ export default {
         {
           label: '序号',
           fixed: 'left',
-          width: 80,
+          width: 50,
           type: 'index'
         },
         {
@@ -275,19 +266,31 @@ export default {
           value: 'asin',
           url: true,
           expand: true,
+          numField: 'skuCnt',
           async: true,
           asyncFunc: row => {
             const params = {
               ...this.storeInfo,
               siteId: this.curSiteId,
+              ...this.searchData,
+              sort: undefined,
+              field: undefined,
+              searchText: undefined,
               parentAsin: row.asin
             }
-            return this.$api[`ss/sellingMayBeGetChildProductList`](params).then(
-              data => data.data
-            )
+            return this.$api[`ss/sellingMayBeGetChildProductList`](
+              params
+            ).then(data => data.data.map(e => ({ ...e, isChild: true })))
           },
           btnClick: scope => {
-            window.open(this.storeUrls.asinUrl + scope.row['asin'])
+            window.open(
+              this.$store.state.selling.curSite.asinUrl +
+                scope.row['asin'] +
+                (this.searchData.displayType &&
+                scope.row.parentAsin === scope.row.asin
+                  ? ''
+                  : '?psc=1')
+            )
           },
           width: 140
         },
@@ -307,6 +310,7 @@ export default {
         },
         {
           label: '父ASIN',
+          noDisplay: false,
           width: 140,
           value: 'parentAsin'
         },
@@ -315,7 +319,7 @@ export default {
           value: 'imageUrl',
           img: true,
           link: row => {
-            return this.storeUrls.asinUrl + row['asin']
+            return this.$store.state.selling.curSite.asinUrl + row['asin']
           },
           title: 'title',
           width: 70
@@ -355,7 +359,7 @@ export default {
         },
         {
           label: '最低售价',
-          width: 80,
+          width: 133,
           sortable: 'custom',
           money: true,
           symbol: row => {
@@ -365,7 +369,7 @@ export default {
         },
         {
           label: '最高售价',
-          width: 80,
+          width: 133,
           symbol: row => {
             return row.srcSiteId
           },
@@ -401,7 +405,7 @@ export default {
               params: {
                 asin,
                 // 站点ID 和配送ID都是源站点
-                siteId:srcSiteId,
+                siteId: srcSiteId,
                 deliverySiteId: srcSiteId
               },
               cancelBtnText: '取消',
@@ -450,14 +454,14 @@ export default {
         {
           label: '采购价(美元)',
           width: 100,
-          money: 'US',
+          money: 'us',
           value: 'purchasePrice'
         },
         {
           label: '运费(美元)',
           width: 100,
-          money: 'US',
-          value: 'targetFare'
+          money: 'us',
+          value: 'fare'
         },
         {
           label: '库存',
@@ -494,11 +498,19 @@ export default {
           label: '跨站最低售价',
           width: 100,
           sortable: 'custom',
+          money: true,
+          symbol: row => {
+            return row.srcSiteId
+          },
           value: 'crossMinPrice'
         },
         {
           label: '跨站最高售价',
           width: 100,
+          money: true,
+          symbol: row => {
+            return row.srcSiteId
+          },
           sortable: 'custom',
           value: 'crossMaxPrice'
         },
@@ -506,6 +518,7 @@ export default {
           label: '跨站跟卖卖家数',
           width: 120,
           sortable: 'custom',
+
           value: 'crossSellerCnt'
         },
         {
@@ -543,11 +556,19 @@ export default {
           label: '目标最低售价',
           width: 110,
           sortable: 'custom',
+          money: true,
+          symbol: () => {
+            return this.curSiteId
+          },
           value: 'targetMinPrice'
         },
         {
           label: '目标最高售价',
           width: 110,
+          money: true,
+          symbol: () => {
+            return this.curSiteId
+          },
           sortable: 'custom',
           value: 'targetMaxPrice'
         },
@@ -607,9 +628,54 @@ export default {
     }
   },
 
+  watch: {
+    'searchData.displayType': {
+      immediate: true,
+      handler(val) {
+        let vm = this
+        vm.columns[1].expand = val
+        if (val) {
+          this.columns[9].noDisplay = false
+          this.columns[4].noDisplay = true
+          this.columns[10].noDisplay = false
+          this.topBatchBtn.options[0].hidden = false
+          this.topBatchBtn.options[2].hidden = false
+        } else {
+          this.columns[9].noDisplay = false
+          this.columns[4].noDisplay = false
+          this.columns[10].noDisplay = false
+          this.topBatchBtn.options[0].hidden = true
+          this.topBatchBtn.options[2].hidden = true
+        }
+        let changed = [
+          'fareCrossFba',
+          'crossMinPrice',
+          'crossMaxPrice',
+          'crossSellerCnt',
+          'crossSellingCnt',
+          'targetMinPrice',
+          'targetMaxPrice',
+          'targetSellerCnt',
+          'targetSellingCnt'
+        ]
+        this.columns.map(el => {
+          if (changed.indexOf(el.value) > -1) {
+            el.sortable = val ? false : 'custom'
+            // this.$refs.layout && this.$refs.layout.refreshTable()
+          }
+        })
+      }
+    }
+  },
+
   methods: {
+    apiName(searchData) {
+      return searchData.displayType
+        ? 'ss/sellingMaybeAllProductList'
+        : 'ss/sellingMaybeChildProductList'
+    },
     btnFn(row) {
-      if (row.asin == row.parentAsin) {
+      if (!row.isChild) {
         return [1]
       } else {
         return [2, 3, 4, 5, 6, 7]
@@ -638,46 +704,81 @@ export default {
       return Promise.resolve(this._groups)
     },
     handleLeftBatchChange(val, sel) {
+      let asins
       switch (val[0]) {
         case '加入分组':
-          this.addGroup(sel)
+          asins = this.selectA(sel)
+          if (!asins) {
+            return
+          }
+          this.addGroup(sel, asins)
           break
         case '加入跨站点可跟卖库':
-          this.addToSite(sel)
+          asins = this.selectB(sel)
+          if (!asins) {
+            return
+          }
+          this.addToSite(sel, asins)
           break
         case '重新抓取源数据':
-          this.reCrawl(sel)
+          asins = this.selectA(sel)
+          if (!asins) {
+            return
+          }
+          this.reCrawl(sel, asins)
           break
         case '重新校验':
-          this.reCheck(sel)
+          asins = this.selectB(sel)
+          if (!asins) {
+            return
+          }
+          this.reCheck(sel, asins)
           break
-        case '修改成本价':
-          this.editCost(sel)
+        case '修改成本':
+          asins = this.selectC(sel)
+          if (!asins) {
+            return
+          }
+          this.editCost(asins)
           break
         case '修改库存':
-          this.editStorage(sel)
+          asins = this.selectC(sel)
+          if (!asins) {
+            return
+          }
+          this.editStorage(asins)
           break
         case '修改库存阀值':
-          this.editThreshold(sel)
+          asins = this.selectC(sel)
+          if (!asins) {
+            return
+          }
+          this.editThreshold(asins)
           break
         case '跟卖':
-          this.sellWith(sel)
+          asins = this.selectC(sel)
+          if (!asins) {
+            return
+          }
+          this.sellWith(asins)
           break
         case '删除':
-          this.del(sel)
+          asins = this.selectB(sel)
+          if (!asins) {
+            return
+          }
+          this.del(sel, asins)
           break
 
         default:
           break
       }
     },
-    addGroup(sel) {
-      const parentAsins = sel
+    addGroup(sel, asins) {
+      const parentAsins = asins || sel
         .filter(e => e._level == 1)
         .map(e => e.parentAsin || e.asin)
-      if (!parentAsins.length) {
-        return this.$message.warning('请选择父产品')
-      }
+      
       this.$_dialog({
         size: 'medium',
         title: '加入分组',
@@ -690,29 +791,35 @@ export default {
         component: () => import('./dialogs/addGroup.vue')
       })
     },
-    addToSite(sel) {
-      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
-        this.$message.warning('只能全部选择父产品或者全部选择子产品')
-        return
+    addToSite(sel, asins) {
+      
+      if ([...new Set(sel.map(el => el.srcSiteId))].length > 1) {
+        return this.$message.warning('只能操作同一源站点的产品')
       }
-      const parentAsins = sel.map(e => e.parentAsin || e.asin)
+      const parentAsins = asins || sel.map(e => e.parentAsin || e.asin)
       this.$_dialog({
         size: 'medium',
         title: '加入跨站点可跟卖库',
         params: {
-          srcSiteId: this.$store.state.selling.curSiteId,
+          srcSiteId: sel[0].srcSiteId,
+          curSiteId: this.curSiteId,
           asins: parentAsins,
-          type: sel[0]._level == 1 && this.$refs.layout.searchData.displayType ? 1 : 0
+          type:
+            sel[0]._level == 1 && this.$refs.layout.searchData.displayType
+              ? 1
+              : 0
         },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/addLib.vue')
       })
     },
-    del(sel) {
-      this.commonReq(sel, 'sellingRemoveTarget', '删除数据')
+    del(sel, asins) {
+      this.commonReq(sel, 'sellingRemoveTarget', '删除数据', asins)
     },
+    
     sellWith(sel) {
+      this.cleanData(sel)
       this.$_dialog({
         size: 'medium',
         title: '跟卖',
@@ -727,6 +834,7 @@ export default {
       })
     },
     editThreshold(sel) {
+      this.cleanData(sel)
       this.$_dialog({
         size: 'medium',
         title: '修改库存阀值',
@@ -737,6 +845,7 @@ export default {
       })
     },
     editStorage(sel) {
+      this.cleanData(sel)
       this.$_dialog({
         size: 'medium',
         title: '修改库存',
@@ -747,32 +856,43 @@ export default {
       })
     },
     editCost(sel) {
+      this.cleanData(sel)
       this.$_dialog({
         size: 'medium',
-        title: '修改成本价',
+        title: '修改成本',
         params: { sel: JSON.parse(JSON.stringify(sel)) },
         cancelBtnText: '取消',
         okBtnText: '确认',
         component: () => import('./dialogs/editCost.vue')
       })
     },
-    reCrawl(sel) {
-      this.commonReq(sel, 'sellingReCrawlSrc', '重新抓取源数据')
-    },
-    reCheck(sel) {
-      this.commonReq(sel, 'sellingCheck', '重新校验数据')
-    },
-    commonReq(sel, api, name) {
-      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
-        this.$message.warning('只能全部选择父产品或者全部选择子产品')
+    justParent(sel) {
+      if (sel.find(e => e._level == 1)) {
+        this.$message.warning('只能选择父产品')
         return
       }
+      return true
+    },
+    reCrawl(sel, asins) {
+      this.commonReq(sel, 'sellingReCrawlSrc', '重新抓取源数据', asins)
+    },
+    reCheck(sel, asins) {
+      this.commonReq(sel, 'sellingCheck', '重新校验数据', asins)
+    },
+    commonReq(sel, api, name, asins) {
+      // if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
+      //   this.$message.warning('只能全部选择父产品或者全部选择子产品')
+      //   return
+      // }
       this.showTips({ msg: `此操作将${name}, 是否继续?` }, () => {
         let params = {
           ...this.storeInfo,
           siteId: this.curSiteId,
-          asins: sel.map(e => e.asin || e.parentAsin),
-          type: sel[0]._level == 1 && this.$refs.layout.searchData.displayType ? 1 : 0
+          asins: asins || sel.map(e => e.asin || e.parentAsin),
+          type:
+            sel[0]._level == 1 && this.$refs.layout.searchData.displayType
+              ? 1
+              : 0
         }
         return this.$api[`ss/${api}`](params)
       })

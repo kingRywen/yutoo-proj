@@ -50,7 +50,8 @@ export default {
       columns: [
         {
           label: '序号',
-          type: 'index'
+          type: 'index',
+          width: 50
         },
         {
           label: '属性名称',

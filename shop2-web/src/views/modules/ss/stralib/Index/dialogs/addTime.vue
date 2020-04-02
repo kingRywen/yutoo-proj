@@ -1,19 +1,21 @@
 <template>
   <div class="w800 no-asterisk">
     <new-form ref="form" label-width="120px" :form-schema="formSchema" :value="value"></new-form>
-    <el-divider class="mt10" content-position="left">跟卖时间策略</el-divider>
-    <h4>非跟卖时段</h4>
-    <el-radio v-model="noSellingOp" v-for="item in ops" :label="item.value" :key="item.value">{{item.label}}</el-radio>
-    <h4>跟卖时段</h4>
-    <el-radio v-model="seoType" v-for="item in dayTypes" :label="item.value" :key="item.label">{{item.label}}</el-radio>
-    <time-form ref="form1" v-if="seoType == 0" :formData="everyTime" />
-    <div v-else>
-      <div class="multi-array-item flex" v-for="(item, index) in someTimes">
-        <time-form @changebox="changebox" :ref="`tform${index}`" :formData="item" :show-week="true" :weeks="weeks" />
-        <el-button @click="addItem(index)" v-if="index == someTimes.length -1 && !allDisabled">+</el-button>
-        <el-button @click="someTimes.splice(index, 1)" v-if="someTimes.length > 1">-</el-button>
+    <!-- <el-divider class="mt10" content-position="left">跟卖时间策略</el-divider> -->
+    <widget-card-wrapper title="跟卖时间策略">
+      <h4 style="margin-top: 0">非跟卖时段</h4>
+      <el-radio v-model="noSellingOp" v-for="item in ops" :label="item.value" :key="item.value">{{item.label}}</el-radio>
+      <h4>跟卖时段</h4>
+      <el-radio v-model="seoType" v-for="item in dayTypes" :label="item.value" :key="item.label">{{item.label}}</el-radio>
+      <time-form ref="form1" v-if="seoType == 0" :formData="everyTime" />
+      <div v-else>
+        <div class="multi-array-item flex" v-for="(item, index) in someTimes">
+          <time-form @changebox="changebox" :ref="`tform${index}`" :formData="item" :show-week="true" :weeks="weeks" />
+          <el-button @click="addItem(index)" v-if="index == someTimes.length -1 && !allDisabled">+</el-button>
+          <el-button @click="delItem(index)" v-if="someTimes.length > 1">-</el-button>
+        </div>
       </div>
-    </div>
+    </widget-card-wrapper>
   </div>
 </template>
 <script>
@@ -45,10 +47,19 @@ export default {
         { label: '周一到周日', value: 1 }
       ],
       formSchema: {
+        ddd: {
+          widget: 'txt',
+          text: '策略名称',
+          style: {
+            fontSize: '16px',
+            textAlign: 'right'
+          },
+          span: 3
+        },
         strategyName: {
-          label: '策略名称',
+          // label: '策略名称',
           required: true,
-          span: 12
+          span: 9
         },
         defaultFlag: {
           widget: 'checkbox',
@@ -200,6 +211,10 @@ export default {
           e.disabled = false
         }
       })
+    },
+    delItem(index) {
+      this.someTimes.splice(index, 1)
+      this.changebox()
     },
     addItem(index) {
       if (!this.someTimes[index].week.length) {

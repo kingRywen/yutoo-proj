@@ -1,8 +1,12 @@
 <template>
   <div class="w1200">
-    <h3 v-if="type == 'lib'">
+    <h3>
       <span>ASIN：</span>
       {{asin}}
+    </h3>
+    <h3>
+      <span>父ASIN：</span>
+      {{parentAsin}}
     </h3>
     <main-layout
       
@@ -19,6 +23,7 @@ export default {
     'siteId',
     'srcSiteId',
     'asin',
+    'parentAsin',
     'platformId',
     'type',
     'deliverySiteId'
@@ -66,6 +71,7 @@ export default {
         },
         {
           label: '跟卖更新时间',
+          width: 160,
           value: 'updateTime'
         },
         {

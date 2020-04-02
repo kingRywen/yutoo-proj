@@ -16,10 +16,19 @@ export default {
   data() {
     return {
       formSchema: {
+        ddd: {
+          widget: 'txt',
+          text: '策略名称',
+          style: {
+            fontSize: '16px',
+            textAlign: 'right'
+          },
+          span: 2
+        },
         strategyName: {
-          label: '策略名称',
+          // label: '策略名称',
           required: true,
-          span: 12
+          span: 10
         },
         defaultFlag: {
           widget: 'checkbox',

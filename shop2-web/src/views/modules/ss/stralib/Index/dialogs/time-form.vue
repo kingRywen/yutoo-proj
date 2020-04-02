@@ -1,5 +1,6 @@
 <template>
   <div class="inner-form mt20">
+    
     <el-form class="mt20" size="small" ref="form" :model="formData">
       <el-form-item v-if="showWeek" prop="week" :rules="notEmpty">
         <el-checkbox-group v-model="formData.week" @change="handleChange">
@@ -16,20 +17,29 @@
           class="multi-array-item"
           label-width="20px"
           label="从"
+          :key="item.end + 's'"
           :prop="`range.${index}.start`"
-          :rules="notEmpty"
+          :rules="startRules(item, index)"
         >
           <el-time-picker
             :picker-options="{
-              selectableRange: `${index == 0 ? '00:00':(formData.range[index-1].end || '00:00')}:00 - 23:59:59`,
+              selectableRange: `${index == 0 ? '00:00':(moment('2000-1-1 ' + formData.range[index-1].end + ':00') || '00:00')}:00 - 23:59:59`,
               format:'HH:mm'
             }"
+            :clearable="false"
             value-format="HH:mm"
             v-model="item.start"
           ></el-time-picker>
         </el-form-item>
-        <el-form-item label-width="20px" label="到" :prop="`range.${index}.end`" :rules="notEmpty">
+        <el-form-item
+          :key="item.start + 'e'"
+          label-width="20px"
+          label="到"
+          :prop="`range.${index}.end`"
+          :rules="endRules(item, index)"
+        >
           <el-time-picker
+            :clearable="false"
             :disabled="!item.start"
             :picker-options="{
              selectableRange: `${item.start}:00 - 23:59:59`,
@@ -50,6 +60,7 @@
   </div>
 </template>
 <script>
+import moment from 'moment'
 export default {
   props: {
     formData: {
@@ -75,10 +86,41 @@ export default {
           required: true,
           message: '不能为空'
         }
+      ],
+      startRules: item => [
+        {
+          required: true,
+          message: '不能为空'
+        },
+        {
+          validator(rule, value, cb) {
+            if (item.end && item.end < value) {
+              cb(new Error('开始时间不能大于结束时间'))
+            }
+            cb()
+          }
+        }
+      ],
+      endRules: item => [
+        {
+          required: true,
+          message: '不能为空'
+        },
+        {
+          validator(rule, value, cb) {
+            if (item.start && item.start > value) {
+              cb(new Error('结束时间不能小于开始时间'))
+            }
+            cb()
+          }
+        }
       ]
     }
   },
   methods: {
+    moment() {
+      return moment.apply(arguments).add(60, 'seconds').format('HH:mm')
+    },
     validate() {
       return this.$refs.form.validate()
     },

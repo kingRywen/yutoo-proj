@@ -1,13 +1,13 @@
 <template>
   <div class="app-wrapper">
     <div class="main-container">
-      <el-scrollbar
+      <!-- <el-scrollbar
         class="main-scroll"
         style="height:100%"
         wrap-class="default-scrollbar__wrap"
         view-class="p20-scrollbar__view cus-main-container"
         ref="scroll"
-      >
+      > -->
         <nav-bar v-if="!$route.meta.__hideHeader"></nav-bar>
         <div v-if="$route.meta.bread" class="mar10 flex bread" :class="{'w1400': $route.meta.width}">
           <div>
@@ -17,7 +17,7 @@
               @click="$router.go(-1)"
             ></i>
 
-            <span class="size12">当前位置：</span>
+            <span class="size14">当前位置：</span>
             <ElBreadcrumb separator=">">
               <ElBreadcrumbItem to="/">首页</ElBreadcrumbItem>
               <ElBreadcrumbItem
@@ -33,6 +33,7 @@
             v-if="showSite"
             size="mini"
             :value="listSite"
+            style="width: 100px"
             @change="handleSiteChange"
             placeholder="请选择站点"
           >
@@ -44,7 +45,7 @@
           <el-button v-if="backRoute" @click="back" class="back" type="primary" size="mini" plain icon="el-icon-back">返回</el-button>
         </div>
         <app-main :class="[{mt10: !$route.meta.bread}]" v-if="storeInfo.platformId || noPlatRoute"></app-main>
-      </el-scrollbar>
+      <!-- </el-scrollbar> -->
     </div>
   </div>
 </template>
@@ -84,9 +85,10 @@ export default {
       this.$router.push(this.backRoute[1])
     },
     handleSiteChange(val) {
+      let info = this.sites.find(e => e.siteId === val)
       this.$store.commit(
         'selling/setSiteId',
-        this.sites.find(e => e.siteId === val)
+        info
       )
     }
   },
@@ -150,7 +152,7 @@ export default {
 }
 .bread {
   color: #666666;
-  margin: 10px 20px;
+  margin: 22px 20px;
   position: relative;
   & > div {
     display: flex;

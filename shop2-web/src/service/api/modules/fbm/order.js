@@ -3,6 +3,8 @@ export default [
     path: "fbm-order/order/fulfillment-import",
     name: "fbm-orderOrderFulfillment-import",
     method: "POST",
+    showSuccess: true,
+    type: "formdata",
     desc: "下载发货模板 - 导入模板发货"
   },
   {
@@ -56,6 +58,7 @@ export default [
     name: "fbm-orderOrderSyn",
     method: "POST",
     showSuccess: true,
+    singleLoading: true,
     desc: "下载发货模板 - 同步订单"
   },
   {
@@ -64,5 +67,29 @@ export default [
     method: "POST",
     showSuccess: true,
     desc: "下载发货模板 - 订单发货/修改运单"
+  },
+  {
+    path: "fbm-order/order/logistics-template-ebo",
+    name: "fbm-orderOrderLogistics-template-ebo",
+    method: "POST",
+    config: {
+      responseType: "blob"
+    },
+    desc: "FBM订单管理 - 导出EBO模板",
+    showSuccess: true
+  },
+  {
+    path: "fbm-order/order/fulfillment-text",
+    name: "fbm-orderOrderFulfillment-text",
+    method: "POST",
+    showSuccess: true,
+    desc: "FBM订单管理 - 填写文本发货"
   }
+  // {
+  //   path: "fbm-order/order/syn",
+  //   name: "fbm-orderOrderSyn",
+  //   method: "POST",
+  //   desc: "FBM订单管理 - 主动同步订单",
+  //   // mock: true
+  // }
 ];

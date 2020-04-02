@@ -9,8 +9,8 @@
           </div>
           <div class="main">
             <span style="font-size:12px;text-wrap">
-              {{ n.dailySales | _formatData}} /
-              <span class="avgSales">{{ n.avgSales | _formatData}}</span>
+              <span v-if="type == 'salesDay'">{{ n.dailySales | _formatData}}</span>
+              <span v-else>{{ n.avgSales | _formatData}}</span>
             </span>
           </div>
         </div>
@@ -26,6 +26,7 @@ import _chunk from 'lodash/chunk'
 export default {
   name: 'daily-box',
   props: {
+    type: String,
     tableData: {
       type: Array,
       default() {
@@ -60,7 +61,7 @@ export default {
 .box {
   font-size: 12px;
   min-width: 800px;
-  min-height: 200px;
+  min-height: 100px;
   border: 1px solid #ddd;
   padding: 4px;
   background: #fff;

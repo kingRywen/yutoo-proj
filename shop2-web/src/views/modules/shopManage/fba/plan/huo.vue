@@ -115,7 +115,7 @@ export default {
               value: 3
             },
             {
-              label: '已签收',
+              label: '签收中',
               value: 4
             },
             {
@@ -323,15 +323,25 @@ export default {
       }))
       switch (val[0]) {
         case '确认发货':
-          this.showTips(
-            {
-              msg:
-                '确认发货前，请确认实际发货与计划是否一致，不一致时请在操作中修改数量后再确认。'
-            },
-            () => {
-              return this.$api[`fba/FbaReplenishShippingConfirmSend`]({ data })
-            }
-          )
+          // this.showTips(
+          //   {
+          //     msg:
+          //       '确认发货前，请确认实际发货与计划是否一致，不一致时请在操作中修改数量后再确认。'
+          //   },
+          //   () => {
+          //     return this.$api[`fba/FbaReplenishShippingConfirmSend`]({ data })
+          //   }
+          // )
+          this.$_dialog({
+          size: 'medium',
+          title: '批量确认发货',
+          params: {
+            data
+          },
+          cancelBtnText: '取消',
+          okBtnText: '确认',
+          component: () => import('./dialogs/confirmTran.vue')
+          })
           break
         case '设置运输方式':
           this.setTran(val[0], data)
@@ -401,7 +411,7 @@ export default {
       this.$api[`fba/FbaReplenishShippingExport`]({ data })
         .then(data => {
           this.topBatchBtn.loading = false
-          downloadCsv(data.path, null)
+          downloadCsv(data, null)
         })
         .catch(() => {
           this.topBatchBtn.loading = false
@@ -424,7 +434,7 @@ export default {
         storeId,
         shippingId
       }).then(data => {
-        downloadCsv(data.path, null)
+        downloadCsv(data, null)
       })
     },
     downQues(storeId, shippingId) {
@@ -432,7 +442,7 @@ export default {
         storeId,
         shippingId
       }).then(data => {
-        downloadCsv(data.path, null)
+        downloadCsv(data, null)
       })
     },
     preview(storeId, shippingId) {
@@ -480,7 +490,7 @@ export default {
             type == 0
               ? `/fbaReplenishShipping/import/transport`
               : '/fbaReplenishShipping/import/sendQty',
-          fileName: `${type == 0 ? '运输方式' : '实际发货数量'}模板`,
+          fileName: '',
           cols:
             type == 0
               ? [

@@ -39,7 +39,7 @@ export default {
         ]
       },
       searchFields: {
-        searchName: {
+        groupName: {
           label: '分组名称'
         }
       },

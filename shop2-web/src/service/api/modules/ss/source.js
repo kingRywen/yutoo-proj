@@ -86,7 +86,6 @@ export default [
     name: "sellingSrcRemoveTask",
     method: "POST",
     desc: "跟卖-跟卖源 - 删除任务",
-    mock: true,
     newShowSuccess: true
   }
 ];

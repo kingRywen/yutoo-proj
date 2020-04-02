@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <ElButton type="primary" size="small" @click="batch">批量应用修改</ElButton>
+  <div class="w1200">
+    <ElButton type="primary" class="mb10" size="small" @click="batch">批量应用修改</ElButton>
     <el-table :data="value.table" ref="table">
-      <ElTableColumn type="selection"></ElTableColumn>
+      <ElTableColumn :selectable="selectable" type="selection"></ElTableColumn>
       <el-table-column label="订单号" prop="amazonOrderId"></el-table-column>
 
-      <el-table-column label="运输方" :width="400" prop="carrierCode">
+      <el-table-column label="运输方" prop="carrierCode">
         <template slot-scope="scope">
           <div class="flex just-sb">
             <el-select
               :class="scope.$index == 0 ? '' : 'vali'"
-              style="width: 130px"
+
               filterable
               size="small"
               v-model="scope.row.carrierCode"
@@ -18,13 +18,13 @@
             >
               <el-option v-for="item in carrierCode" :label="item.label" :value="item.value" :key="item.value"></el-option>
             </el-select>
-            <el-input
+            <!-- <el-input
               class="ml10 vali"
               v-if="scope.row.carrierCode == 'Other'"
               v-model="scope.row.carrierName"
               size="small"
               placeholder="请输入运输方"
-            ></el-input>
+            ></el-input> -->
           </div>
         </template>
       </el-table-column>
@@ -39,7 +39,7 @@
       </el-table-column>
       <el-table-column label="运单号" prop="trackingNumber">
         <template slot-scope="scope">
-          <div>
+          <div class="flex">
             <el-input
               class="ml10"
               :class="scope.$index == 0 ? '' : 'vali'"
@@ -47,6 +47,14 @@
               size="small"
               placeholder="请输入运单号"
             ></el-input>
+            <el-button
+              class="ml10 del-hover"
+              size="small"
+              type="text"
+              icon="el-icon-delete"
+              :style="{visibility: scope.$index !== 0 ? 'visible' : 'hidden'}"
+              @click="value.table.splice(scope.$index, 1)"
+            ></el-button>
           </div>
         </template>
       </el-table-column>
@@ -170,7 +178,7 @@ export default {
       },
       value: {
         table: [
-          {},
+          { all: true },
           ...this.orderNumbers.map(e => ({
             ...e,
             amazonOrderId: e.amazonOrderId,
@@ -181,6 +189,9 @@ export default {
         ]
       }
     }
+  },
+  mounted() {
+    this.$refs.table.toggleAllSelection()
   },
   methods: {
     batch() {
@@ -200,11 +211,21 @@ export default {
         this.value.table[0][key] = null
       })
     },
+    selectable(row, index) {
+      return index == 0 ? false : true
+    },
     validate() {
-      let el = [].find.call(
-        document.querySelectorAll('.vali .el-input__inner'),
-        e => e.value == ''
-      )
+      // let el = [].find.call(
+      //   document.querySelectorAll('.vali .el-input__inner'),
+      //   e => e.value == ''
+      // )
+      let index = this.$refs.table.selection
+        .filter(el => !el.all)
+        .find(e => e.trackingNumber)
+      if (index == -1) {
+        return Promise.resolve()
+      }
+      let el = document.querySelectorAll('.vali .el-input__inner')[index]
       if (el) {
         this.$message.warning('请填写完整信息')
         return Promise.reject()
@@ -214,15 +235,18 @@ export default {
     _submit() {
       return this.validate().then(() => {
         let params = {
-          storeId: this.orderNumbers[0].storeId,
-          orders: this.value.table.slice(1).map(e => ({
-            amazonOrderId: e.amazonOrderId,
-            shipDate: e.shipDate,
-            carrierCode: e.carrierCode,
-            carrierName: e.carrierName,
-            shipMethod: e.shipMethod,
-            trackingNumber: e.trackingNumber
-          }))
+          // storeId: this.orderNumbers[0].storeId,
+          orders: this.$refs.table.selection
+            .filter(el => !el.all)
+            .map(e => ({
+              storeId: e.storeId,
+              amazonOrderId: e.amazonOrderId,
+              shipDate: e.shipDate,
+              carrierCode: e.carrierCode,
+              carrierName: e.carrierName,
+              shipMethod: e.shipMethod,
+              trackingNumber: e.trackingNumber
+            }))
         }
         return this.$api[`fbm/${'fbm-orderOrderFulfillment'}`](params)
       })
@@ -230,3 +254,12 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.del-hover.el-button {
+  opacity: 0;
+  transition: 0.3s;
+  &:hover {
+    opacity: 1;
+  }
+}
+</style>

@@ -6,9 +6,12 @@
       :searchFields="searchFields"
       :columns="columns"
       :url="apiName"
+      :bigData="false"
+      @searchTrueData="val => searchData = val"
       ref="layout"
       :object-merge="true"
       :checkStrictly="false"
+      :btnFn="btnFn"
       editWidth="200px"
       reserveSelection="asin"
       :right-edit-btns="editBtns"
@@ -30,16 +33,39 @@
 </template>
 <script>
 import { getSearchNumField, renderCate } from 'Utils/table-render'
+import selectMixin from '../../selectMixin'
 export default {
+  mixins: [selectMixin],
   data() {
     let vm = this
+    function setChange(data) {
+      if (data.displayType) {
+        vm.topBatchBtn.options[1].hidden = false
+        vm.columns[2].noDisplay = true
+        vm.columns[1].noDisplay = false
+        vm.columns[9].noDisplay = false
+        vm.columns[8].noDisplay = false
+      } else {
+        vm.topBatchBtn.options[1].hidden = true
+        vm.columns[2].noDisplay = false
+        vm.columns[1].noDisplay = false
+        vm.columns[9].noDisplay = false
+        vm.columns[8].noDisplay = false
+      }
+      vm.columns[1].expand = data.displayType
+    }
+
     let columns = [
       {
         label: '序号',
-        type: 'index'
+        type: 'index',
+        fixed: 'left',
+        width: 50
       },
       {
         label: 'ASIN',
+        fixed: 'left',
+        numField: 'skuCnt',
         value: 'asin',
         url: true,
         noDisplay: false,
@@ -49,6 +75,10 @@ export default {
           const params = {
             ...this.storeInfo,
             srcSiteId: this.curSiteId,
+            ...this.searchData,
+            sort: undefined,
+            field: undefined,
+            searchText: undefined,
             parentAsin: row.asin
           }
           return this.$api[`ss/sellingSrcGetChildProductList`](params).then(
@@ -56,9 +86,16 @@ export default {
           )
         },
         btnClick: scope => {
-          window.open(this.storeUrls.asinUrl + scope.row['asin'])
+          window.open(
+            this.$store.state.selling.curSite.asinUrl +
+              scope.row['asin'] +
+              (this.searchData.displayType &&
+              scope.row.parentAsin === scope.row.asin
+                ? ''
+                : '?psc=1')
+          )
         },
-        width: 140
+        width: 180
       },
       {
         label: '父ASIN',
@@ -72,14 +109,15 @@ export default {
         value: 'imageUrl',
         img: true,
         link: row => {
-          return this.storeUrls.asinUrl + row['asin']
+          return this.$store.state.selling.curSite.asinUrl + row['asin']
         },
         title: 'title',
-        width: '70px'
+        width: 70
       },
       {
         label: '品牌名',
-        width: 120,
+        width: 130,
+        noTooltip: true,
         value: 'brand'
       },
       {
@@ -93,6 +131,7 @@ export default {
       },
       {
         label: '销售状态',
+        width: 90,
         value: 'saleFlag',
         _enum: {
           true: '在售',
@@ -101,36 +140,45 @@ export default {
       },
       {
         label: '大类BSR',
+        width: 90,
         value: 'bsr'
       },
       {
-        label: '评价数',noDisplay: false,
+        label: '评价数',
+        noDisplay: false,
+        width: 90,
         sortable: 'custom',
         value: 'reviewCnt'
       },
       {
-        label: '评分',noDisplay: false,
+        label: '评分',
+        width: 90,
+        noDisplay: false,
         sortable: 'custom',
         value: 'starCnt'
       },
       {
         label: '最低售价',
+        width: 90,
         sortable: 'custom',
         value: 'minPrice'
       },
       {
         label: '最高售价',
+        width: 90,
         sortable: 'custom',
         value: 'maxPrice'
       },
       {
         label: '跟卖卖家数',
+        width: 90,
         sortable: 'custom',
-        width: 100,
+        // width: 100,
         value: 'sellerCnt'
       },
       {
         label: '跟卖数量',
+        width: 90,
         sortable: 'custom',
         value: 'sellingCnt',
         isClick: scope => {
@@ -150,7 +198,8 @@ export default {
               // 站点ID 和配送ID都是源站点
               siteId: this.curSiteId,
               deliverySiteId: this.curSiteId,
-              asin: scope.row.asin
+              asin: scope.row.asin,
+              parentAsin: scope.row.parentAsin
             },
             cancelBtnText: '取消',
             okBtnText: '确认',
@@ -161,41 +210,49 @@ export default {
       },
       {
         label: '发货方式',
+        width: 90,
         value: 'fbpFlag',
         _enum: this.cfuns.arrayToObj(this.$const['OTHER/fbpFlag'])
       },
       {
         label: '抓取方式',
+        width: 90,
         value: 'dataType',
         _enum: ['类目', '关键词', '店铺ID', 'ASIN']
       },
       {
         label: '抓取状态',
         value: 'status',
+        width: 90,
         _enum: this.cfuns.arrayToObj(this.$const['PRODUCTANALYSIS/status'])
       },
       {
         label: '抓取创建时间',
+
         width: 150,
         value: 'createTime'
       },
       {
         label: '请求更新时间',
+
         width: 150,
         value: 'requestTime'
       },
       {
         label: '基础数据更新时间',
+
         width: 150,
         value: 'baseUpdateTime'
       },
       {
         label: '跟卖数据更新时间',
+
         width: 150,
         value: 'updateTime'
       },
       {
         label: '是否关注',
+        width: 110,
         value: 'attentionFlag',
         _enum: {
           true: '是',
@@ -206,9 +263,12 @@ export default {
 
     return {
       key: '1111',
-      apiName: 'ss/sellingSrcAllProductList',
+      searchData: {
+        displayType: true
+      },
+      // apiName: 'ss/sellingSrcAllProductList',
       treeTableOtions: {
-        childs: 'childs',
+        childs: 'childrens',
         expandFunc: row => {
           return row._level == 1
         }
@@ -220,7 +280,8 @@ export default {
             label: '加入可跟卖库'
           },
           {
-            label: '重新抓取源数据'
+            label: '重新抓取源数据',
+            hidden: false
           },
           {
             label: '关注'
@@ -277,9 +338,17 @@ export default {
           fn: scope => {
             this.atx([scope.row.asin], scope.row._level == 1 ? 1 : 0, false)
           }
+        },
+        {
+          name: '删除',
+          perm: 'add',
+          fn: scope => {
+            this.del([scope.row.asin], scope.row._level == 1 ? 1 : 0)
+          }
         }
       ],
       columns,
+      setChange,
       searchFields: {
         searchText: {
           label: 'ASIN',
@@ -289,24 +358,7 @@ export default {
           label: '展示方式',
           widget: 'select',
           clearable: false,
-          change: data => {
-            vm.apiName = data.displayType
-              ? 'ss/sellingSrcAllProductList'
-              : 'ss/sellingSrcChildProductList'
-            if (data.displayType) {
-              // vm.columns[2].label == '父ASIN' && vm.columns.splice(2, 1)
-              vm.columns[2].noDisplay = true
-              vm.columns[1].noDisplay = false
-              vm.columns[9].noDisplay = false
-              vm.columns[8].noDisplay = false
-            } else {
-              vm.columns[2].noDisplay = false
-              vm.columns[1].noDisplay = true
-              vm.columns[9].noDisplay = true
-              vm.columns[8].noDisplay = true
-            }
-            vm.columns[1].expand = data.displayType
-          },
+          change: setChange,
           defaultVal: true,
           options: [
             {
@@ -321,36 +373,36 @@ export default {
         },
         category: {
           hidden: true,
-          widget: 'cascader',
+          widget: 'input',
           label: '平台类目',
-          clearable: true,
-          props: {
-            lazy: true,
-            lazyLoad(node, resolve) {
-              const { data } = node
-              const params = {
-                ...vm.storeInfo,
-                siteId: vm.$store.state.selling.curSiteId,
-                parentName: data
-                  ? (data.parentName ? data.parentName + ':' : '') + data.value
-                  : null
-              }
-              vm.$api[`ss/sellingGetCategoryList`](params)
-                .then(data => {
-                  resolve(
-                    data.data.map(e => ({
-                      label: e.name,
-                      value: e.name,
-                      parentName: e.parentName,
-                      leaf: !e.haveChildren
-                    }))
-                  )
-                })
-                .catch(() => {
-                  resolve(false)
-                })
-            }
-          }
+          clearable: true
+          // props: {
+          //   lazy: true,
+          //   lazyLoad(node, resolve) {
+          //     const { data } = node
+          //     const params = {
+          //       ...vm.storeInfo,
+          //       siteId: vm.$store.state.selling.curSiteId,
+          //       parentName: data
+          //         ? (data.parentName ? data.parentName + ':' : '') + data.value
+          //         : null
+          //     }
+          //     vm.$api[`ss/sellingGetCategoryList`](params)
+          //       .then(data => {
+          //         resolve(
+          //           data.data.map(e => ({
+          //             label: e.name,
+          //             value: e.name,
+          //             parentName: e.parentName,
+          //             leaf: !e.haveChildren
+          //           }))
+          //         )
+          //       })
+          //       .catch(() => {
+          //         resolve(false)
+          //       })
+          //   }
+          // }
         },
         status: {
           label: '抓取状态',
@@ -369,6 +421,7 @@ export default {
           hidden: true,
           labelWidth: '55px',
           widget: 'select',
+          defaultVal: true,
           options: [
             {
               label: '已关注',
@@ -403,10 +456,11 @@ export default {
           '价格',
           'searchPrice',
           '50px',
+          true,
           2
         ),
         reviewCnt: getSearchNumField.call(vm, '评价数', 'reviewCnt', '65px'),
-        starCnt: getSearchNumField.call(vm, '评分', 'starCnt', '56px'),
+        starCnt: getSearchNumField.call(vm, '评分', 'starCnt', '56px', true, 1),
         brands: {
           widget: 'textarea',
           placeholder: '一行一个',
@@ -421,54 +475,68 @@ export default {
   watch: {
     '$store.state.selling.curSiteId'(val) {
       this.key = val
+    },
+    'searchData.displayType': {
+      immediate: true,
+      handler(val) {
+        this.setChange({ displayType: val })
+      }
     }
   },
   computed: {
     treeTable() {
-      return this.apiName == 'ss/sellingSrcAllProductList'
+      return this.searchData.displayType
     },
     curSiteId() {
       return this.$store.state.selling.curSiteId
     }
   },
   methods: {
-    handleLeftBatchChange(val, sel) {
-      // {
-      //       label: '加入可跟卖库'
-      //     },
-      //     {
-      //       label: '重新抓取源数据'
-      //     },
-      //     {
-      //       label: '关注'
-      //     },
-      //     {
-      //       label: '取消关注'
-      //     },
-      //     {
-      //       label: '删除'
-      //     }
-      let asins = sel.map(e => e.asin)
-      if (sel.find(e => e._level == 1) && sel.find(e => e._level == 2)) {
-        this.$message.warning('只能全部选择父产品或者全部选择子产品')
-        return
+    apiName(searchData) {
+      return searchData.displayType
+        ? 'ss/sellingSrcAllProductList'
+        : 'ss/sellingSrcChildProductList'
+    },
+    btnFn(row) {
+      if (row.attentionFlag) {
+        return [1, 2, 4, 5]
+      } else {
+        return [1, 2, 3, 5]
       }
+    },
+    handleLeftBatchChange(val, sel) {
+      let asins = sel.map(e => e.asin)
       const type = sel[0]._level == 1 ? 1 : 0
       switch (val[0]) {
         case '加入可跟卖库':
-          this.addToLib(asins, type)
+          asins = this.selectB(sel)
+          if (asins) {
+            this.addToLib(asins, type)
+          }
           break
         case '重新抓取源数据':
-          this.recrwal(asins, type)
+          asins = this.selectA(sel)
+          if (asins) {
+            this.recrwal(asins, type)
+          }
           break
         case '关注':
-          this.atx(asins, type, true)
+          asins = this.selectB(sel)
+          if (asins) {
+            this.atx(asins, type, true)
+          }
           break
         case '取消关注':
-          this.atx(asins, type, false)
+          asins = this.selectB(sel)
+          if (asins) {
+            this.atx(asins, type, false)
+          }
           break
         case '删除':
-          this.del(asins, type)
+          asins = this.selectB(sel)
+          if (asins) {
+            this.del(asins, type)
+          }
           break
 
         default:

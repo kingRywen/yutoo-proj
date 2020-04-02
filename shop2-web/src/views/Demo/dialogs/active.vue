@@ -325,14 +325,14 @@ export default {
               width: 'auto', // 如果不设置每一列的宽度，用这个，能最优分配表格列的宽度
               head: {
                 color: {
-                  type: 'input',
+                  widget: 'input',
                   width: 200, // 列宽，父级如果设置了 ↑ 宽度， 此设置不生效
                   label: '颜色',
                   noLabel: true,
                   required: true
                 },
                 size: {
-                  type: 'input',
+                  widget: 'input',
                   label: '尺寸',
                   noLabel: true
                 },

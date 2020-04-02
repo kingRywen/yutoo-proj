@@ -1,12 +1,13 @@
 <template>
   <div class="w1200">
     <new-form ref="form" label-width="80px" :form-schema="formSchema" :value="value"></new-form>
-    <div class="mb20">
+    <div class="mb20 import">
       <b>【温馨提示】</b>非平台采购的库存、采购价，都>0时，系统将会优先销售。请留意设置运费。
     </div>
     <el-form ref="form1" size="mini" :model="sellingInfo">
       <el-table stripe border size="mini" class="custom-eltable" :data="sellingInfo.list">
         <el-table-column label="ASIN" prop="asin"></el-table-column>
+        <el-table-column label="父ASIN" prop="parentAsin"></el-table-column>
         <el-table-column label="主图" :width="70">
           <template slot-scope="scope">
             <el-tooltip placement="right" effect="light">
@@ -166,7 +167,7 @@ export default {
       },
       formSchema: {
         siteId: {
-          label: '源站点',
+          label: '站点',
           span: 12,
           widget: 'select',
           disabled: true,
@@ -246,19 +247,14 @@ export default {
   },
   created() {
     this.getStras()
-    // this.sellingInfo.list.forEach(el => {
-    //   this.getSellers(el.asin, el.srcSiteId).then(data => {
-    //     this.$set(el, 'sellers', data || [])
-    //   })
-    // })
   },
   methods: {
     getSellers(row, val) {
       const { asin, srcSiteId } = row
       const params = {
         ...this.storeInfo,
-        deliverySiteId: val ? this.curSiteId : srcSiteId,
-        siteId: this.curSiteId,
+        deliverySiteId: this.curSiteId,
+        siteId: srcSiteId,
         // srcSiteId: this.curSiteId,
         asin
       }

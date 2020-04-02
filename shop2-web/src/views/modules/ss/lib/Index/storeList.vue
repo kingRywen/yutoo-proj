@@ -33,7 +33,7 @@ export default {
           label: '暂停原因',
           value: 'status',
           _enum: this.cfuns.arrayToObj([
-            { label: '不可采购', value: 2 },
+            { label: '不可采购', value: 1 },
             { label: '非跟卖时间修改库存为0', value: 3 },
             { label: '非跟卖时间删除SKU', value: 4 }
           ])

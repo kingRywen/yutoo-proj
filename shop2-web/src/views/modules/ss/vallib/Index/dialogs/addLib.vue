@@ -3,7 +3,7 @@
 </template>
 <script>
 export default {
-  props: ['asins', 'srcSiteId', 'type'],
+  props: ['asins', 'srcSiteId', 'type', 'curSiteId'],
   data() {
     return {
       formSchema: {
@@ -26,6 +26,7 @@ export default {
           platformId: this.storeInfo.platformId,
           asins: this.asins,
           srcSiteId: this.srcSiteId,
+          maybeTargetSiteId: this.curSiteId,
           targetSiteId: this.value.targetSiteId,
           type: this.type
         }

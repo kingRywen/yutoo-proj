@@ -2,8 +2,8 @@ export default {
   // 开发环境 112 - 王成   138 - 剑辉 156 -yc
   dev: {
     loginRedirect: "/",
-    LOGIN_URL: "http://192.168.0.156:8003",
-    COMMON_URL: "http://192.168.0.156:8002"
+    LOGIN_URL: "http://192.168.0.112:8003",
+    COMMON_URL: "http://192.168.0.112:8002"
     // COMMON_URL: "http://192.168.0.112:8002",
     // LOGIN_URL: "http://192.168.0.112:8003"
   },

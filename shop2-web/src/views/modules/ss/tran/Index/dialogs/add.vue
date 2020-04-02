@@ -45,6 +45,7 @@ export default {
       },
       value: {
         siteName: this.$store.state.selling.curSite.siteName,
+        siteId: this.$store.state.selling.curSiteId,
         ...this.row
       }
     }
@@ -56,6 +57,7 @@ export default {
           ...this.storeInfo,
           ...this.row,
           ...this.value
+          
         }
         return this.$api[
           `ss/${this.row ? 'sellingFareUpdate' : 'sellingFareSave'}`

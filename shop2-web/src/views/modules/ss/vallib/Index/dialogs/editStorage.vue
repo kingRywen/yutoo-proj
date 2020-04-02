@@ -2,10 +2,13 @@
  * @Author: rywen 
  * @Date: 2020-03-02 17:10:40 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-18 17:14:04
+ * @Last Modified time: 2020-03-28 17:13:55
  */
 <template>
   <div>
+    <div class="mb20 import">
+      <b>【温馨提示】</b>库存是全局设置的，不分站点。
+    </div>
     <main-layout
       :showSelection="false"
       class="editcost"
@@ -33,6 +36,10 @@ export default {
           btnClick: scope => {
             window.open(this.storeUrls.asinUrl + scope.row['asin'])
           }
+        },
+        {
+          label: '父ASIN',
+          value: 'parentAsin'
         },
         {
           label: '主图',

@@ -39,7 +39,7 @@ export default {
       default: '/fbaReplenishProduct/localInventory/import'
     },
     fileName: {
-      default: 'FBA本地库存模板'
+      default: ''
     },
     cols: {
       type: Array,
