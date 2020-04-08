@@ -1,5 +1,11 @@
 $table-border-color: #dfdfdf;
 
+.el-tabs__content {
+  overflow: initial;
+}
+.custom-eltable {
+  overflow: initial;
+}
 .el-menu {
   box-sizing: border-box;
 }
@@ -934,4 +940,10 @@ tr.tree-table__row--striped > td {
 .el-table__fixed::before,
 .el-table__fixed-right::before {
   background-color: $table-border-color;
+}
+.el-table__fixed-right {
+  background-color: #fff;
+}
+.el-table__body-wrapper.is-scrolling-right ~ .el-table__fixed-right {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
 }

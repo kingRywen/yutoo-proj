@@ -4,7 +4,8 @@
     <div class="mb20 import">
       <b>【温馨提示】</b>非平台采购的库存、采购价，都>0时，系统将会优先销售。请留意设置运费。
     </div>
-    <el-form ref="form1" size="mini" :model="sellingInfo">
+    <ImportInvo ref="form1" type="sellWith" :purchaseObject="strageInfo.purchaseObject" :query="query" v-if="isImport" />
+    <el-form v-else ref="form1" size="mini" :model="sellingInfo">
       <el-table stripe border size="mini" class="custom-eltable" :data="sellingInfo.list">
         <el-table-column label="ASIN" prop="asin"></el-table-column>
         <el-table-column label="父ASIN" prop="parentAsin"></el-table-column>
@@ -146,8 +147,19 @@
   </div>
 </template>
 <script>
+import ImportInvo from './importInvo'
 export default {
-  props: ['curSiteId', 'getStoreList', 'sel'],
+  props: ['curSiteId', 'getStoreList', 'sel', 'isImport'],
+  components: {
+    ImportInvo
+  },
+  computed: {
+    query() {
+      return {
+        importType: 9
+      }
+    }
+  },
   data() {
     return {
       siteTypes: [
@@ -187,6 +199,7 @@ export default {
           options: () => this.getStoreList({ fareTempFlag: true })
         },
         inventoryStrategyId: {
+          clearable: false,
           label: '库存策略',
           required: true,
           span: 12,
@@ -195,6 +208,7 @@ export default {
           options: []
         },
         priceStrategyId: {
+          clearable: false,
           label: '价格策略',
           required: true,
           span: 12,
@@ -209,6 +223,7 @@ export default {
           options: []
         },
         cntStrategyId: {
+          clearable: false,
           label: '数量策略',
           required: true,
           span: 12,
@@ -216,12 +231,21 @@ export default {
           options: []
         },
         timeStrategyId: {
+          clearable: false,
           label: '时间策略',
           required: true,
           span: 12,
           widget: 'select',
 
           options: []
+        },
+        skuRule: {
+          label: 'SKU生成规则',
+          required: true,
+          labelWidth: '105px',
+          tipText:
+            '{店铺名} {ASIN} {随机数字:长度} {随机字母:长度} {随机数字或字母:长度}',
+          placeholder: '{店铺名}-{ASIN}-{随机数字或字母:8}-ABC'
         }
         // frequencyStrategyId: {
         //   label: '频率策略',
@@ -249,7 +273,7 @@ export default {
     this.getStras()
   },
   methods: {
-    getSellers(row, val) {
+    getSellers(row) {
       const { asin, srcSiteId } = row
       const params = {
         ...this.storeInfo,
@@ -361,9 +385,18 @@ export default {
             fare: e.fare,
             fixedPrice: e.fixedPrice,
             fixedSeller: e.fixedSeller,
+            fixedTargetSiteFlag: e.fixedSiteId,
             fixedSiteId: e.fixedSiteId ? this.curSiteId : e.srcSiteId
           })),
           op: 0
+        }
+        if (this.isImport) {
+          params.file = this.$refs.form1.$refs.upload.fileList[0].raw
+          params.importType = 9
+          params.op = 1
+          console.log(params)
+
+          return this.$api[`keyword/importLogImportData1`](params)
         }
         return this.$api[`ss/sellingSaveLib`](params)
       })

@@ -1,7 +1,7 @@
 <template>
   <div>
     <main-layout
-      :outerParams="{...storeInfo, fromData,transportId}"
+      :outerParams="{...storeInfo, fromData,transportId: selectTran.value}"
       :searchFields="searchFields"
       :isExpandAll="true"
       :columns="columns"
@@ -310,7 +310,7 @@ export default {
 
               vm.$api[`fba/${cur.name}`]({
                 parentFlag,
-                transportId: vm.transportId,
+                transportId: vm.selectTran.value,
                 sellerSku,
                 asin,
                 fnsku,

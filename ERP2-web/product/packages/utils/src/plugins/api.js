@@ -10,7 +10,7 @@ import { dealObjectValue } from "./$.js";
 // const { strict } = API_DEFAULT_CONFIG
 
 function loadScript() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let script = document.createElement("script");
     script.src = "http://mockjs.com/dist/mock.js";
     script.type = "text/javascript";
@@ -58,7 +58,7 @@ class MakeApi {
     AJAX_LOCALLY_ENABLE,
     env
   ) {
-    Object.keys(config).map(namespace => {
+    Object.keys(config).map((namespace) => {
       this._apiSingleBuilder(
         {
           namespace,
@@ -66,7 +66,7 @@ class MakeApi {
           CONST_PORT_CONFIG,
           sep,
           debug,
-          config: config[namespace]
+          config: config[namespace],
         },
         _axios,
         API_DEFAULT_CONFIG,
@@ -86,7 +86,7 @@ class MakeApi {
       config = {},
       // eslint-disable-next-line
       mock = false,
-      debug = false
+      debug = false,
     },
     _axios,
     API_DEFAULT_CONFIG,
@@ -95,7 +95,7 @@ class MakeApi {
     env
   ) {
     const { strict, mockBaseURL, validate, moduleMock } = API_DEFAULT_CONFIG;
-    config.forEach(api => {
+    config.forEach((api) => {
       const {
         name,
         desc,
@@ -116,7 +116,7 @@ class MakeApi {
         mockBaseURL: apiMockBaseUrl,
 
         must,
-        singleLoading
+        singleLoading,
       } = api;
       const isProd = env.NODE_ENV === "production";
       const isMock = isProd
@@ -167,7 +167,7 @@ class MakeApi {
                 singleLoading,
                 isMock,
                 method,
-                noShowDefaultError
+                noShowDefaultError,
               },
               outerConfig
             );
@@ -180,12 +180,12 @@ class MakeApi {
             if (!isProd && validate && must && _data) {
               let keys = [],
                 error = [];
-              Object.keys(_data).forEach(key => {
+              Object.keys(_data).forEach((key) => {
                 if (_data[key] != null) {
                   keys.push(key);
                 }
               });
-              must.forEach(el => {
+              must.forEach((el) => {
                 if (keys.indexOf(el) === -1) {
                   error.push(el);
                 }
@@ -194,7 +194,7 @@ class MakeApi {
                 const styles = [
                   "color:black",
                   "background:yellow",
-                  "font-size:12px"
+                  "font-size:12px",
                 ].join(";");
                 console.error(
                   `%c接口 %c${url} %c的必填项没传: %c${error.join(" | ")}`,
@@ -216,13 +216,13 @@ class MakeApi {
             }
             return _axios(
               _normoalize(_assign(_options, outerOptions), _data, type, isMock)
-            ).catch(err => {
+            ).catch((err) => {
               if (err instanceof Error) {
                 console.error(err);
               }
               return Promise.reject(err);
             });
-          }
+          },
         }
       );
     });
@@ -235,7 +235,7 @@ function _normoalize(options, data, type, isMock) {
     if (type === "formdata") {
       // formdata处理
       options.headers = {
-        "Content-Type": "multipart/form-data;charset=utf-8"
+        "Content-Type": "multipart/form-data;charset=utf-8",
       };
       let formData = new FormData();
       for (const key in data) {
@@ -248,7 +248,7 @@ function _normoalize(options, data, type, isMock) {
           } else if (
             Object.prototype.toString.call(element) === "[object Array]"
           ) {
-            element.forEach(el => {
+            element.forEach((el) => {
               if (Object.prototype.toString.call(el) === "[object Object]") {
                 //对象是二进制文件
                 if (el.raw) {
@@ -257,6 +257,8 @@ function _normoalize(options, data, type, isMock) {
                 } else {
                   formData.append(key, JSON.stringify(el));
                 }
+              } else {
+                formData.append(key, el);
               }
             });
             continue;
@@ -269,7 +271,7 @@ function _normoalize(options, data, type, isMock) {
       return options;
     } else if (type === "form") {
       options.headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded",
       };
       data = qs.stringify(data);
     }
@@ -280,7 +282,7 @@ function _normoalize(options, data, type, isMock) {
   }
   if (isMock) {
     options.headers = {
-      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/x-www-form-urlencoded",
     };
   }
   return options;

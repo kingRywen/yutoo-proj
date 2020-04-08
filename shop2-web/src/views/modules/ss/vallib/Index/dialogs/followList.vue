@@ -2,11 +2,12 @@
  * @Author: rywen 
  * @Date: 2020-03-02 15:29:21 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-03-10 11:42:43
+ * @Last Modified time: 2020-04-02 17:16:22
  */
 <template>
   <div class="w800">
     <main-layout
+      :showSelection="false"
       :outerParams="{asin,siteId, deliverySiteId, platformId: storeInfo.platformId}"
       :isShowPag="false"
       :columns="columns"

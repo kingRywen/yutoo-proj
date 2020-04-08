@@ -67,6 +67,7 @@
       </template>
     </div>
     <slot name="formItem" v-bind="schema"></slot>
+    <div style="opacity: 0.4" v-if="schema.tipText">{{schema.tipText}}</div>
   </ElFormItem>
 
   <!-- object类型组件， 分组组件 -->

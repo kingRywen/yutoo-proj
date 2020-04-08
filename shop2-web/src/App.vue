@@ -20,7 +20,14 @@ export default {
     bindEvent() {
       //新版提示
       GLOBAL.vbus.$on('business.response.newSuccess', regData => {
-        let msg = `<span>共处理: ${regData.total}条 , <span style="color:#67C23A">成功: ${regData.success}条</span> , <span style="color:#F56C6C">失败: ${regData.fail}条</span> , <span style="color:#409EFF">忽略: ${regData.ignore}条 ! </span></span>`
+        let msg = `<span>共处理: ${
+          regData.total
+        }条 , <span style="color:#67C23A">成功: ${
+          regData.success
+        }条</span> , <span style="color:#F56C6C">失败: ${
+          regData.fail
+        }条</span><span style="color:#409EFF">${(regData.ignore || '') &&
+          `忽略: ${regData.ignore}条`} ! </span></span>`
         this.$message({
           type: 'success',
           dangerouslyUseHTMLString: true,
@@ -95,12 +102,10 @@ export default {
   created() {
     // this.init()
     this.bindEvent()
-
-    
   },
   beforeDestroy() {
     GLOBAL.vbus.$emit('setTableEnter')
-  },
+  }
 }
 </script>
 <style lang="scss">

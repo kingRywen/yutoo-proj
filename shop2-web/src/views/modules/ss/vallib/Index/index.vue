@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 15:42:31 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-04-01 17:30:06
+ * @Last Modified time: 2020-04-08 15:10:11
  */
 <template>
   <main-layout
@@ -19,6 +19,7 @@
     :object-merge="true"
     editWidth="230px"
     :edit-btns="edits"
+    :right-edit-btns="editBtns"
     @searchTrueData="val => searchData = val"
     :btnTip="true"
     tbRightFixed="right"
@@ -35,7 +36,9 @@
   </main-layout>
 </template>
 <script>
-import selectMixin from '../../selectMixin';
+import selectMixin from '../../selectMixin'
+import { downloadFile } from 'Utils'
+import { mapActions } from 'vuex'
 export default {
   mixins: [selectMixin],
   computed: {
@@ -51,6 +54,39 @@ export default {
   },
   data() {
     return {
+      editBtns: [
+        {
+          name: '导出',
+          type: 'plain',
+          icon: 'iconfont icondaochu',
+          perm: 'add',
+          fn: () => {
+            this._export()
+          }
+        },
+        {
+          name: '导入',
+          type: 'dropdown',
+          icon: 'iconfont icondaoru',
+          perm: 'add',
+          btns: [
+            {
+              name: '导入库存/成本',
+              perm: 'add',
+              fn: () => {
+                this.importInvo()
+              }
+            },
+            {
+              name: '导入跟卖',
+              perm: 'add',
+              fn: () => {
+                this.importSell()
+              }
+            }
+          ]
+        }
+      ],
       searchData: {
         displayType: true
       },
@@ -198,7 +234,7 @@ export default {
             content: '目标站点'
           }
         },
-        targetSaleFlag: {
+        saleFlag: {
           hidden: true,
           label: '销售状态',
           labelWidth: 100,
@@ -275,7 +311,9 @@ export default {
               ...this.searchData,
               sort: undefined,
               field: undefined,
-              searchText: undefined,
+              displayType: undefined,
+              pageSize: undefined,
+              pageNumber: undefined,
               parentAsin: row.asin
             }
             return this.$api[`ss/sellingMayBeGetChildProductList`](
@@ -292,7 +330,7 @@ export default {
                   : '?psc=1')
             )
           },
-          width: 140
+          width: 180
         },
         {
           label: '站点',
@@ -342,6 +380,13 @@ export default {
           label: '大类BSR',
           width: 80,
           value: 'bsr'
+        },
+        {
+          label: '新增评价数',
+          width: 110,
+          headerTooltip: '近30天新增评价数',
+          sortable: 'custom',
+          value: 'newReviewCnt'
         },
         {
           label: '评价数',
@@ -408,17 +453,30 @@ export default {
                 siteId: srcSiteId,
                 deliverySiteId: srcSiteId
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
+              // okBtnText: '确认',
               component: () => import('./dialogs/followList.vue')
             })
           }
         },
         {
-          label: '发货方式',
+          label: 'FBA',
           width: 100,
           value: 'fbpFlag',
-          _enum: this.cfuns.arrayToObj(this.$const['OTHER/fbpFlag'])
+          _enum: {
+            0: '否',
+            '>=1': '是'
+          }
+        },
+        {
+          label: 'FBM',
+          width: 100,
+          value: 'fbpFlag',
+          _enum: {
+            0: '是',
+            1: '否',
+            '2': '是'
+          }
         },
         {
           label: '抓取方式',
@@ -546,8 +604,8 @@ export default {
                 siteId: srcSiteId,
                 deliverySiteId: this.curSiteId
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
+              // okBtnText: '确认',
               component: () => import('./dialogs/followList.vue')
             })
           }
@@ -603,8 +661,8 @@ export default {
                 siteId: this.curSiteId,
                 deliverySiteId: this.curSiteId
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
+              // okBtnText: '确认',
               component: () => import('./dialogs/followList.vue')
             })
           }
@@ -635,15 +693,15 @@ export default {
         let vm = this
         vm.columns[1].expand = val
         if (val) {
-          this.columns[9].noDisplay = false
-          this.columns[4].noDisplay = true
           this.columns[10].noDisplay = false
+          this.columns[4].noDisplay = true
+          this.columns[11].noDisplay = false
           this.topBatchBtn.options[0].hidden = false
           this.topBatchBtn.options[2].hidden = false
         } else {
-          this.columns[9].noDisplay = false
-          this.columns[4].noDisplay = false
           this.columns[10].noDisplay = false
+          this.columns[4].noDisplay = false
+          this.columns[11].noDisplay = false
           this.topBatchBtn.options[0].hidden = true
           this.topBatchBtn.options[2].hidden = true
         }
@@ -669,6 +727,56 @@ export default {
   },
 
   methods: {
+    ...mapActions('storeInfo', ['getStoreList']),
+    importSell() {
+      this.$_dialog({
+        size: 'medium',
+        title: '导入跟卖',
+        params: {
+          isImport: true,
+          sel: [],
+          curSiteId: this.curSiteId,
+          getStoreList: this.getStoreList
+        },
+        cancelBtnText: '取消',
+        okBtnText: '确认',
+        component: () => import('./dialogs/sellWith.vue')
+      })
+    },
+    importInvo() {
+      this.$_dialog({
+        size: 'medium',
+        fullscreen: false,
+        title: '导入库存/成本',
+        params: {
+          query: {
+            importType: 8
+          }
+        },
+        cancelBtnText: '取消',
+        okBtnText: '确认',
+        component: () => import('./dialogs/importInvo.vue')
+      })
+    },
+    _export() {
+      let parentAsins,
+        asins,
+        sel = this.$refs.layout.selection
+      if (sel.length) {
+        parentAsins = this.getAsins(this.getParents(sel))
+        asins = this.getAsins(this.getChilds(sel))
+      }
+      this.$api[`ss/sellingMaybeChildProductExport`]({
+        ...this.searchData,
+        exportType: 1,
+        parentAsins,
+        asins,
+        pageNumber: null,
+        pageSize: null
+      }).then(data => {
+        downloadFile(data)
+      })
+    },
     apiName(searchData) {
       return searchData.displayType
         ? 'ss/sellingMaybeAllProductList'
@@ -775,10 +883,9 @@ export default {
       }
     },
     addGroup(sel, asins) {
-      const parentAsins = asins || sel
-        .filter(e => e._level == 1)
-        .map(e => e.parentAsin || e.asin)
-      
+      const parentAsins =
+        asins || sel.filter(e => e._level == 1).map(e => e.parentAsin || e.asin)
+
       this.$_dialog({
         size: 'medium',
         title: '加入分组',
@@ -792,7 +899,6 @@ export default {
       })
     },
     addToSite(sel, asins) {
-      
       if ([...new Set(sel.map(el => el.srcSiteId))].length > 1) {
         return this.$message.warning('只能操作同一源站点的产品')
       }
@@ -817,7 +923,7 @@ export default {
     del(sel, asins) {
       this.commonReq(sel, 'sellingRemoveTarget', '删除数据', asins)
     },
-    
+
     sellWith(sel) {
       this.cleanData(sel)
       this.$_dialog({

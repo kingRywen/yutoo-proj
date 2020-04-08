@@ -5,7 +5,7 @@
     <!-- <el-radio-group size="small" class="mb10" v-model="isFile">
       <el-radio-button :label="true">上传文件</el-radio-button>
       <el-radio-button :label="false">填写数据</el-radio-button>
-    </el-radio-group> -->
+    </el-radio-group>-->
     <div v-if="isFile">
       <el-button class="mb10" type="success" plain @click="download">下载模板</el-button>
       <new-form ref="form1" label-width="0px" :form-schema="formSchema1" :value="value1"></new-form>
@@ -14,7 +14,13 @@
       <el-table :data="tableData" :show-header="false">
         <el-table-column label>
           <div class="flex" slot-scope="scope">
-            <ElInput type="textarea" :rows="10" size="small" v-model="scope.row.text" placeholder="每行一个订单，订单号和运单号以逗号或制表符分隔"></ElInput>
+            <ElInput
+              type="textarea"
+              :rows="10"
+              size="small"
+              v-model="scope.row.text"
+              placeholder="每行一个订单，订单号和运单号以逗号或制表符分隔"
+            ></ElInput>
             <!-- <div style="width:100px">
               <ElButton
                 size="small"
@@ -31,7 +37,7 @@
                 type="text"
                 icon="el-icon-delete"
               ></ElButton>
-            </div> -->
+            </div>-->
           </div>
         </el-table-column>
       </el-table>
@@ -39,7 +45,7 @@
   </div>
 </template>
 <script>
-import {downloadFile} from 'Utils';
+import { downloadFile } from 'Utils'
 export default {
   data() {
     return {
@@ -48,7 +54,8 @@ export default {
       formSchema: {
         carrierCode: {
           widget: 'select',
-          label: '发货方式',
+          label: '运输方',
+          filterable: true,
           required: true,
           options: [
             { label: 'USPS', value: 'USPS' },
@@ -128,7 +135,7 @@ export default {
         shipMethod: {
           required: true,
           widget: 'select',
-          label: '运输方',
+          label: '运输方式',
           options: [
             {
               label: 'Standard',
@@ -158,10 +165,11 @@ export default {
   },
   methods: {
     download() {
-      this.$api[`fbm/fbm-orderOrderFulfillment-template`]({a: 1})
-      .then((data) => {
-        downloadFile(data)
-      })
+      this.$api[`fbm/fbm-orderOrderFulfillment-template`]({ a: 1 }).then(
+        data => {
+          downloadFile(data)
+        }
+      )
     },
     validate() {
       let forms = ['form']
@@ -182,12 +190,18 @@ export default {
           ...this.value
         }
         if (this.isFile) {
-          params = {...params, file: this.value1.file[0]}
+          params = { ...params, file: this.value1.file[0] }
           // debugger
         } else {
           params.text = this.tableData[0].text
         }
-        return this.$api[`fbm/${this.isFile ? 'fbm-orderOrderFulfillment-import' :'fbm-orderOrderFulfillment-text'}`](params)
+        return this.$api[
+          `fbm/${
+            this.isFile
+              ? 'fbm-orderOrderFulfillment-import'
+              : 'fbm-orderOrderFulfillment-text'
+          }`
+        ](params)
       })
     }
   }

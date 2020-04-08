@@ -1,350 +1,352 @@
 <template>
-  <div :class="['main-layout', {'has-scroll': scroll, 'show-right-btns': showRightBtns}]">
-    <ElRow :gutter="20">
-      <ElCol class="left" v-if="leftTree" :span="!toggleLeft ? 0 : leftSpan">
-        <slot name="left">
-          <div style="margin:10px">
-            <el-input size="small" v-model="leftTreeSearchVal" suffix-icon="el-icon-search"></el-input>
-          </div>
-          <!-- 树形上面的操作按钮 -->
-          <div v-if="leftTree.topHandle" style="margin-left:10px;">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="item.content"
-              placement="top-start"
-              v-for="item in leftTree.topHandle"
-              :key="item.id"
-            >
-              <el-button type="text" :icon="item.icon" @click="item.fn" style="font-size: 16px" size="mini"></el-button>
-            </el-tooltip>
-          </div>
-          <!-- 完 -->
-          <el-tree
-            ref="tree"
-            :filter-node-method="filterNode"
-            :data="leftTreeData"
-            :props="leftTree.props"
-            :current-node-key="leftTree.currentKey"
-            :node-key="leftTree.nodeKey"
-            :show-checkbox="leftTree.showCheckbox"
-            highlight-current
-            :check-strictly="leftTree.checkStrictly"
-            :expand-on-click-node="false"
-            :load="leftTree.loadNode"
-            @node-click=" leftTree.dataFn($event) ? getList(leftTree.dataFn($event)) : '' "
-            :lazy="!!leftTree.loadNode"
-          >
-            <div slot-scope="{node, data}">
-              <!-- treeNodeClass 影藏不能选择的的选择框  -->
-              <span
-                :style="{fontWeight: node.level < 3 ? 'bolder' : null}"
-                :class="{treeNodeClass: leftTree.showClassName && !data.leaf}"
-              >
-                {{data[leftTree.props.label]}}
-                <span v-if="leftTree.props.num">( {{data[leftTree.props.num]}} )</span>
-              </span>
+  <div>
+    <div :class="['main-layout', {'has-scroll': scroll && currentRow.length > 20, 'show-right-btns': showRightBtns}]">
+      <ElRow :gutter="20">
+        <ElCol class="left" v-if="leftTree" :span="!toggleLeft ? 0 : leftSpan">
+          <slot name="left">
+            <div style="margin:10px">
+              <el-input size="small" v-model="leftTreeSearchVal" suffix-icon="el-icon-search"></el-input>
             </div>
-          </el-tree>
-        </slot>
-        <div v-if="leftTree" class="drawer-btn inner" @click="toggleLeft = !toggleLeft">
+            <!-- 树形上面的操作按钮 -->
+            <div v-if="leftTree.topHandle" style="margin-left:10px;">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="item.content"
+                placement="top-start"
+                v-for="item in leftTree.topHandle"
+                :key="item.id"
+              >
+                <el-button type="text" :icon="item.icon" @click="item.fn" style="font-size: 16px" size="mini"></el-button>
+              </el-tooltip>
+            </div>
+            <!-- 完 -->
+            <el-tree
+              ref="tree"
+              :filter-node-method="filterNode"
+              :data="leftTreeData"
+              :props="leftTree.props"
+              :current-node-key="leftTree.currentKey"
+              :node-key="leftTree.nodeKey"
+              :show-checkbox="leftTree.showCheckbox"
+              highlight-current
+              :check-strictly="leftTree.checkStrictly"
+              :expand-on-click-node="false"
+              :load="leftTree.loadNode"
+              @node-click=" leftTree.dataFn($event) ? getList(leftTree.dataFn($event)) : '' "
+              :lazy="!!leftTree.loadNode"
+            >
+              <div slot-scope="{node, data}">
+                <!-- treeNodeClass 影藏不能选择的的选择框  -->
+                <span
+                  :style="{fontWeight: node.level < 3 ? 'bolder' : null}"
+                  :class="{treeNodeClass: leftTree.showClassName && !data.leaf}"
+                >
+                  {{data[leftTree.props.label]}}
+                  <span v-if="leftTree.props.num">( {{data[leftTree.props.num]}} )</span>
+                </span>
+              </div>
+            </el-tree>
+          </slot>
+          <div v-if="leftTree" class="drawer-btn inner" @click="toggleLeft = !toggleLeft">
+            <i :class="toggleLeft ? 'el-icon-caret-left' : 'el-icon-caret-right'"></i>
+          </div>
+        </ElCol>
+        <div
+          v-if="leftTree"
+          v-show="!toggleLeft"
+          class="drawer-btn outer"
+          :style="{'left': arrowLeft}"
+          @click="toggleLeft = !toggleLeft"
+        >
           <i :class="toggleLeft ? 'el-icon-caret-left' : 'el-icon-caret-right'"></i>
         </div>
-      </ElCol>
-      <div
-        v-if="leftTree"
-        v-show="!toggleLeft"
-        class="drawer-btn outer"
-        :style="{'left': arrowLeft}"
-        @click="toggleLeft = !toggleLeft"
-      >
-        <i :class="toggleLeft ? 'el-icon-caret-left' : 'el-icon-caret-right'"></i>
-      </div>
 
-      <!-- 自定义展示内容 -->
-      <ElCol :span="!toggleLeft ? 24 : leftTree ? (24-leftSpan) : 24" v-if="isShowCustomContent">
-        <slot name="customContent"></slot>
-      </ElCol>
-      <!-- 完 -->
-      <ElCol
-        :class="['right', {'is-simple': simple}, {'no-table': !showTable}]"
-        :span="!toggleLeft ? 24 : leftTree ? (24-leftSpan) : 24"
-        v-if="!isShowCustomContent"
-      >
-        <template>
-          <!-- <CollapseWrapper :backBtn="backBtn" v-if="showSearch" :expand="expand" class="mb10"> -->
-          <slot name="search" v-if="Object.keys(searchFields).length" :data="searchData">
-            <div class="table-search" ref="tableSearch">
-              <!-- <span v-if="!simple" ref="searchText">筛选条件：</span> -->
-              <new-form
-                :search="true"
-                inline
-                :form-schema="currentSearchFields"
-                ref="search"
-                @default-val-done="searchDefVAL"
-                v-model="searchData"
-                @clear="handleSearch"
-                @close="handleScClose"
-                label-width="80px"
+        <!-- 自定义展示内容 -->
+        <ElCol :span="!toggleLeft ? 24 : leftTree ? (24-leftSpan) : 24" v-if="isShowCustomContent">
+          <slot name="customContent"></slot>
+        </ElCol>
+        <!-- 完 -->
+        <ElCol
+          :class="['right', {'is-simple': simple}, {'no-table': !showTable}]"
+          :span="!toggleLeft ? 24 : leftTree ? (24-leftSpan) : 24"
+          v-if="!isShowCustomContent"
+        >
+          <template>
+            <!-- <CollapseWrapper :backBtn="backBtn" v-if="showSearch" :expand="expand" class="mb10"> -->
+            <slot name="search" v-if="Object.keys(searchFields).length" :data="searchData">
+              <div class="table-search" ref="tableSearch">
+                <!-- <span v-if="!simple" ref="searchText">筛选条件：</span> -->
+                <new-form
+                  :search="true"
+                  inline
+                  :form-schema="currentSearchFields"
+                  ref="search"
+                  @default-val-done="searchDefVAL"
+                  v-model="searchData"
+                  @clear="handleSearch"
+                  @close="handleScClose"
+                  label-width="80px"
+                >
+                  <div ref="searchWrapper" v-if="!simple">
+                    <!-- <ElButton class="ml10 mb10" type="primary" plain size="small" @click="saveNormal">保存</ElButton> -->
+                    <el-dropdown v-if="Object.keys(selSearchFields).length" trigger="click" @command="handleSearchCmd">
+                      <ElButton plain type="primary" class="ml10" size="small">
+                        更多
+                        <i class="el-icon-arrow-down el-icon--right"></i>
+                      </ElButton>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item
+                          :command="item"
+                          v-for="(item, searchIdx) in selSearchFields"
+                          :key="searchIdx"
+                        >{{item.label}}</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                    <ElButton
+                      class="ml10 mb10"
+                      type="primary"
+                      plain
+                      icon="el-icon-search"
+                      size="small"
+                      :loading="tableLoading"
+                      @click="handleSearch"
+                    >搜索</ElButton>
+                    <ElButton
+                      class="ml10 mb10"
+                      type="primary"
+                      plain
+                      icon="el-icon-refresh"
+                      size="small"
+                      :loading="tableLoading"
+                      @click="resetMethod"
+                    >重置</ElButton>
+                    <div style="display:inline-block" class="tip ml10" v-if="tip && !topBtnOpts.length">
+                      <el-tooltip :content="tip" placement="top">
+                        <el-tag type="info">说明</el-tag>
+                      </el-tooltip>
+                    </div>
+                  </div>
+                  <ElButton v-else class="mr10 mb10" type="primary" size="small" @click="getList(searchData)">搜索</ElButton>
+                </new-form>
+                <el-button
+                  class="showMoreBtn"
+                  @click="setFormItemHidden"
+                  type="text"
+                  :icon="`el-icon-arrow-${hiddenMore ? 'up' : 'down'} el-icon--right`"
+                  v-show="showSearchMoreBtn"
+                ></el-button>
+              </div>
+            </slot>
+            <!-- </CollapseWrapper> -->
+            <!-- 最上面的按钮 -->
+            <div
+              v-if="(!simple && !hiddenTopBtn)"
+              :class="['top-btn']"
+              :style="{marginBottom: (!hasPermRightEditBtns.length && !topBtnOpts.length) ? '0': null}"
+            >
+              <div class="flex" style="align-items: flex-end;">
+                <!-- 左边批量 -->
+                <div :class="['top-btn-left',{'is-loading': topBatchData.loading}]">
+                  <el-cascader
+                    v-if="topBtnOpts.length"
+                    ref="batchCas"
+                    :disabled="!selection.length || topBatchData.loading"
+                    :value="topBatchBtnVal"
+                    :props="topBatchData.props"
+                    :placeholder="topBatchBtnText"
+                    :options="topBtnOpts"
+                    @change="handleTopLeftBatchChange"
+                    :popper-class="`top-btn-cascader-wrapper ${casHasChildren ? 'casHasChildren' : ''}`"
+                  ></el-cascader>
+                  <i v-if="topBatchData.loading" class="el-icon-loading"></i>
+                </div>
+                <slot name="batchRight"></slot>
+
+                <div class="tip" v-if="tip && topBtnOpts.length">
+                  <el-tooltip :content="tip" placement="top">
+                    <el-tag type="info">说明</el-tag>
+                  </el-tooltip>
+                </div>
+                <div class="tip" v-else-if="btnTip">
+                  <el-tooltip placement="top">
+                    <div slot="content">
+                      <slot name="btnTip"></slot>
+                    </div>
+                    <el-tag type="info">说明</el-tag>
+                  </el-tooltip>
+
+                  <!-- <el-tag type="info">说明</el-tag> -->
+                </div>
+              </div>
+
+              <!-- 右边批量操作按钮 -->
+              <div
+                class="btns"
+                :class="{'show-filter':showFilter !== false}"
+                v-if="(showFilter!== false || hasTopPermsBtn)"
               >
-                <div ref="searchWrapper" v-if="!simple">
-                  <!-- <ElButton class="ml10 mb10" type="primary" plain size="small" @click="saveNormal">保存</ElButton> -->
-                  <el-dropdown v-if="Object.keys(selSearchFields).length" trigger="click" @command="handleSearchCmd">
-                    <ElButton plain type="primary" class="ml10" size="small">
-                      更多
-                      <i class="el-icon-arrow-down el-icon--right"></i>
+                <div class="textDes" v-if="showAsinDes">
+                  <slot name="textDes"></slot>
+                </div>
+                <template v-for="(item, index) in hasPermRightEditBtns">
+                  <el-dropdown
+                    v-if="item.type === 'dropdown'"
+                    :key="index"
+                    type="primary"
+                    plain
+                    class="right-dropdown bottom-btn"
+                    @command="handleCommand"
+                  >
+                    <!-- <i :class="item.icon"></i> -->
+                    <ElButton v-if="!item.btn" type="text" :loading="item.showLoading" :icon="item.icon"></ElButton>
+                    <ElButton :loading="item.showLoading" v-else :type="item.btn">
+                      {{item.name}}
+                      <i class="el-icon-arrow-down"></i>
                     </ElButton>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item
-                        :command="item"
-                        v-for="(item, searchIdx) in selSearchFields"
-                        :key="searchIdx"
-                      >{{item.label}}</el-dropdown-item>
+                      <el-dropdown-item v-for="n in item.btns" :key="n.name" :command="n.fn">{{n.name}}</el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
+
                   <ElButton
-                    class="ml10 mb10"
-                    type="primary"
-                    plain
-                    icon="el-icon-search"
-                    size="small"
-                    :loading="tableLoading"
-                    @click="handleSearch"
-                  >搜索</ElButton>
-                  <ElButton
-                    class="ml10 mb10"
-                    type="primary"
-                    plain
-                    icon="el-icon-refresh"
-                    size="small"
-                    :loading="tableLoading"
-                    @click="resetMethod"
-                  >重置</ElButton>
-                  <div style="display:inline-block" class="tip ml10" v-if="tip && !topBtnOpts.length">
-                    <el-tooltip :content="tip" placement="top">
-                      <el-tag type="info">说明</el-tag>
-                    </el-tooltip>
+                    class="bottom-btn"
+                    :class="{ml10:  !hasTopPermsBtn}"
+                    v-permission="item.perm"
+                    :icon="item.icon"
+                    :loading="item.showLoading ? item.loading : false"
+                    v-else-if="item.show === undefined ? true : typeof item.show === 'function' ? item.show() : item.show"
+                    :key="index"
+                    :title="item.type == 'plain' ? (item.nameFn ? item.nameFn() : item.name) : null"
+                    :type="item.type !== 'plain'? 'primary': 'text'"
+                    :disabled="typeof item.disabled === 'function' ? item.disabled(selection) : false"
+                    @click="handleBtnClick(item)"
+                  >{{item.type !== 'plain' ? (item.nameFn ? item.nameFn() : item.name) : null}}</ElButton>
+                </template>
+                <el-popover v-if="showFilter !== false" placement="bottom" trigger="click">
+                  <div class="rowCheckbox">
+                    <el-checkbox :indeterminate="isIndeterminate" :value="checkAll" @change="handleCheckAllSelect">全选</el-checkbox>
+                    <ElCheckboxGroup v-model="currentRow">
+                      <ElCheckbox v-for="item in allRow" :key="item.label" :label="item.label"></ElCheckbox>
+                    </ElCheckboxGroup>
                   </div>
-                </div>
-                <ElButton v-else class="mr10 mb10" type="primary" size="small" @click="getList(searchData)">搜索</ElButton>
-              </new-form>
-              <el-button
-                class="showMoreBtn"
-                @click="setFormItemHidden"
-                type="text"
-                :icon="`el-icon-arrow-${hiddenMore ? 'up' : 'down'} el-icon--right`"
-                v-show="showSearchMoreBtn"
-              ></el-button>
-            </div>
-          </slot>
-          <!-- </CollapseWrapper> -->
-          <!-- 最上面的按钮 -->
-          <div
-            v-if="(!simple && !hiddenTopBtn)"
-            :class="['top-btn']"
-            :style="{marginBottom: (!hasPermRightEditBtns.length && !topBtnOpts.length) ? '0': null}"
-          >
-            <div class="flex" style="align-items: flex-end;">
-              <!-- 左边批量 -->
-              <div :class="['top-btn-left',{'is-loading': topBatchData.loading}]">
-                <el-cascader
-                  v-if="topBtnOpts.length"
-                  ref="batchCas"
-                  :disabled="!selection.length || topBatchData.loading"
-                  :value="topBatchBtnVal"
-                  :props="topBatchData.props"
-                  :placeholder="topBatchBtnText"
-                  :options="topBtnOpts"
-                  @change="handleTopLeftBatchChange"
-                  :popper-class="`top-btn-cascader-wrapper ${casHasChildren ? 'casHasChildren' : ''}`"
-                ></el-cascader>
-                <i v-if="topBatchData.loading" class="el-icon-loading"></i>
-              </div>
-              <slot name="batchRight"></slot>
-
-              <div class="tip" v-if="tip && topBtnOpts.length">
-                <el-tooltip :content="tip" placement="top">
-                  <el-tag type="info">说明</el-tag>
-                </el-tooltip>
-              </div>
-              <div class="tip" v-else-if="btnTip">
-                <el-tooltip placement="top">
-                  <div slot="content">
-                    <slot name="btnTip"></slot>
+                  <div class="list-btn-wrapper" :class="{mb10: !hasTopPermsBtn}" slot="reference">
+                    <el-button class="list-btn" type="text" icon="el-icon-set-up"></el-button>
+                    <div v-if="restRowNum" class="num-tags">{{restRowNum}}</div>
                   </div>
-                  <el-tag type="info">说明</el-tag>
-                </el-tooltip>
-
-                <!-- <el-tag type="info">说明</el-tag> -->
+                </el-popover>
               </div>
             </div>
+            <!-- 最上面的按钮 end -->
+          </template>
 
-            <!-- 右边批量操作按钮 -->
-            <div
-              class="btns"
-              :class="{'show-filter':showFilter !== false}"
-              v-if="(showFilter!== false || hasTopPermsBtn)"
-            >
-              <div class="textDes" v-if="showAsinDes">
-                <slot name="textDes"></slot>
-              </div>
-              <template v-for="(item, index) in hasPermRightEditBtns">
-                <el-dropdown
-                  v-if="item.type === 'dropdown'"
-                  :key="index"
-                  type="primary"
-                  plain
-                  class="right-dropdown bottom-btn"
-                  @command="handleCommand"
-                >
-                  <!-- <i :class="item.icon"></i> -->
-                  <ElButton v-if="!item.btn" type="text" :loading="item.showLoading" :icon="item.icon"></ElButton>
-                  <ElButton :loading="item.showLoading" v-else :type="item.btn">
-                    {{item.name}}
-                    <i class="el-icon-arrow-down"></i>
-                  </ElButton>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="n in item.btns" :key="n.name" :command="n.fn">{{n.name}}</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-
-                <ElButton
-                  class="bottom-btn"
-                  :class="{ml10:  !hasTopPermsBtn}"
-                  v-permission="item.perm"
-                  :icon="item.icon"
-                  :loading="item.showLoading ? item.loading : false"
-                  v-else-if="item.show === undefined ? true : typeof item.show === 'function' ? item.show() : item.show"
-                  :key="index"
-                  :title="item.type == 'plain' ? (item.nameFn ? item.nameFn() : item.name) : null"
-                  :type="item.type !== 'plain'? 'primary': 'text'"
-                  :disabled="typeof item.disabled === 'function' ? item.disabled(selection) : false"
-                  @click="handleBtnClick(item)"
-                >{{item.type !== 'plain' ? (item.nameFn ? item.nameFn() : item.name) : null}}</ElButton>
-              </template>
-              <el-popover v-if="showFilter !== false" placement="bottom" trigger="click">
-                <div class="rowCheckbox">
-                  <el-checkbox :indeterminate="isIndeterminate" :value="checkAll" @change="handleCheckAllSelect">全选</el-checkbox>
-                  <ElCheckboxGroup v-model="currentRow">
-                    <ElCheckbox v-for="item in allRow" :key="item.label" :label="item.label"></ElCheckbox>
-                  </ElCheckboxGroup>
-                </div>
-                <div class="list-btn-wrapper" :class="{mb10: !hasTopPermsBtn}" slot="reference">
-                  <el-button class="list-btn" type="text" icon="el-icon-set-up"></el-button>
-                  <div v-if="restRowNum" class="num-tags">{{restRowNum}}</div>
-                </div>
-              </el-popover>
-            </div>
+          <!-- 下方标签页 -->
+          <div v-if="tabs.length" class="tabs mb10">
+            <el-tabs @tab-click="handleTabClick" v-model="activeTab">
+              <el-tab-pane
+                v-for="item in tabs"
+                :label="`${item.name} ( ${item.num} )`"
+                :key="item.name"
+                :item="item"
+                :name="item.name"
+              ></el-tab-pane>
+            </el-tabs>
           </div>
-          <!-- 最上面的按钮 end -->
-        </template>
-
-        <!-- 下方标签页 -->
-        <div v-if="tabs.length" class="tabs mb10">
-          <el-tabs @tab-click="handleTabClick" v-model="activeTab">
-            <el-tab-pane
-              v-for="item in tabs"
-              :label="`${item.name} ( ${item.num} )`"
-              :key="item.name"
-              :item="item"
-              :name="item.name"
-            ></el-tab-pane>
-          </el-tabs>
-        </div>
-        <!-- 下方标签页 end -->
-        <slot name="table">
-          <div style="position:relative" class="table-wrapper-main">
-            <div
-              ref="leftArrow"
-              v-show="showAllArrow && scroll && showArrowLeft"
-              :class="[{fixed: showFixed}]"
-              class="table-arrow-left"
-              @click="getMore(-1)"
-            >
-              <span class="gw-icon iconfont">&#xe626;</span>
-            </div>
-            <div
-              ref="rightArrow"
-              v-show="showAllArrow && scroll && showArrowRight"
-              :class="[{fixed: showFixed}]"
-              class="table-arrow-right"
-              @click="getMore()"
-            >
-              <span class="gw-icon iconfont">&#xe623;</span>
-            </div>
-            <yt-table
-              @big-expand="handleBigExpand"
-              @big-table-body-scroll="bigTableBodyScroll"
-              :fixedMinusOne="fixedMinusOne"
-              :bigData="bigData"
-              :cellStyle="cellStyle"
-              :selection="showSelection === false ? false : radioMode !== false ? 'radio' : 'checkbox'"
-              :checkStrictly="checkStrictly"
-              @select="handleSelect"
-              :treeTable="treeTable"
-              :treeColor="treeTable"
-              :stripe="!treeTable"
-              :treeStripe="treeTable"
-              :pageSize="pageSize"
-              :pageNo="pageNo"
-              :selectableFunc="selectableFunc"
-              :treeTableOtions="treeTableOtions"
-              v-loading="tableLoading"
-              @sortChange="sortChange"
-              @selectChange="selectChange"
-              :span-method="spanMethod"
-              :tableRowClassName="tableRowClassName"
-              :data="dataList"
-              :columns="columns"
-              :reserve-selection="reserveSelection"
-              :isExpandAll="isExpandAll"
-              ref="table"
-              v-if="showTable || reShowTable"
-            >
-              <template slot="right">
-                <slot name="right">
-                  <el-table-column
-                    class-name="rightHandles"
-                    :fixed="tbRightFixed"
-                    label="操作"
-                    align="left"
-                    :width="editWidth"
-                    v-if="edits.length"
-                  >
-                    <template slot-scope="scope">
-                      <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
-                        <el-dropdown
-                          v-setplain.small
-                          split-button
-                          class="w100 item-btn"
-                          type="primary"
-                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                          @command="handleEditCommand"
-                        >
-                          {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
-                          <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item
-                              v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
-                              :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
-                              :key="index"
-                            >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
-                          </el-dropdown-menu>
-                        </el-dropdown>
+          <!-- 下方标签页 end -->
+          <slot name="table">
+            <div style="position:relative" class="table-wrapper-main">
+              <div
+                ref="leftArrow"
+                v-show="showAllArrow && scroll && showArrowLeft"
+                :class="[{fixed: showFixed}]"
+                class="table-arrow-left"
+                @click="getMore(-1)"
+              >
+                <span class="gw-icon iconfont">&#xe626;</span>
+              </div>
+              <div
+                ref="rightArrow"
+                v-show="showAllArrow && scroll && showArrowRight"
+                :class="[{fixed: showFixed}]"
+                class="table-arrow-right"
+                @click="getMore()"
+              >
+                <span class="gw-icon iconfont">&#xe623;</span>
+              </div>
+              <yt-table
+                @table-scroll="handleTbScrl"
+                @big-expand="handleBigExpand"
+                @big-table-body-scroll="bigTableBodyScroll"
+                :fixedMinusOne="fixedMinusOne"
+                :bigData="bigData"
+                :cellStyle="cellStyle"
+                :selection="showSelection === false ? false : radioMode !== false ? 'radio' : 'checkbox'"
+                :checkStrictly="checkStrictly"
+                @select="handleSelect"
+                :treeTable="treeTable"
+                :treeColor="treeTable"
+                :stripe="!treeTable"
+                :treeStripe="treeTable"
+                :pageSize="pageSize"
+                :pageNo="pageNo"
+                :selectableFunc="selectableFunc"
+                :treeTableOtions="treeTableOtions"
+                v-loading="tableLoading"
+                @sortChange="sortChange"
+                @selectChange="selectChange"
+                :span-method="spanMethod"
+                :tableRowClassName="tableRowClassName"
+                :data="dataList"
+                :columns="columns"
+                :reserve-selection="reserveSelection"
+                :isExpandAll="isExpandAll"
+                ref="table"
+                v-if="showTable || reShowTable"
+              >
+                <template slot="right">
+                  <slot name="right">
+                    <el-table-column
+                      class-name="rightHandles"
+                      :fixed="tbRightFixed"
+                      label="操作"
+                      align="left"
+                      :width="editWidth"
+                      v-if="edits.length"
+                    >
+                      <template slot-scope="scope">
+                        <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
+                          <el-dropdown
+                            v-setplain.small
+                            split-button
+                            class="w100 item-btn"
+                            type="primary"
+                            @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                            @command="handleEditCommand"
+                          >
+                            {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
+                            <el-dropdown-menu slot="dropdown">
+                              <el-dropdown-item
+                                v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
+                                :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
+                                :key="index"
+                              >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </el-dropdown>
+                        </template>
+                        <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
+                          <el-button
+                            class="item-btn w100"
+                            v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
+                            size="small"
+                            @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                            type="primary"
+                            plain
+                          >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
+                        </template>
                       </template>
-                      <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
-                        <el-button
-                          class="item-btn w100"
-                          v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
-                          size="small"
-                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                          type="primary"
-                          plain
-                        >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
-                      </template>
-                    </template>
-                  </el-table-column>
-                </slot>
-                <!-- <el-table-column
+                    </el-table-column>
+                  </slot>
+                  <!-- <el-table-column
                   v-if="scroll && arrowShowRight && showArrowRight"
                   key="arrowRight"
                   fixed="right"
@@ -354,52 +356,52 @@
                   <template slot-scope="scope">
                     <el-button type="text" icon="el-icon-d-arrow-right" :class="[{fixed: showFixed}]" @click="getMore"></el-button>
                   </template>
-                </el-table-column>-->
-              </template>
-              <template slot="right1">
-                <slot name="right1">
-                  <plx-table-column
-                    class-name="rightHandles"
-                    :fixed="tbRightFixed"
-                    label="操作"
-                    align="left"
-                    :width="editWidth"
-                    v-if="edits.length"
-                  >
-                    <template slot-scope="scope">
-                      <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
-                        <el-dropdown
-                          v-setplain.small
-                          split-button
-                          class="w100 item-btn"
-                          type="primary"
-                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                          @command="handleEditCommand"
-                        >
-                          {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
-                          <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item
-                              v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
-                              :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
-                              :key="index"
-                            >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
-                          </el-dropdown-menu>
-                        </el-dropdown>
+                  </el-table-column>-->
+                </template>
+                <template slot="right1">
+                  <slot name="right1">
+                    <plx-table-column
+                      class-name="rightHandles"
+                      :fixed="tbRightFixed"
+                      label="操作"
+                      align="left"
+                      :width="editWidth"
+                      v-if="edits.length"
+                    >
+                      <template slot-scope="scope">
+                        <template v-if="scope.row.buttonList ? (scope.row.buttonList.length > 1) : (edits.length > 1)">
+                          <el-dropdown
+                            v-setplain.small
+                            split-button
+                            class="w100 item-btn"
+                            type="primary"
+                            @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                            @command="handleEditCommand"
+                          >
+                            {{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}
+                            <el-dropdown-menu slot="dropdown">
+                              <el-dropdown-item
+                                v-for="(item, index) in (scope.row.buttonList ? scope.row.buttonList.slice(1) : edits.slice(1))"
+                                :command="{item:scope.row.buttonList ? edits[item-1]: item , scope}"
+                                :key="index"
+                              >{{scope.row.buttonList ? edits[item - 1].name : item.name}}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </el-dropdown>
+                        </template>
+                        <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
+                          <el-button
+                            class="item-btn w100"
+                            v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
+                            size="small"
+                            @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
+                            type="primary"
+                            plain
+                          >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
+                        </template>
                       </template>
-                      <template v-else-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0]">
-                        <el-button
-                          class="item-btn w100"
-                          v-if="edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show == null ? true : typeof edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show === 'boolean' ? edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 : 0].show : edits[scope.row.buttonList ? scope.row.buttonList[0] - 1 : 0].show(scope)"
-                          size="small"
-                          @click="edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].fn(scope)"
-                          type="primary"
-                          plain
-                        >{{edits[scope.row.buttonList ?scope.row.buttonList[0] - 1 :0].name}}</el-button>
-                      </template>
-                    </template>
-                  </plx-table-column>
-                </slot>
-                <!-- <plx-table-column
+                    </plx-table-column>
+                  </slot>
+                  <!-- <plx-table-column
                   v-if="scroll && arrowShowRight && showArrowRight"
                   key="arrowRight"
                   fixed="right"
@@ -414,25 +416,25 @@
                       @click="getMoreBig"
                     ></el-button>
                   </template>
-                </plx-table-column>-->
-              </template>
-            </yt-table>
-          </div>
-        </slot>
-        <el-pagination
-          background
-          v-if="isShowPag && total"
-          :total="total"
-          :current-page="pageNo"
-          :page-size="pageSize"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-          class="pagination"
-          layout="total, sizes, prev, pager, next, jumper"
-        ></el-pagination>
-      </ElCol>
-    </ElRow>
-
+                  </plx-table-column>-->
+                </template>
+              </yt-table>
+            </div>
+          </slot>
+          <el-pagination
+            background
+            v-if="isShowPag && total"
+            :total="total"
+            :current-page="pageNo"
+            :page-size="pageSize"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+            class="pagination"
+            layout="total, sizes, prev, pager, next, jumper"
+          ></el-pagination>
+        </ElCol>
+      </ElRow>
+    </div>
     <Dialog
       :opts="innerDialogOpts"
       :copyText="dialogComponent.copyText"
@@ -556,12 +558,14 @@ export default {
     }
   },
   props: {
+    // 用Object.freeze优化性能
+    freezeData: false,
     // 修正-1的数据显示为 -
     fixedMinusOne: false,
     cellStyle: Function,
     // 是否显示左右滚动箭头
     scroll: {
-      default: false
+      default: true
     },
     // 搜索中的 对象|区间 参数合并方式 false -> parentkey在前 subKey在后  true -> 与前逻辑相反
     objectMerge: {
@@ -1005,7 +1009,12 @@ export default {
       return this.showFixedBtn
     },
     dataList() {
-      return this.url ? this.tableList : this.outerTableList
+      if (!this.freezeData) {
+        return this.url ? this.tableList : this.outerTableList
+      }
+      return this.url
+        ? Object.freeze(this.tableList)
+        : Object.freeze(this.outerTableList)
     },
     showFilter() {
       return this.allRow.length > 14
@@ -1368,11 +1377,48 @@ export default {
     }
   },
   methods: {
-    bindMouseEnter(bind = true) {
-      if (!this.bigData) {
+    handleTbScrl() {
+      if (!this.$el || !this.$el.querySelectorAll) {
         return
       }
-      const vm = this
+      let tbw = this.$el.querySelectorAll('.el-table__body-wrapper')[0]
+      let tb = tbw.querySelectorAll('table.el-table__body')[0]
+      this.$nextTick(() => {
+        if (tbw.offsetWidth + tbw.scrollLeft === tb.offsetWidth) {
+          this.showRightBtns = true
+        } else {
+          this.showRightBtns = false
+        }
+      })
+    },
+    bindMouseEnter(bind = true) {
+      let vm = this
+      if (this.currentRow.length <= 20) {
+        return
+      }
+      if (!this.bigData) {
+        const handle =
+          this.__mousemoveHandle ||
+          (this.__mousemoveHandle = e => {
+            // console.log(e.clientX > window.innerWidth - 20)
+            if (e.clientX > window.innerWidth - 20) {
+              vm.showRightBtns = true
+            }
+            if (!vm.$el) {
+              return
+            }
+            if (
+              e.clientX < window.innerWidth - parseInt(this.editWidth) &&
+              !vm.$el.querySelectorAll(
+                '.el-table__body-wrapper.is-scrolling-right'
+              )[0]
+            ) {
+              vm.showRightBtns = false
+            }
+          })
+        document.addEventListener('mousemove', handle)
+        return
+      }
       const handle =
         this.__mousemoveHandle ||
         (this.__mousemoveHandle = e => {
@@ -1478,12 +1524,6 @@ export default {
       }
 
       this.setLRArrow()
-
-      // if (e.scrollLeft == 0) {
-      //   this.showArrowLeft = false
-      // } else {
-      //   this.showArrowLeft = true
-      // }
     },
 
     handleCheckAllSelect(val) {
@@ -1501,7 +1541,6 @@ export default {
             if (document.activeElement.nodeName.toUpperCase() !== 'TEXTAREA') {
               e.preventDefault()
             }
-            
           }
           if (e.keyCode == 13 && !this.innerDialogOpts.visible) {
             if (document.activeElement.nodeName.toUpperCase() == 'TEXTAREA') {
@@ -2705,6 +2744,7 @@ $leftBgColor: #f6f6f9;
     z-index: 222;
     background: #fff;
     padding: 12px 0;
+    padding-bottom: 0;
   }
 }
 .rowCheckbox {

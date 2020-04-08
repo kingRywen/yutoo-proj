@@ -106,5 +106,15 @@ export default [
     desc: "全部接口 - 修改库存阀值",
     // mock: true,
     newShowSuccess: true
+  },
+  {
+    path: "sellingMaybe/childProductExport",
+    name: "sellingMaybeChildProductExport",
+    method: "POST",
+    config: {
+      responseType: 'blob'
+    },
+    desc: "跟卖-可跟卖库 - 产品列表-导出变体",
+    showSuccess: true
   }
 ];

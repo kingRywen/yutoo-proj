@@ -8,17 +8,16 @@
       <tr>
         <td class="table-header" style="width:80px">地址</td>
         <td>
-          {{row.buyerName || ""}}, {{row.addressLine1 || ""}} {{row.city || ""}}, {{row.state || ""}} {{row.postalCode ||
+          {{row.addressLine1 || ""}} {{row.city || ""}}, {{row.state || ""}} {{row.postalCode ||
           ""}} {{row.countryCode || ""}}
         </td>
       </tr>
-      <!-- <tr>
+      <tr>
         <td class="table-header" style="width:80px">电话</td>
         <td>{{row.phone || '-'}}</td>
-      </tr> -->
+      </tr>
     </table>
     <main-layout
-      
       :showSelection="false"
       url="fbm/fbm-orderOrderItems"
       :outerParams="queries"

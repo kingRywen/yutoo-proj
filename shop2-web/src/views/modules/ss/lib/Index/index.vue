@@ -199,7 +199,9 @@ export default {
               ...this.searchData,
               sort: undefined,
               field: undefined,
-              searchText: undefined,
+              displayType: undefined,
+              pageSize: undefined,
+              pageNumber: undefined,
               parentAsin: row.asin
             }
             return this.$api[`ss/sellingLibGetChildProductList`](params).then(
@@ -216,7 +218,7 @@ export default {
                   : '?psc=1')
             )
           },
-          width: 160
+          width: 180
         },
         {
           label: '站点',
@@ -275,8 +277,7 @@ export default {
               size: 'medium',
               title: '跟卖店铺列表',
               params: { asin: scope.row.asin },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
               component: () => import('./storeList.vue')
             })
           }
@@ -307,8 +308,7 @@ export default {
                 parentAsin: scope.row.parentAsin,
                 asin: scope.row.asin
               },
-              cancelBtnText: '取消',
-              okBtnText: '确认',
+              cancelBtnText: '关闭',
               component: () =>
                 import('Views/modules/ss/vallib/Index/dialogs/sellList.vue')
             })

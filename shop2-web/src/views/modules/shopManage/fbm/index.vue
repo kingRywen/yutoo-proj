@@ -7,8 +7,9 @@
       @searchTrueData="val => searchData = val"
       @requestSuccess="_ => isMount = true"
       edit-width="160px"
+      :sortableFunc="sortableFunc"
       :tableRowClassName="tableRowClassName"
-      :sortType="1"
+      :sortType="0"
       :cellStyle="cellStyle"
       tbRightFixed="right"
       reserveSelection="amazonOrderId"
@@ -115,11 +116,17 @@ export default {
       isMount: false,
       searchData: {},
       searchFields: {
+        // sku: {
+        //   widget: 'select',
+        //   options: [],
+        //   labelWidth: '55px',
+        //   placeholder: 'SKU'
+        // },
         storeId: {
           widget: 'select',
           options: [],
           labelWidth: '55px',
-          label: '店铺'
+          placeholder: '店铺'
         },
         purchaseDate: timeField(
           '下单时间',
@@ -152,6 +159,12 @@ export default {
           placeholder: '订单号',
           labelWidth: '65px'
         },
+        shipCarrier: {
+          placeholder: '运输方',
+          options,
+          widget: 'select'
+        },
+
         shipMethod: {
           placeholder: '运输方式',
           options: [
@@ -164,11 +177,6 @@ export default {
               value: 'Express'
             }
           ],
-          widget: 'select'
-        },
-        shipCarrier: {
-          placeholder: '运输方',
-          options,
           widget: 'select'
         },
 
@@ -265,31 +273,42 @@ export default {
           // _enum: ['未发货', '已发货']
         },
         {
+          label: '提交状态',
+          width: 100,
+          value: 'shipping',
+          _enum: {
+            '1': '提交中',
+            '3': '提交失败',
+            '2': '-',
+            '>3': '-'
+          }
+        },
+        {
           label: '运单号',
           width: 160,
           noTooltip: true,
           render(h, scope) {
             const { trackingNumbers, shipping } = scope.row
-            if (shipping == 1) {
-              return (
-                <div class="info">
-                  <i class="el-icon-loading" />
-                  <span class="info">{trackingNumbers || '-'}</span>
-                </div>
-              )
-            }
+            // if (shipping == 1) {
+            //   return (
+            //     <div class="info">
+            //       <i class="el-icon-loading" />
+            //       <span class="info">{trackingNumbers || '-'}</span>
+            //     </div>
+            //   )
+            // }
             return <span>{trackingNumbers || '-'}</span>
           },
           value: 'trackingNumbers'
         },
         {
-          label: '运输方式',
-          value: 'shipMethods'
-        },
-        {
           label: '运输方',
           value: 'shipCarriers',
           _enum: this.cfuns.arrayToObj(options)
+        },
+        {
+          label: '运输方式',
+          value: 'shipMethods'
         }
       ],
       editBtns: [
@@ -395,9 +414,9 @@ export default {
   },
   methods: {
     tableRowClassName({ row }) {
-      if (row.shipping == 1) {
-        return '_info'
-      }
+      // if (row.shipping == 1) {
+      //   return '_info'
+      // }
       // return 'font-size:24px'
     },
     cellStyle({ row, column }) {
@@ -435,6 +454,17 @@ export default {
         // okBtnText: '确认',
         component: () => import('./dialogs/proList.vue')
       })
+    },
+    sortableFunc({ prop, order }) {
+      let sortField = order != null ? prop : undefined
+      if (sortField === 'remainDays') {
+        sortField = 'latestShipDate'
+      }
+      return {
+        sortField,
+        sortType: order && (order === 'ascending' ? 'asc' : 'desc'),
+        sortData: null
+      }
     },
     handleCommand(command) {
       switch (command) {

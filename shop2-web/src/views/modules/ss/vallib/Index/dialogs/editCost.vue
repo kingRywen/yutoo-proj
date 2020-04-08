@@ -2,7 +2,7 @@
  * @Author: rywen 
  * @Date: 2020-03-02 17:10:40 
  * @Last Modified by: rywen
- * @Last Modified time: 2020-04-01 17:02:30
+ * @Last Modified time: 2020-04-08 15:29:07
  */
 <template>
   <div>
@@ -32,7 +32,6 @@ export default {
           fixed: 'left',
           value: 'asin',
           url: true,
-          expand: true,
           btnClick: scope => {
             window.open(this.storeUrls.asinUrl + scope.row['asin'])
           }
@@ -98,7 +97,9 @@ export default {
         setTimeout(() => {
           if (
             this.selected.find(
-              e => e.__isedit.fare.editVal == null || e.__isedit.purchasePrice.editVal === ''
+              e =>
+                e.__isedit.fare.editVal == null ||
+                e.__isedit.purchasePrice.editVal === ''
             )
           ) {
             this.$message.warning('请填写数据')

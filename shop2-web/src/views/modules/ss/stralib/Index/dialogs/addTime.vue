@@ -196,6 +196,12 @@ export default {
                 range
               }
             }
+
+            // keys.push(weekMap[k])
+            let w = this.weeks.find(e => e.label === weekMap[k])
+            if (w) {
+              w.disabled = true
+            }
           })
           this.someTimes = Object.values(obj)
         }

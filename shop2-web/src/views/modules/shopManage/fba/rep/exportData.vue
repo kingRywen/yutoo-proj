@@ -35,11 +35,10 @@ export default {
         obj = {}
       this.sel.forEach(el => {
         if (el._level == 2) {
-          if (
-            obj[el.parent.sellerSku] &&
-            obj[el.parent.sellerSku].childs.indexOf(el) == -1
-          ) {
-            obj[el.parent.sellerSku].childs.push(el)
+          if (obj[el.parent.sellerSku]) {
+            if (obj[el.parent.sellerSku].childs.indexOf(el) == -1) {
+              obj[el.parent.sellerSku].childs.push(el)
+            }
           } else {
             obj[el.parent.sellerSku] = {
               ...el.parent,

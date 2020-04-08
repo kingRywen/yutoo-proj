@@ -1,6 +1,7 @@
 <template>
   <div>
     <main-layout
+      :showSelection="false"
       :isShowPag="false"
       :outerParams="{...storeInfo,siteId: this.$store.state.selling.curSiteId, asin, sellingFlag: true, fareTempFlag: false}"
       :columns="columns"

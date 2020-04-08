@@ -20,7 +20,7 @@
 </template>
 <script>
 import { timeField } from 'Utils/table-render'
-import { downloadCsv, formatDate } from 'Utils'
+import { downloadCsv, formatDate, downloadFile } from 'Utils'
 import { mapActions } from 'vuex'
 export default {
   data() {
@@ -145,10 +145,16 @@ export default {
       },
       columns: [
         {
-          label: 'FBA货件编号',
+          label: 'FBA编号',
           noTooltip: true,
           width: 160,
           value: 'shippingId'
+        },
+        {
+          label: '追踪编号',
+          noTooltip: true,
+          width: 160,
+          value: 'amazonReferenceId'
         },
         {
           label: '店铺',
@@ -167,7 +173,7 @@ export default {
           value: 'createTime'
         },
         {
-          label: '实际发货时间',
+          label: '发货日期',
           width: 150,
           sortable: 'custom',
           value: 'sendTime',
@@ -177,52 +183,86 @@ export default {
               return <span>-</span>
             }
             let [date, hour] = sendTime.split(' ')
-            hour = hour.split(':')[0]
+            hour = hour && hour.split(':')[0]
             return (
               <span>
                 {formatDate(
-                  new Date(new Date(date).setHours(hour)),
-                  '{y}/{m}/{d} {h}:{i}:{s}'
+                  !hour
+                    ? new Date(date)
+                    : new Date(new Date(date).setHours(hour)),
+                  '{y}/{m}/{d}'
                 )}
               </span>
             )
           }
         },
         {
-          label: '预计送达天数',
-          width: 100,
+          label: '到达日期',
+          width: 150,
           sortable: 'custom',
-          value: 'planArriveDays',
+          value: 'deliveryDate',
           render(h, scope) {
-            const { planArriveDays } = scope.row
-            return <span>{planArriveDays ? `${planArriveDays}天` : '-'}</span>
+            const { deliveryDate } = scope.row
+            if (!deliveryDate) {
+              return <span>-</span>
+            }
+            let [date, hour] = deliveryDate.split(' ')
+            hour = hour && hour.split(':')[0]
+            return (
+              <span>
+                {formatDate(
+                  !hour
+                    ? new Date(date)
+                    : new Date(new Date(date).setHours(hour)),
+                  '{y}/{m}/{d}'
+                )}
+              </span>
+            )
           }
         },
+		{
+		  label: '目的地',
+		  value: 'destination'
+		},
+        // {
+        //   label: '预计送达天数',
+        //   width: 100,
+        //   sortable: 'custom',
+        //   value: 'planArriveDays',
+        //   render(h, scope) {
+        //     const { planArriveDays } = scope.row
+        //     return <span>{planArriveDays ? `${planArriveDays}天` : '-'}</span>
+        //   }
+        // },
         {
           label: 'MSKU',
           value: 'msku'
         },
         {
-          label: '已发货',
+          label: '计划数量',
+          value: 'quantityPlanSend'
+        },
+        {
+          label: '实发数量',
           value: 'quantityReal'
         },
         {
-          label: '已收到',
+          label: '收到数量',
           value: 'signedQuestions'
         },
         {
-          label: '问题数量',
-          value: 'quantityQuestions'
+          label: '缺失数量',
+          value: 'quantityMissing'
         },
-        {
-          label: '目的地',
-          value: 'destination'
-        },
-        {
-          label: '是否发货',
-          value: 'sendFlag',
-          _enum: ['否', '是']
-        },
+		{
+		  label: '问题数量',
+		  value: 'quantityQuestions'
+		},
+        // {
+        //   label: '是否发货',
+        //   value: 'sendFlag',
+        //   _enum: ['否', '是']
+        // },
         {
           label: '状态',
           value: 'shippingStatusString'
@@ -271,25 +311,53 @@ export default {
           name: '设置运单号',
           perm: 'addTask'
         },
-        {
-          fn: scope => {
-            this.setTran('设置运输方式', [
-              {
-                storeId: scope.row.storeId,
-                shippingId: scope.row.shippingId
-              }
-            ])
-          },
-          name: '设置运输方式',
-          perm: 'addTask'
-        },
+        // {
+        //   fn: scope => {
+        //     this.setTran('设置运输方式', [
+        //       {
+        //         storeId: scope.row.storeId,
+        //         shippingId: scope.row.shippingId
+        //       }
+        //     ])
+        //   },
+        //   name: '设置运输方式',
+        //   perm: 'addTask'
+        // },
         {
           fn: scope => {
             this.modifyTranNum(scope.row.storeId, scope.row.shippingId)
           },
           name: '修改发货数量',
           perm: 'addTask'
+        },
+        {
+          fn: scope => {
+            this.downDocu('outer', scope)
+          },
+          name: '下载外箱标签',
+          perm: 'addTask'
+        },
+        {
+          fn: scope => {
+            this.downDocu('tuo', scope)
+          },
+          name: '下载托盘数量',
+          perm: 'addTask'
+        },
+        {
+          fn: scope => {
+            this.downDocu('zhang', scope)
+          },
+          name: '下载账单信息',
+          perm: 'addTask'
         }
+      ],
+      pages: [
+        'PackageLabel_Letter_2',
+        'PackageLabel_Letter_6',
+        'PackageLabel_A4_2',
+        'PackageLabel_A4_4',
+        'PackageLabel_Plain_Paper'
       ],
       topBatchBtn: {
         title: '货件',
@@ -316,6 +384,43 @@ export default {
   },
   methods: {
     ...mapActions('fba', ['clearCacheProj']),
+    downDocu(type, scope) {
+      let api,
+        params = {
+          shipmentId: scope.row.shippingId,
+          storeId: scope.row.storeId
+        }
+      if (type == 'outer') {
+        api = 'fbaShipmentCreateLabelPackage'
+        params.pageType = scope.row.pageType
+      } else if (type == 'tuo') {
+        api = 'fbaShipmentCreateLabelPallet'
+        params.pageType = scope.row.pageType
+        params.palletCount = scope.row.palletCount
+      } else if (type == 'zhang') {
+        api = 'fbaShipmentCreateLabelBill'
+      }
+
+      if (type == 'outer' || type == 'tuo') {
+        this.$_dialog({
+          size: 'medium',
+          title: '选择纸张类型',
+          params: {
+            pages: this.pages,
+            params,
+            api
+          },
+          cancelBtnText: '取消',
+          okBtnText: '确认',
+          component: () => import('./dialogs/selectPap.vue')
+        })
+        return
+      }
+
+      this.$api[`fba/${api}`](params).then(data => {
+        downloadFile(data)
+      })
+    },
     handleLeftBatchChange(val, sel) {
       const data = sel.map(el => ({
         storeId: el.storeId,
@@ -333,14 +438,14 @@ export default {
           //   }
           // )
           this.$_dialog({
-          size: 'medium',
-          title: '批量确认发货',
-          params: {
-            data
-          },
-          cancelBtnText: '取消',
-          okBtnText: '确认',
-          component: () => import('./dialogs/confirmTran.vue')
+            size: 'medium',
+            title: '批量确认发货',
+            params: {
+              data
+            },
+            cancelBtnText: '取消',
+            okBtnText: '确认',
+            component: () => import('./dialogs/confirmTran.vue')
           })
           break
         case '设置运输方式':

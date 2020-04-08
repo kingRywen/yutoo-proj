@@ -48,7 +48,7 @@ export function formatDate(time, cFormat) {
     h: date.getHours(),
     i: date.getMinutes(),
     s: date.getSeconds(),
-    a: date.getDay()
+    a: date.getDay(),
   };
   var timeStr = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     var value = formatObj[key];
@@ -69,9 +69,11 @@ export function formatDate(time, cFormat) {
  */
 export function downloadCsv(data) {
   if (data && data.path) {
-    return downloadFile(data.path)
+    downloadFile(data.path);
+    return Promise.resolve();
   }
-  return downloadFile(data)
+  downloadFile(data);
+  return Promise.resolve();
 }
 // export function downloadCsv(data) {
 
@@ -85,8 +87,6 @@ export function downloadCsv(data) {
 //   if (data.split(".").pop() !== "csv") {
 //     return downloadFile(data, null);
 //   }
-  
-
 
 //   return axios({
 //     url: data.replace("http://localhost:8080", "http://192.168.0.112:8003"),
@@ -94,7 +94,7 @@ export function downloadCsv(data) {
 //     // url: data,
 //     responseType: "blob",
 //     transformResponse: function (data1) {
-      
+
 //       console.log(data1);
 //       // if (data1.type == "text/html") {
 //       //   return Vue.prototype.$message.error("下载失败，请重试");
@@ -134,12 +134,11 @@ export function downloadFile(url, txt, _blank, downloadName) {
   }
   if (!(url instanceof Blob)) {
     process.env.NODE_ENV !== "production" &&
-      console.info(
+      console.error(
         '下载时如果是二进制文件流，必须在api接口中配置 config.responseType= "blob"'
       );
   }
   var link;
-  debugger;
   if (typeof url === "string") {
     // console.log(22);
 
@@ -189,7 +188,7 @@ export function downloadFile(url, txt, _blank, downloadName) {
 
 export function arrayToObj(arr) {
   let obj = {};
-  arr.forEach(el => {
+  arr.forEach((el) => {
     obj[el.value] = el.label;
   });
   return obj;
@@ -197,7 +196,7 @@ export function arrayToObj(arr) {
 
 export function removeSearchEmpty(searchData) {
   let curSearchData = {};
-  Object.keys(searchData).forEach(k => {
+  Object.keys(searchData).forEach((k) => {
     let val = searchData[k];
     if (
       Object.prototype.toString.call(val) === "[object Array]" &&

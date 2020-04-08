@@ -15,7 +15,7 @@
       :row-style="showRow"
       size="mini"
       :paginationShow="false"
-      :datas="tableData"
+      :datas="curTableData"
       ref="table"
     >
       <slot name="topleft"></slot>
@@ -119,6 +119,14 @@ export default {
         }))
     }
   },
+  computed: {
+    curTableData() {
+      return this.tableData.filter(
+        e =>
+          e._level == null || e._level == 1 || (e.parent && e.parent._expanded)
+      )
+    }
+  },
   data() {
     return {
       treeStripe: true,
@@ -127,29 +135,37 @@ export default {
     }
   },
   watch: {
-    tableData() {
+    tableData(val) {
+      // TODO:
+      if (this.$route.path === '/shopManage/fba') {
+        this.height = 0
+      }
+
+      // if (val.length <= 10) {
+      //   this.height = 0
+      // }
       this.height = 0
       this.$nextTick(() => {
-        // debugger
         this.setHeight()
       })
     }
   },
+
   methods: {
     showRow,
     rowClassName,
     handleExpand() {
       this.$emit('expand')
-      // setTimeout(() => {
-      //   this.$refs.table.doLayout()
-      //   this.$refs.table.setHeight()
-      // }, 100);
+      // this.$nextTick(() => {
+      //   this.innerTableRowClassName.count = 0
+      // })
     },
     innerTableRowClassName(data) {
       const { row, rowIndex } = data
       if (this.innerTableRowClassName.count == null) {
         this.innerTableRowClassName.count = 0
       }
+      console.log(this.innerTableRowClassName.count)
 
       const show = row.parent ? row.parent._expanded && row.parent.__show : true
       if (show) {
@@ -172,8 +188,10 @@ export default {
       }
     },
     setHeight() {
-      let grid = this.$refs.table.$el.querySelectorAll('.plx-grid')[0]
-      this.height = grid.offsetHeight
+      this.$nextTick(() => {
+        let grid = this.$refs.table.$el.querySelectorAll('.plx-grid')[0]
+        this.height = grid.offsetHeight
+      })
     },
     handleTableScroll($event) {
       this.$emit('table-body-scroll', $event)
@@ -198,7 +216,15 @@ export default {
 <style lang="scss">
 $table-border-color: #dfdfdf;
 $table-bg-color: #f2f2f2;
-.has-scroll .plx-table--fixed-right-wrapper,
+.has-scroll .plx-table--fixed-right-wrapper {
+  transition: 0.1s;
+  opacity: 1;
+  right: -40px;
+  z-index: 3;
+  &:not(.scrolling--middle) {
+    right: 0;
+  }
+}
 .has-scroll .el-table__fixed-right {
   transition: 0.1s;
   opacity: 1;

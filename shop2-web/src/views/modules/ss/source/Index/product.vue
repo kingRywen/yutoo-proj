@@ -6,7 +6,7 @@
       :searchFields="searchFields"
       :columns="columns"
       :url="apiName"
-      :bigData="false"
+      :bigData="true"
       @searchTrueData="val => searchData = val"
       ref="layout"
       :object-merge="true"
@@ -43,14 +43,14 @@ export default {
         vm.topBatchBtn.options[1].hidden = false
         vm.columns[2].noDisplay = true
         vm.columns[1].noDisplay = false
+        vm.columns[10].noDisplay = false
         vm.columns[9].noDisplay = false
-        vm.columns[8].noDisplay = false
       } else {
         vm.topBatchBtn.options[1].hidden = true
         vm.columns[2].noDisplay = false
         vm.columns[1].noDisplay = false
+        vm.columns[10].noDisplay = false
         vm.columns[9].noDisplay = false
-        vm.columns[8].noDisplay = false
       }
       vm.columns[1].expand = data.displayType
     }
@@ -74,15 +74,19 @@ export default {
         asyncFunc: row => {
           const params = {
             ...this.storeInfo,
+            siteId: this.curSiteId,
             srcSiteId: this.curSiteId,
             ...this.searchData,
             sort: undefined,
             field: undefined,
-            searchText: undefined,
+            displayType: undefined,
+            pageSize: undefined,
+            pageNumber: undefined,
             parentAsin: row.asin
           }
           return this.$api[`ss/sellingSrcGetChildProductList`](params).then(
-            data => data.data
+            data => data.data.map(e => ({ ...e, _isChild: true }))
+            // _isChild
           )
         },
         btnClick: scope => {
@@ -144,6 +148,13 @@ export default {
         value: 'bsr'
       },
       {
+        label: '新增评价数',
+        width: 90,
+        headerTooltip: '近30天新增评价数',
+        sortable: 'custom',
+        value: 'newReviewCnt'
+      },
+      {
         label: '评价数',
         noDisplay: false,
         width: 90,
@@ -201,18 +212,30 @@ export default {
               asin: scope.row.asin,
               parentAsin: scope.row.parentAsin
             },
-            cancelBtnText: '取消',
-            okBtnText: '确认',
+            cancelBtnText: '关闭',
             component: () =>
               import('Views/modules/ss/vallib/Index/dialogs/sellList.vue')
           })
         }
       },
       {
-        label: '发货方式',
-        width: 90,
+        label: 'FBA',
+        width: 100,
         value: 'fbpFlag',
-        _enum: this.cfuns.arrayToObj(this.$const['OTHER/fbpFlag'])
+        _enum: {
+          0: '否',
+          '>=1': '是'
+        }
+      },
+      {
+        label: 'FBM',
+        width: 100,
+        value: 'fbpFlag',
+        _enum: {
+          0: '是',
+          1: '否',
+          '2': '是'
+        }
       },
       {
         label: '抓取方式',
@@ -498,10 +521,14 @@ export default {
         : 'ss/sellingSrcChildProductList'
     },
     btnFn(row) {
+      let arr = [1]
+      if (!row._isChild && this.searchData.displayType) {
+        arr.push(2)
+      }
       if (row.attentionFlag) {
-        return [1, 2, 4, 5]
+        return arr.concat([4, 5])
       } else {
-        return [1, 2, 3, 5]
+        return arr.concat([3, 5])
       }
     },
     handleLeftBatchChange(val, sel) {

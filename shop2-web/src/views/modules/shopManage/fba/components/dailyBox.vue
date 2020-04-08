@@ -61,7 +61,7 @@ export default {
 .box {
   font-size: 12px;
   min-width: 800px;
-  min-height: 100px;
+  min-height: 150px;
   border: 1px solid #ddd;
   padding: 4px;
   background: #fff;

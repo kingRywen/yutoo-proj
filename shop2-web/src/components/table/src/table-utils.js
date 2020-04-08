@@ -16,8 +16,8 @@ export function getEnum(item, scope) {
   function getLabel(key) {
     if (!item._enum.hasOwnProperty(key)) {
       Object.keys(item._enum)
-        .filter(el => parseInt(el) != el)
-        .forEach(k => {
+        .filter((el) => parseInt(el) != el)
+        .forEach((k) => {
           try {
             let fn = new Function("key", `return key ${k}`);
             if (fn(key)) {
@@ -44,7 +44,7 @@ export function getEnum(item, scope) {
     key = key.split(",");
   }
   if (Array.isArray(key)) {
-    let ar = key.map(k => getLabel(k)).filter(el => el != null);
+    let ar = key.map((k) => getLabel(k)).filter((el) => el != null);
     return ar.length ? ar.join("、") : "-";
   } else {
     return getLabel(key);
@@ -62,12 +62,12 @@ export function getMoney(item, scope) {
             : item.symbol
             ? this.$store.state.storeInfo.allData[0] &&
               this.$store.state.storeInfo.allData[0].sites.find(
-                e => e.siteId == item.symbol(scope.row)
+                (e) => e.siteId == item.symbol(scope.row)
               ).symbol
             : item["money"] === "us"
             ? "$"
             : "¥"
-        } ` + scope.row[moneyField]
+        } ` + Number(scope.row[moneyField]).toFixed(2)
       );
     } else {
       return scope.row[moneyField];
@@ -95,15 +95,14 @@ export function handleExpand(scope, item, treeTableOtions, stop, e, vm) {
         // 需要请求后台
         Vue.set(row, "loading", true);
         asyncFunc(row)
-          .then(data => {
+          .then((data) => {
             row.loading = false;
             vm.addBtn(data);
             Vue.set(row, "_expanded", true);
             Vue.set(row, childs, data);
-            
           })
           .then(() => vm.$emit("expand"))
-          .catch(e => {
+          .catch((e) => {
             console.error(e);
             row.loading = false;
           });
@@ -114,8 +113,10 @@ export function handleExpand(scope, item, treeTableOtions, stop, e, vm) {
     } else {
       // 不需要请求后台
       Vue.set(row, "_expanded", true);
+      vm.$emit("expand");
     }
   } else {
+    vm.$emit("expand");
     row._expanded = false;
   }
 }
@@ -124,7 +125,7 @@ export const getLink = (h, item, scope, treeTableOtions, numJsx, vm) => {
   let _jsx = [],
     val = scope.row[item.value],
     {
-      isClick /**是否能点击，不传的话默认可以点击，用于不同行的数据判断 */
+      isClick /**是否能点击，不传的话默认可以点击，用于不同行的数据判断 */,
     } = item;
 
   if (item.expand) {
@@ -138,9 +139,9 @@ export const getLink = (h, item, scope, treeTableOtions, numJsx, vm) => {
             ? "caret-bottom"
             : "caret-right"
         }`}
-        onClick={e => handleExpand(scope, item, treeTableOtions, true, e, vm)}
+        onClick={(e) => handleExpand(scope, item, treeTableOtions, true, e, vm)}
         style={{
-          visibility: !treeTableOtions.expandFunc(scope.row) ? `hidden` : null
+          visibility: !treeTableOtions.expandFunc(scope.row) ? `hidden` : null,
         }}
       ></el-button>
     );
@@ -172,7 +173,7 @@ export const getLink = (h, item, scope, treeTableOtions, numJsx, vm) => {
             <a
               class="url"
               href="javascript:;"
-              onClick={e => item.btnClick(scope, e)}
+              onClick={(e) => item.btnClick(scope, e)}
               style={item.style || ""}
             >
               {val}
@@ -227,7 +228,7 @@ export const getLink = (h, item, scope, treeTableOtions, numJsx, vm) => {
         <a
           class="url"
           href="javascript:;"
-          onClick={e => item.btnClick(scope, e)}
+          onClick={(e) => item.btnClick(scope, e)}
           // style={{ position: 'absolute', top: 0, right: 0 }}
           class={item.showBtn ? "link-btn" : ""}
         >
@@ -285,7 +286,7 @@ export function getImg(h, item, scope) {
             class="__img_wrapper mar-auto"
             style={{
               width: toolTipImgSize + "px",
-              height: toolTipImgSize + "px"
+              height: toolTipImgSize + "px",
             }}
           >
             <img
@@ -322,7 +323,7 @@ export function getImg(h, item, scope) {
                 class="__img_wrapper mar-auto"
                 style={{
                   width: ((item.style && item.style.width) || "45") + "px",
-                  height: ((item.style && item.style.width) || "45") + "px"
+                  height: ((item.style && item.style.width) || "45") + "px",
                 }}
               >
                 {image}
@@ -334,7 +335,7 @@ export function getImg(h, item, scope) {
             class="__img_wrapper mar-auto"
             style={{
               width: ((item.style && item.style.width) || "45") + "px",
-              height: ((item.style && item.style.width) || "45") + "px"
+              height: ((item.style && item.style.width) || "45") + "px",
             }}
           >
             {item.link ? (

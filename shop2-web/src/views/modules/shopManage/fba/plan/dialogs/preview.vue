@@ -41,6 +41,10 @@ export default {
         {
           label: '问题数量',
           value: 'inCase'
+        },
+        {
+          label: '缺失数量',
+          value: 'miss'
         }
       ],
       info: {

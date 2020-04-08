@@ -3,16 +3,16 @@ export default [
     path: "fbm-order/order/fulfillment-import",
     name: "fbm-orderOrderFulfillment-import",
     method: "POST",
-    showSuccess: true,
+    newShowSuccess: true,
     type: "formdata",
-    desc: "下载发货模板 - 导入模板发货"
+    desc: "下载发货模板 - 导入模板发货",
   },
   {
     path: "fbm-order/order/edit",
     name: "fbm-orderOrderEdit",
     method: "POST",
     showSuccess: true,
-    desc: "下载发货模板 - 修改订单状态"
+    desc: "下载发货模板 - 修改订单状态",
   },
   {
     path: "fbm-order/order/fulfillment-template",
@@ -20,38 +20,38 @@ export default [
     method: "POST",
     showSuccess: true,
     config: {
-      responseType: "blob"
+      responseType: "blob",
     },
-    desc: "下载发货模板 - 下载发货模板"
+    desc: "下载发货模板 - 下载发货模板",
   },
   {
     path: "fbm-order/order/items",
     name: "fbm-orderOrderItems",
     method: "POST",
-    desc: "下载发货模板 - 查询订单商品"
+    desc: "下载发货模板 - 查询订单商品",
   },
   {
     path: "fbm-order/order/export",
     name: "fbm-orderOrderExport",
     method: "POST",
     config: {
-      responseType: "blob"
+      responseType: "blob",
     },
     desc: "下载发货模板 - 导出订单",
-    showSuccess: true
+    showSuccess: true,
   },
   {
     path: "fbm-order/order/page",
     name: "fbm-orderOrderPage",
     method: "POST",
-    desc: "下载发货模板 - 查询订单"
+    desc: "下载发货模板 - 查询订单",
   },
   {
     path: "fbm-order/order/adjustment",
     name: "fbm-orderOrderAdjustment",
     method: "POST",
     showSuccess: true,
-    desc: "下载发货模板 - 订单退款"
+    desc: "下载发货模板 - 订单退款",
   },
   {
     path: "fbm-order/order/syn",
@@ -59,32 +59,59 @@ export default [
     method: "POST",
     showSuccess: true,
     singleLoading: true,
-    desc: "下载发货模板 - 同步订单"
+    desc: "下载发货模板 - 同步订单",
   },
   {
     path: "fbm-order/order/fulfillment",
     name: "fbm-orderOrderFulfillment",
     method: "POST",
     showSuccess: true,
-    desc: "下载发货模板 - 订单发货/修改运单"
+    desc: "下载发货模板 - 订单发货/修改运单",
   },
   {
     path: "fbm-order/order/logistics-template-ebo",
     name: "fbm-orderOrderLogistics-template-ebo",
     method: "POST",
     config: {
-      responseType: "blob"
+      responseType: "blob",
     },
     desc: "FBM订单管理 - 导出EBO模板",
-    showSuccess: true
+    showSuccess: true,
   },
   {
     path: "fbm-order/order/fulfillment-text",
     name: "fbm-orderOrderFulfillment-text",
     method: "POST",
-    showSuccess: true,
-    desc: "FBM订单管理 - 填写文本发货"
-  }
+    newShowSuccess: true,
+    desc: "FBM订单管理 - 填写文本发货",
+  },
+  {
+    path: "fbaShipmentCreate/label/package",
+    name: "fbaShipmentCreateLabelPackage",
+    method: "POST",
+    config: {
+      responseType: "blob",
+    },
+    desc: "FBA补货预处理 - 下载外箱标签",
+  },
+  {
+    path: "fbaShipmentCreate/label/pallet",
+    name: "fbaShipmentCreateLabelPallet",
+    method: "POST",
+    config: {
+      responseType: "blob",
+    },
+    desc: "FBA补货预处理 - 下载托盘标签",
+  },
+  {
+    path: "fbaShipmentCreate/label/bill",
+    name: "fbaShipmentCreateLabelBill",
+    method: "POST",
+    config: {
+      responseType: "blob",
+    },
+    desc: "FBA补货预处理 - 下载账单信息",
+  },
   // {
   //   path: "fbm-order/order/syn",
   //   name: "fbm-orderOrderSyn",

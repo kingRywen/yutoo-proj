@@ -40,13 +40,15 @@ export default {
       }
     },
     getVariant(expands) {
-      if (expands.length) {
-        Promise.all(expands.map(e => {
-          return this.asyncFunc(e);
-        })).then(res => {
+      if (expands.length && this.asyncFunc) {
+        Promise.all(
+          expands.map(e => {
+            return this.asyncFunc(e);
+          })
+        ).then(res => {
           let tableList = this.$refs.layout.tableList;
-          
-          res.forEach((childs) => {
+
+          res.forEach(childs => {
             let p = tableList.find(e => e.asin == childs[0].parentAsin);
             p._expanded = true;
             this.$set(p, "childs", childs);
@@ -110,7 +112,7 @@ export default {
                   path: this.$route.path,
                   query: {
                     ...this.$route.query,
-                    transportId: command.transportId
+                    transportId: command.value
                   }
                 });
               }

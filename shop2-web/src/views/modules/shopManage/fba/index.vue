@@ -215,7 +215,7 @@ export default {
         {
           label: '价格',
           width: 120,
-          value: 'price'
+          value: 'priceString'
         },
         {
           label: '运输方式',

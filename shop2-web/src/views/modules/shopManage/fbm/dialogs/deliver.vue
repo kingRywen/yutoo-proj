@@ -10,7 +10,6 @@
           <div class="flex just-sb">
             <el-select
               :class="scope.$index == 0 ? '' : 'vali'"
-
               filterable
               size="small"
               v-model="scope.row.carrierCode"
@@ -24,11 +23,11 @@
               v-model="scope.row.carrierName"
               size="small"
               placeholder="请输入运输方"
-            ></el-input> -->
+            ></el-input>-->
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="发货方式" prop="trackingNumber">
+      <el-table-column label="运输方式" prop="trackingNumber">
         <template slot-scope="scope">
           <div>
             <el-select :class="scope.$index == 0 ? '' : 'vali'" size="small" v-model="scope.row.shipMethod" placeholder>

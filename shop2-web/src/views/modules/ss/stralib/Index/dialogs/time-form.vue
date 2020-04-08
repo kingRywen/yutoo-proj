@@ -23,7 +23,7 @@
         >
           <el-time-picker
             :picker-options="{
-              selectableRange: `${index == 0 ? '00:00':(moment('2000-1-1 ' + formData.range[index-1].end + ':00') || '00:00')}:00 - 23:59:59`,
+              selectableRange: `${index == 0 ? '00:00':(getMoment('2013-02-08 ' + formData.range[index-1].end + ':00') || '00:00')}:00 - 23:59:59`,
               format:'HH:mm'
             }"
             :clearable="false"
@@ -42,8 +42,8 @@
             :clearable="false"
             :disabled="!item.start"
             :picker-options="{
-             selectableRange: `${item.start}:00 - 23:59:59`,
-              format:'HH:mm'
+            selectableRange: `${getMoment('2013-02-08 ' + item.start + ':00')}:00 - 23:59:59`,
+            format:'HH:mm'
             }"
             value-format="HH:mm"
             v-model="item.end"
@@ -118,8 +118,8 @@ export default {
     }
   },
   methods: {
-    moment() {
-      return moment.apply(arguments).add(60, 'seconds').format('HH:mm')
+    getMoment() {
+      return moment.bind(this).apply(this, arguments).add(60, 'seconds').format('HH:mm')
     },
     validate() {
       return this.$refs.form.validate()

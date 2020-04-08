@@ -9,7 +9,7 @@
       {{parentAsin}}
     </h3>
     <main-layout
-      
+      :showSelection="false"
       :outerParams="outerParams"
       :columns="type == 'lib' ? columns1 : columns"
       :url="`ss/${type == 'lib' ? 'sellingSellingLibList' : 'sellingMaybeSellingList'}`"
@@ -116,12 +116,11 @@ export default {
             return (
               <el-popover placement="right">
                 <yt-table
-                  
                   selection={false}
                   show-header={false}
                   columns={[
-                    { label: '策略类型', value: 'type',width: 140 },
-                    { label: '策略名称', value: 'name',minWidth: 320 }
+                    { label: '策略类型', value: 'type', width: 140 },
+                    { label: '策略名称', value: 'name', minWidth: 320 }
                   ]}
                   data={__list}
                 ></yt-table>

@@ -1,22 +1,27 @@
 export default {
   methods: {
     getParents(sel) {
-      return sel.filter(el =>
+      return sel.filter((el) =>
         this.searchData.displayType ? el._level == 1 : false
       );
     },
     cleanData(sel) {
-      sel = sel.map(e => ({ ...e, parent: null, childrens: null }));
+      sel = sel.map((e) => ({
+        ...e,
+        parent: null,
+        childrens: null,
+        buttonList: undefined,
+      }));
       return sel;
     },
     getChilds(sel) {
-      return sel.filter(el =>
+      return sel.filter((el) =>
         this.searchData.displayType ? !(el._level == 1) : true
       );
     },
 
     getAsins(parent) {
-      return parent.map(e => e.asin);
+      return parent.map((e) => e.asin);
     },
     // 只能选择父的就自动过滤子的
     selectA(sel) {
@@ -37,7 +42,7 @@ export default {
         // 父视图
         let parent = this.getAsins(this.getParents(sel));
         let childs = this.getAsins(
-          this.getChilds(sel).filter(e => parent.indexOf(e.parent.asin) == -1)
+          this.getChilds(sel).filter((e) => parent.indexOf(e.parent.asin) == -1)
         );
         return [...parent, ...childs];
       } else {
@@ -55,6 +60,6 @@ export default {
         return this.cleanData(childs);
       }
       return this.getAsins(childs);
-    }
-  }
+    },
+  },
 };

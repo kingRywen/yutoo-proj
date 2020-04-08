@@ -509,29 +509,55 @@ export default {
             //   </span>
             // )
           }
-          return item.renderHeader ? (
+          return item.renderHeader ? item.headerTooltip ? (
             <div class="headerDiv flex">
-              {item.renderHeader.call(this, h, { column, $index })}
-              {headerTooltip}
+			  <el-tooltip placement="top">
+			    <div slot="content">{item.headerTooltip}</div>
+                {item.renderHeader.call(this, h, { column, $index })}
+			  </el-tooltip>
             </div>
-          ) : item.type === 'array' ? (
+          ) : (
+			<div class="headerDiv flex">
+			  {item.renderHeader.call(this, h, { column, $index })}
+			</div>
+		  ) : item.type === 'array' ? item.headerTooltip ? (
+			<span class="double-title">
+			  <span class="__title">
+			    <el-tooltip placement="top">
+			      <div slot="content">{item.headerTooltip}</div>
+			      {vm.renderHeader(item.children[0])(h, { column, $index })}
+				</el-tooltip>
+			  </span>
+			  <br />
+			  <span class="__subtitle">
+			    <el-tooltip placement="top">
+			      <div slot="content">{item.headerTooltip}</div>
+			    {item.children[1].showLabel === false
+			      ? ''
+			      : vm.renderHeader(item.children[1])(h, { column, $index })}
+				</el-tooltip>
+			  </span>
+			</span>
+		  ) : (
             <span class="double-title">
               <span class="__title">
                 {vm.renderHeader(item.children[0])(h, { column, $index })}
-                {headerTooltip}
               </span>
               <br />
               <span class="__subtitle">
                 {item.children[1].showLabel === false
                   ? ''
                   : vm.renderHeader(item.children[1])(h, { column, $index })}
-                {headerTooltip}
               </span>
             </span>
-          ) : (
+          ) : item.headerTooltip ? (
+			  <el-tooltip placement="top">
+			    <div slot="content">{item.headerTooltip}</div>
+				<span>{item.label}</span>
+			  </el-tooltip>
+		  ) : (
             <span>
               {item.label}
-              {headerTooltip}
             </span>
           )
         }
